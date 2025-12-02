@@ -178,23 +178,30 @@ export default function CreateListing() {
   };
 
   const resolveShortGoogleUrl = async (url: string): Promise<string | null> => {
-    try {
-      const apiBase =
-        import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')
-          ? import.meta.env.VITE_API_URL
-          : '';
-      const response = await fetch(`${apiBase}/api/maps/resolve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
-      if (!response.ok) return null;
-      const data = await response.json();
-      return data.resolvedUrl || null;
-    } catch (error) {
-      console.warn('Failed to resolve short Google Maps URL:', error);
-      return null;
+    const devApiBase =
+      import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('localhost')
+        ? import.meta.env.VITE_API_URL
+        : 'http://localhost:3001';
+    const targets = import.meta.env.DEV
+      ? [`${devApiBase}/api/maps/resolve`, '/api/maps/resolve']
+      : ['/api/maps/resolve'];
+
+    for (const target of targets) {
+      try {
+        const response = await fetch(target, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        if (!response.ok) continue;
+        const data = await response.json();
+        if (data?.resolvedUrl) return data.resolvedUrl;
+      } catch (error) {
+        console.warn(`Failed to resolve short Google Maps URL via ${target}:`, error);
+      }
     }
+
+    return null;
   };
 
   const handleGoogleMapsUrlChange = async (url: string) => {
