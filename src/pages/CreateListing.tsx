@@ -201,6 +201,20 @@ export default function CreateListing() {
       }
     }
 
+    // Fallback: try GET with query param (some mobile browsers/extensions block POST)
+    for (const target of targets) {
+      try {
+        const response = await fetch(`${target}?url=${encodeURIComponent(url)}`, {
+          method: 'GET'
+        });
+        if (!response.ok) continue;
+        const data = await response.json();
+        if (data?.resolvedUrl) return data.resolvedUrl;
+      } catch (error) {
+        console.warn(`Failed to resolve short Google Maps URL via GET ${target}:`, error);
+      }
+    }
+
     return null;
   };
 
