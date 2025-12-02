@@ -1,0 +1,179 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    
+    // Helper function to check if user is the owner
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user is a host
+    function isHost() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isHost == true;
+    }
+    
+    // Settings collection (for admin settings)
+    match /settings/{settingId} {
+      // Anyone can read settings
+      allow read: if true;
+      
+      // Only admins can write settings
+      allow write: if isAdmin();
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone can read user profiles (for displaying host info, etc.)
+      allow read: if true;
+      
+      // Users can create their own profile during sign-up
+      // This is crucial for Firebase Auth sign-up to work
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // Users can update their own profile, admins can update any profile
+      allow update: if isOwner(userId) || isAdmin();
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // Camps collection
+    match /camps/{campId} {
+      // Anyone can read active camps
+      allow read: if true;
+      
+      // Only authenticated hosts can create camps
+      allow create: if isSignedIn() && isHost();
+      
+      // Hosts can update their own camps, admins can update any camp
+      allow update: if isSignedIn() && 
+                       (resource.data.hostId == request.auth.uid || isAdmin());
+      
+      // Hosts can delete their own camps, admins can delete any camp
+      allow delete: if isSignedIn() && 
+                       (resource.data.hostId == request.auth.uid || isAdmin());
+    }
+    
+    // Bookings collection
+    match /bookings/{bookingId} {
+      // Anyone can read booking documents (required for availability calendar and host dashboards)
+      // If you want to restrict this, change to: allow read: if isSignedIn();
+      allow read: if true;
+      
+      // Authenticated users can create bookings
+      allow create: if isSignedIn();
+      
+      // Guests can update their own booking; hosts for the camp and admins can also update
+      allow update: if isSignedIn() && (
+                       resource.data.userId == request.auth.uid ||
+                       resource.data.hostId == request.auth.uid ||
+                       isAdmin()
+                     );
+      
+      // Only admins can delete bookings
+      allow delete: if isAdmin();
+    }
+    
+    // Transactions collection
+    match /transactions/{transactionId} {
+      // Users can read their own transactions, admins can read all
+      allow read: if isSignedIn() && 
+                     (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Only system/admin can create transactions
+      allow create: if isSignedIn();
+      
+      // Only admins can update transactions
+      allow update: if isAdmin();
+      
+      // Only admins can delete transactions
+      allow delete: if isAdmin();
+    }
+    
+    // Reviews collection
+    match /reviews/{reviewId} {
+      // Anyone can read reviews
+      allow read: if true;
+      
+      // Authenticated users can create reviews
+      allow create: if isSignedIn();
+      
+      // Users can update their own reviews, admins can update any review
+      allow update: if isSignedIn() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Users can delete their own reviews, admins can delete any review
+      allow delete: if isSignedIn() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+    }
+    
+    // Cancellations collection
+    match /cancellations/{cancellationId} {
+      // Users can read their own cancellations (as guest or host), admins can read all
+      allow read: if isSignedIn() && 
+                     (resource.data.guestId == request.auth.uid || 
+                      resource.data.hostId == request.auth.uid ||
+                      isAdmin());
+      
+      // Authenticated users can create cancellation records
+      allow create: if isSignedIn() && 
+                       request.resource.data.guestId == request.auth.uid;
+      
+      // Only admins can update cancellation records
+      allow update: if isAdmin();
+      
+      // Only admins can delete cancellation records
+      allow delete: if isAdmin();
+    }
+    
+    // Blocked Dates collection
+    match /blockedDates/{blockId} {
+      // Anyone can read blocked dates (needed for availability checking)
+      allow read: if true;
+      
+      // Only hosts can create blocked dates for their own camps
+      allow create: if isSignedIn() && isHost() &&
+                       get(/databases/$(database)/documents/camps/$(request.resource.data.campId)).data.hostId == request.auth.uid;
+      
+      // Hosts can update their own blocked dates, admins can update any
+      allow update: if isSignedIn() && 
+                       (resource.data.hostId == request.auth.uid || isAdmin());
+      
+      // Hosts can delete their own blocked dates, admins can delete any
+      allow delete: if isSignedIn() && 
+                       (resource.data.hostId == request.auth.uid || isAdmin());
+    }
+    
+    // Refunds collection
+    match /refunds/{refundId} {
+      // Users can read refunds for their own cancellations, admins can read all
+      allow read: if isSignedIn() && 
+                     (get(/databases/$(database)/documents/cancellations/$(resource.data.cancellationId)).data.guestId == request.auth.uid ||
+                      isAdmin());
+      
+      // System can create refund records (authenticated users for their own bookings)
+      allow create: if isSignedIn();
+      
+      // Only admins can update refund records
+      allow update: if isAdmin();
+      
+      // Only admins can delete refund records
+      allow delete: if isAdmin();
+    }
+  }
+}

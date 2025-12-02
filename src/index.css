@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Modern warm earth tone theme */
+    --background: 0 0% 100%;
+    --foreground: 20 14% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 20%;
+    --primary: 14 77% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 24 33% 97%;
+    --secondary-foreground: 20 14% 20%;
+    --muted: 24 33% 97%;
+    --muted-foreground: 20 14% 46%;
+    --accent: 14 77% 62%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 20 13% 91%;
+    --input: 20 13% 91%;
+    --ring: 14 77% 62%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 20 14% 10%;
+    --foreground: 24 33% 97%;
+    --card: 20 14% 12%;
+    --card-foreground: 24 33% 97%;
+    --popover: 20 14% 12%;
+    --popover-foreground: 24 33% 97%;
+    --primary: 14 77% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 14% 18%;
+    --secondary-foreground: 24 33% 97%;
+    --muted: 20 14% 18%;
+    --muted-foreground: 24 33% 60%;
+    --accent: 20 14% 18%;
+    --accent-foreground: 24 33% 97%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 24 33% 97%;
+    --border: 20 14% 18%;
+    --input: 20 14% 18%;
+    --ring: 14 77% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Modern warm earth tone backgrounds */
+.desert-bg {
+  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8DC 25%, #FFD4C4 50%, #E07A5F 75%, #C86A50 100%);
+}
+
+.desert-gradient {
+  background: linear-gradient(to bottom, #FFF5F0, #FFE8DC, #FFF5F0);
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hide number input spinners when we already provide +/- buttons */
+.no-spin::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spin[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Modern card styling */
+.modern-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(224, 122, 95, 0.15);
+}
+
+/* Map container styling */
+.map-container {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 2px solid rgba(224, 122, 95, 0.2);
+}

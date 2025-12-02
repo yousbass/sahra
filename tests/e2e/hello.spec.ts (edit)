@@ -1,0 +1,18 @@
+{
+  "name": "your-project-name",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "playwright": "^1.0.0"
+  }
+}
+```
+import { test, expect } from '@playwright/test';
+
+test('hello world test', async ({ page }) => {
+  await page.goto('https://example.com');
+  const title = await page.title();
+  expect(title).toBe('Example Domain');
+});
