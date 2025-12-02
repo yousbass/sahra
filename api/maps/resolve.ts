@@ -25,16 +25,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Accept url from body or query for flexibility
-  const url = (body && (body.url as string)) || (req.query.url as string);
+  let url = (body && (body.url as string)) || (req.query.url as string);
 
   if (!url || typeof url !== 'string') {
     return res.status(400).json({ success: false, error: 'Missing url' });
   }
 
-  try {
+  // Ensure absolute URL
+  if (!/^https?:\/\//i.test(url)) {
+    url = `https://${url}`;
+  }
+
+  const attemptResolve = async (redirect: RequestRedirect, method: 'GET' | 'HEAD') => {
     const response = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow',
+      method,
+      redirect,
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; SahraBot/1.0; +https://sahra.camp)',
         'Accept-Language': 'en-US,en;q=0.9',
@@ -43,21 +48,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const finalUrl = response.url;
     const locationHeader = response.headers.get('location');
-    const resolved = finalUrl || locationHeader;
+    const resolved = redirect === 'manual' ? locationHeader || finalUrl : finalUrl || locationHeader;
+    return { response, resolved };
+  };
 
-    if (!response.ok && !resolved) {
-      const text = await response.text().catch(() => '');
-      return res.status(400).json({ success: false, error: 'Failed to resolve URL', status: response.status, body: text?.slice(0, 200) });
+  try {
+    // Try manual redirect (captures Location without following)
+    let resolvedData = await attemptResolve('manual', 'GET');
+
+    // If nothing, try HEAD manual
+    if (!resolvedData.resolved) {
+      resolvedData = await attemptResolve('manual', 'HEAD');
     }
 
+    // If still nothing, follow redirects
+    if (!resolvedData.resolved) {
+      resolvedData = await attemptResolve('follow', 'GET');
+    }
+
+    const { response, resolved } = resolvedData;
+
     if (!resolved) {
-      return res.status(400).json({ success: false, error: 'Failed to resolve URL', status: response.status || 400 });
+      const text = await response.text().catch(() => '');
+      return res.status(400).json({
+        success: false,
+        error: 'Failed to resolve URL',
+        status: response.status || 400,
+        body: text?.slice(0, 200),
+      });
     }
 
     res.setHeader('Access-Control-Allow-Origin', '*');
     return res.status(200).json({ success: true, resolvedUrl: resolved });
   } catch (error) {
     console.error('❌ Vercel map resolve error:', error);
-    return res.status(500).json({ success: false, error: 'Internal error resolving URL' });
+    const message = error instanceof Error ? error.message : 'Internal error resolving URL';
+    return res.status(500).json({ success: false, error: message });
   }
 }
