@@ -1,6 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+// Vercel Node API route (no framework types to avoid missing deps in build)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function handler(req: any, res: any) {
   const method = req.method || 'GET';
 
   if (method === 'OPTIONS') {
@@ -36,20 +36,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     url = `https://${url}`;
   }
 
-  const attemptResolve = async (redirect: RequestRedirect, method: 'GET' | 'HEAD') => {
-    const response = await fetch(url, {
-      method,
-      redirect,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; SahraBot/1.0; +https://sahra.camp)',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-    });
+  const attemptResolve = async (redirect: 'follow' | 'manual', method: 'GET' | 'HEAD') => {
+    try {
+      const response = await fetch(url, {
+        method,
+        redirect,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; SahraBot/1.0; +https://sahra.camp)',
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
+      });
 
-    const finalUrl = response.url;
-    const locationHeader = response.headers.get('location');
-    const resolved = redirect === 'manual' ? locationHeader || finalUrl : finalUrl || locationHeader;
-    return { response, resolved };
+      const finalUrl = response.url;
+      const locationHeader = response.headers.get('location');
+      const resolved = redirect === 'manual' ? locationHeader || finalUrl : finalUrl || locationHeader;
+      return { response, resolved };
+    } catch (error) {
+      console.error('❌ Resolve attempt failed:', error);
+      return { response: null, resolved: null };
+    }
   };
 
   try {
@@ -69,12 +74,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { response, resolved } = resolvedData;
 
     if (!resolved) {
-      const text = await response.text().catch(() => '');
+      const text = response?.text ? await response.text().catch(() => '') : '';
+      const status = response?.status || 400;
       return res.status(400).json({
         success: false,
         error: 'Failed to resolve URL',
-        status: response.status || 400,
-        body: text?.slice(0, 200),
+        status,
+        body: text?.slice(0, 200) || 'No response body',
       });
     }
 
