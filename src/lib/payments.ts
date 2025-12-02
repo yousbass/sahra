@@ -20,10 +20,15 @@ export async function createPaymentSession(
   payload: PaymentSessionRequest
 ): Promise<PaymentSessionResponse> {
   try {
-    const apiBase =
-      import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')
-        ? import.meta.env.VITE_API_URL
-        : '';
+    const configured = import.meta.env.VITE_API_URL?.trim();
+    const useExternal =
+      configured &&
+      (configured.includes('localhost') ||
+        configured.includes('127.0.0.1') ||
+        import.meta.env.VITE_API_URL_FORCE === 'true');
+
+    const apiBase = useExternal ? configured : '';
+
     const res = await fetch(`${apiBase}/api/payments/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
