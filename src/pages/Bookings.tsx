@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import { toast } from 'sonner';
 import ReviewForm from '@/components/ReviewForm';
 import { CancellationDialog } from '@/components/CancellationDialog';
 import type { CancellationPolicy } from '@/lib/refundCalculator';
+import { createPaymentSession } from '@/lib/payments';
 
 interface BookingWithCamp extends Booking {
   camp?: Camp;
@@ -32,6 +34,7 @@ export default function Bookings() {
   const [showCancellationDialog, setShowCancellationDialog] = useState(false);
   const [reviewingBooking, setReviewingBooking] = useState<BookingWithCamp | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('=== BOOKINGS PAGE ===');
@@ -157,6 +160,41 @@ export default function Bookings() {
     } catch (error) {
       console.error('Error submitting review:', error);
       throw error;
+    }
+  };
+
+  const handlePayPending = async (booking: BookingWithCamp) => {
+    if (!user) return;
+    setPayingBookingId(booking.id);
+
+    try {
+      const redirectUrl =
+        import.meta.env.VITE_PAYMENT_REDIRECT_URL ||
+        `${window.location.origin}/payment-success?bookingId=${booking.id}`;
+
+      const session = await createPaymentSession({
+        amount: booking.totalPrice,
+        currency: 'BHD',
+        bookingId: booking.id,
+        customer: {
+          name: userData?.displayName || user.displayName || user.email || 'Guest',
+          email: user.email || undefined,
+          phone: (booking as { userPhone?: string }).userPhone || undefined,
+        },
+        redirectUrl,
+      });
+
+      if (!session.success || !session.paymentUrl) {
+        toast.error(session.error || 'Could not start payment');
+        return;
+      }
+
+      window.location.href = session.paymentUrl;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Payment failed to start';
+      toast.error(message);
+    } finally {
+      setPayingBookingId(null);
     }
   };
 
@@ -345,6 +383,32 @@ export default function Bookings() {
                                 </span>
                               </div>
 
+                              <div className="pb-4 border-b flex items-start justify-between gap-4">
+                                <div>
+                                  <h3 className="font-semibold text-lg">Payment</h3>
+                                  <p className="text-sm text-muted-foreground">
+                                    {booking.paymentMethod === 'cash_on_arrival' ? 'Cash on Arrival selected' : 'Online payment'}
+                                  </p>
+                                  <div className="mt-2 flex gap-2 items-center">
+                                    <Badge className="bg-sand-100 text-gray-900 border border-sand-300">
+                                      {(booking.paymentMethod || 'online').replace('_', ' ')}
+                                    </Badge>
+                                    <Badge variant="secondary" className={booking.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-900 border border-amber-200'}>
+                                      {booking.paymentStatus || 'pending'}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                {(!booking.paymentStatus || booking.paymentStatus === 'pending') && (
+                                  <Button
+                                    onClick={() => handlePayPending(booking)}
+                                    disabled={payingBookingId === booking.id}
+                                    className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold"
+                                  >
+                                    {payingBookingId === booking.id ? 'Starting Payment...' : 'Pay Now'}
+                                  </Button>
+                                )}
+                              </div>
+
                               <div className="pb-4 border-b">
                                 <h3 className="font-semibold mb-2">Booking ID</h3>
                                 <p className="text-sm text-muted-foreground font-mono break-all">{booking.id}</p>
@@ -441,6 +505,16 @@ export default function Bookings() {
                           </DialogContent>
                         </Dialog>
                         
+                        {(!booking.paymentStatus || booking.paymentStatus === 'pending') && (
+                          <Button
+                            onClick={() => handlePayPending(booking)}
+                            className="flex-1 sm:flex-none bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold"
+                            disabled={payingBookingId === booking.id}
+                          >
+                            {payingBookingId === booking.id ? 'Starting Payment...' : 'Pay Now'}
+                          </Button>
+                        )}
+
                         {booking.eligibleForReview && !booking.reviewId && (
                           <Button
                             onClick={() => handleWriteReview(booking)}

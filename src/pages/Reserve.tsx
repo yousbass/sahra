@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Users, Phone, MessageSquare, ArrowLeft, Loader2, Tent, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { getCampById, createBooking } from '@/lib/firestore';
+import { getCampById, createBooking, hasUserBookingOnDate } from '@/lib/firestore';
 import { format, addDays } from 'date-fns';
 import { toast } from 'sonner';
 import { BookingCalendar } from '@/components/BookingCalendar';
@@ -41,6 +41,7 @@ export default function Reserve() {
   const [guests, setGuests] = useState(2);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash_on_arrival'>('online');
   
   // Payment states
   const [showPayment, setShowPayment] = useState(false);
@@ -223,8 +224,8 @@ export default function Reserve() {
   const calculateDayPrice = () => {
     if (!camp || !selectedDate) return { basePrice: 0, serviceFee: 0, tax: 0, total: 0 };
     
-    // Base price per day
-    const basePrice = camp.price * guests;
+    // Base price per day (flat, not per guest)
+    const basePrice = camp.price;
     
     // Service fee (10%)
     const serviceFee = basePrice * 0.10;
@@ -288,19 +289,6 @@ export default function Reserve() {
       return;
     }
 
-    // Double-check availability before creating booking
-    try {
-      const availability = await checkAvailability(camp.id, selectedDate);
-      if (!availability.available) {
-        toast.error(availability.message);
-        return;
-      }
-    } catch (error) {
-      console.error('❌ Final availability check failed:', error);
-      toast.error('Failed to verify availability. Please try again.');
-      return;
-    }
-
     if (guests < 1) {
       toast.error('Please select at least 1 guest');
       return;
@@ -316,9 +304,36 @@ export default function Reserve() {
       return;
     }
 
+    const bookingDateStr = format(selectedDate, 'yyyy-MM-dd');
+
+    // Prevent multiple bookings by same user on the same date (non-cancelled)
+    try {
+      const hasBookingSameDay = await hasUserBookingOnDate(user.uid, bookingDateStr);
+      if (hasBookingSameDay) {
+        toast.error('You already have a reservation on this date. Please pick a different date.');
+        return;
+      }
+    } catch (error) {
+      console.error('❌ Error checking existing bookings for user:', error);
+      toast.error('Could not verify your existing bookings. Please try again.');
+      return;
+    }
+
+    // Double-check availability before creating booking
+    try {
+      const availability = await checkAvailability(camp.id, selectedDate);
+      if (!availability.available) {
+        toast.error(availability.message);
+        return;
+      }
+    } catch (error) {
+      console.error('❌ Final availability check failed:', error);
+      toast.error('Failed to verify availability. Please try again.');
+      return;
+    }
+
     try {
       // Create booking for single day with custom check-in/check-out times
-      const bookingDateStr = format(selectedDate, 'yyyy-MM-dd');
       const nextDay = addDays(selectedDate, 1);
       const nextDayStr = format(nextDay, 'yyyy-MM-dd');
 
@@ -366,6 +381,7 @@ export default function Reserve() {
         // Status (matching database format)
         status: 'pending' as const,
         paymentStatus: 'pending' as const,
+        paymentMethod,
         
         // Refund policy (matching database format)
         refundPolicy: camp.refundPolicy || 'moderate',
@@ -734,6 +750,37 @@ export default function Reserve() {
                     />
                   </div>
 
+                  {/* Payment Method */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Payment Method</h3>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('online')}
+                        className={`w-full rounded-xl border-2 p-4 text-left transition ${
+                          paymentMethod === 'online'
+                            ? 'border-terracotta-500 bg-terracotta-50 shadow-md'
+                            : 'border-sand-300 hover:border-terracotta-300 bg-white'
+                        }`}
+                      >
+                        <p className="font-semibold text-gray-900">Pay Online</p>
+                        <p className="text-sm text-gray-700">BenefitPay / Apple Pay / Card</p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('cash_on_arrival')}
+                        className={`w-full rounded-xl border-2 p-4 text-left transition ${
+                          paymentMethod === 'cash_on_arrival'
+                            ? 'border-terracotta-500 bg-terracotta-50 shadow-md'
+                            : 'border-sand-300 hover:border-terracotta-300 bg-white'
+                        }`}
+                      >
+                        <p className="font-semibold text-gray-900">Cash on Arrival</p>
+                        <p className="text-sm text-gray-700">Pay in cash when you check in</p>
+                      </button>
+                    </div>
+                  </div>
+
                   <Button
                     type="submit"
                     disabled={!selectedDate || checkingAvailability}
@@ -753,7 +800,9 @@ export default function Reserve() {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">Reservation Created Successfully!</h3>
                     <p className="text-gray-700 font-medium">
-                      Payment integration is coming soon with Tap Payments for Bahrain.
+                      {paymentMethod === 'cash_on_arrival'
+                        ? 'You chose Cash on Arrival. Pay at check-in or pay online now to confirm faster.'
+                        : 'Complete your payment online to confirm your reservation.'}
                     </p>
                   </div>
 
@@ -766,9 +815,14 @@ export default function Reserve() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-700">Status:</span>
-                        <Badge variant="secondary" className="bg-amber-100 text-amber-900 border border-amber-300">
-                          Pending Payment
-                        </Badge>
+                        <div className="flex gap-2 items-center">
+                          <Badge variant="secondary" className="bg-amber-100 text-amber-900 border border-amber-300">
+                            Pending Payment
+                          </Badge>
+                          <Badge variant="secondary" className="bg-sand-100 text-gray-900 border border-sand-300">
+                            {paymentMethod === 'cash_on_arrival' ? 'Cash on Arrival' : 'Online Payment'}
+                          </Badge>
+                        </div>
                       </div>
                       {selectedDate && (
                         <div className="flex justify-between">
@@ -813,10 +867,14 @@ export default function Reserve() {
                     {paying ? 'Starting Payment...' : 'Pay Now (BenefitPay / Apple Pay / Card)'}
                   </Button>
 
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-left">
-                    <p className="text-sm font-semibold text-blue-900 mb-2">📱 What's Next?</p>
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-left space-y-1">
+                    <p className="text-sm font-semibold text-blue-900">
+                      📱 {paymentMethod === 'cash_on_arrival' ? 'Bring cash to your check-in.' : 'Need a different method?'}
+                    </p>
                     <p className="text-sm text-blue-800">
-                      We're integrating Tap Payments to support Bahrain businesses. You can view your reservation in "My Bookings" and we'll notify you once payment is available.
+                      {paymentMethod === 'cash_on_arrival'
+                        ? 'You can still pay online anytime from here or My Bookings.'
+                        : 'BenefitPay, Apple Pay, and cards are supported.'}
                     </p>
                   </div>
 

@@ -119,6 +119,7 @@ export interface Booking {
   totalPrice: number;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   paymentStatus: 'pending' | 'paid' | 'refunded' | 'partially_refunded';
+  paymentMethod?: 'card' | 'apple_pay' | 'google_pay' | 'cash_on_arrival';
   paymentIntentId?: string;
   createdAt: string | Timestamp;
   updatedAt?: string;
@@ -707,6 +708,24 @@ export const updateBooking = async (bookingId: string, updates: Partial<Booking>
   await updateDoc(bookingDoc, {
     ...updates,
     updatedAt: new Date().toISOString()
+  });
+};
+
+// Check if a user already has a booking on a specific date (excluding cancelled)
+export const hasUserBookingOnDate = async (userId: string, dateString: string): Promise<boolean> => {
+  if (!db) throw new Error('Firestore is not initialized');
+  
+  const bookingsCollection = collection(db, 'bookings');
+  const bookingsQuery = query(
+    bookingsCollection,
+    where('userId', '==', userId),
+    where('checkInDate', '==', dateString)
+  );
+  const snapshot = await getDocs(bookingsQuery);
+  
+  return snapshot.docs.some(doc => {
+    const data = doc.data() as Booking;
+    return data.status !== 'cancelled';
   });
 };
 
