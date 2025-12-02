@@ -35,6 +35,7 @@ export default function Bookings() {
   const [reviewingBooking, setReviewingBooking] = useState<BookingWithCamp | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'current' | 'past'>('current');
 
   useEffect(() => {
     console.log('=== BOOKINGS PAGE ===');
@@ -216,6 +217,21 @@ export default function Bookings() {
     });
   };
 
+  const isPastBooking = (booking: BookingWithCamp) => {
+    const endDateStr = (booking as { checkOutDate?: string }).checkOutDate || booking.checkOut;
+    if (!endDateStr) return false;
+    const end = new Date(endDateStr);
+    if (isNaN(end.getTime())) return false;
+    end.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return end < today;
+  };
+
+  const currentBookings = bookings.filter(b => !isPastBooking(b));
+  const pastBookings = bookings.filter(b => isPastBooking(b));
+  const displayedBookings = viewMode === 'current' ? currentBookings : pastBookings;
+
   if (loading || loadingBookings) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
@@ -255,17 +271,49 @@ export default function Bookings() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Bookings</h1>
           <p className="text-gray-700 font-medium">
-            {bookings.length} active reservation{bookings.length !== 1 ? 's' : ''}
+            {viewMode === 'current'
+              ? `${currentBookings.length} current reservation${currentBookings.length !== 1 ? 's' : ''}`
+              : `${pastBookings.length} past reservation${pastBookings.length !== 1 ? 's' : ''}`}
           </p>
+          <div className="mt-4 inline-flex rounded-xl border-2 border-sand-300 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setViewMode('current')}
+              className={`px-4 py-2 font-semibold transition ${
+                viewMode === 'current'
+                  ? 'bg-terracotta-600 text-white'
+                  : 'bg-white text-gray-900 hover:bg-sand-100'
+              }`}
+            >
+              Current
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('past')}
+              className={`px-4 py-2 font-semibold transition ${
+                viewMode === 'past'
+                  ? 'bg-terracotta-600 text-white'
+                  : 'bg-white text-gray-900 hover:bg-sand-100'
+              }`}
+            >
+              Past
+            </button>
+          </div>
         </div>
 
-        {bookings.length === 0 ? (
+        {displayedBookings.length === 0 ? (
           <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-12 text-center shadow-xl">
             <div className="w-20 h-20 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-full mx-auto flex items-center justify-center mb-4">
               <span className="text-4xl">🏕️</span>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Active Bookings</h3>
-            <p className="text-gray-700 font-medium mb-6">Start exploring and book your next desert adventure</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {viewMode === 'current' ? 'No Current Bookings' : 'No Past Bookings'}
+            </h3>
+            <p className="text-gray-700 font-medium mb-6">
+              {viewMode === 'current'
+                ? 'Start exploring and book your next desert adventure'
+                : 'Future trips await—book your next stay'}
+            </p>
             <Button
               onClick={() => navigate('/')}
               className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
@@ -275,7 +323,7 @@ export default function Bookings() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {bookings.map((booking) => (
+            {displayedBookings.map((booking) => (
               <Card
                 key={booking.id}
                 className="bg-white/95 backdrop-blur-sm overflow-hidden hover:shadow-xl transition-shadow border-sand-300"

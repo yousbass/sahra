@@ -230,14 +230,11 @@ export default function Reserve() {
     // Service fee (10%)
     const serviceFee = basePrice * 0.10;
     
-    // Tax (5% in Bahrain)
-    const tax = basePrice * 0.05;
-    
     return {
       basePrice,
       serviceFee,
-      tax,
-      total: basePrice + serviceFee + tax
+      tax: 0,
+      total: basePrice + serviceFee
     };
   };
 
@@ -430,7 +427,10 @@ export default function Reserve() {
         const { sendBookingConfirmationToGuest, sendBookingNotificationToHost } = await import('@/lib/emailService');
         const { getDoc, doc } = await import('firebase/firestore');
         const { db } = await import('@/lib/firebase');
-        
+
+        const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@sahra.camp';
+        const fallbackHostEmail = camp.hostEmail || supportEmail;
+
         // Prepare booking data for emails
         const emailBookingData = {
           bookingId: newBookingId,
@@ -456,8 +456,13 @@ export default function Reserve() {
         }
         
         // Get host email and send notification
-        const hostDoc = await getDoc(doc(db, 'users', camp.hostId));
-        const hostEmail = hostDoc.data()?.email;
+        let hostEmail = fallbackHostEmail;
+        try {
+          const hostDoc = await getDoc(doc(db, 'users', camp.hostId));
+          hostEmail = hostDoc.data()?.email || fallbackHostEmail;
+        } catch (hostFetchError) {
+          console.warn('⚠️ Could not fetch host email, using fallback:', hostFetchError);
+        }
         
         if (hostEmail && user.email) {
           await sendBookingNotificationToHost(
@@ -466,6 +471,8 @@ export default function Reserve() {
             user.email
           );
           console.log('✅ Booking notification sent to host');
+        } else {
+          console.warn('⚠️ Host email missing; booking notification skipped');
         }
       } catch (emailError) {
         console.error('❌ Failed to send booking emails:', emailError);
@@ -806,7 +813,7 @@ export default function Reserve() {
                     </p>
                   </div>
 
-                  <div className="space-y-3 text-left bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
+                    <div className="space-y-3 text-left bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
                     <p className="text-sm font-bold text-gray-900 mb-3">Booking Details:</p>
                     <div className="space-y-2">
                       <div className="flex justify-between">
@@ -943,18 +950,12 @@ export default function Reserve() {
                   <h3 className="font-semibold text-lg text-gray-900 mb-4">Price Breakdown</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">
-                        {camp.price.toFixed(3)} BD × {guests} guest{guests !== 1 ? 's' : ''}
-                      </span>
+                      <span className="text-gray-700"> {camp.price.toFixed(3)} BD per day</span>
                       <span className="text-gray-900 font-semibold">{priceBreakdown.basePrice.toFixed(3)} BD</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-700">Service Fee (10%)</span>
                       <span className="text-gray-900 font-semibold">{priceBreakdown.serviceFee.toFixed(3)} BD</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">Taxes (5%)</span>
-                      <span className="text-gray-900 font-semibold">{priceBreakdown.tax.toFixed(3)} BD</span>
                     </div>
                     <div className="border-t border-sand-300 pt-3">
                       <div className="flex justify-between">
