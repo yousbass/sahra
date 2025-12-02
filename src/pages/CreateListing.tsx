@@ -133,6 +133,23 @@ export default function CreateListing() {
 
     const decoded = decodeURIComponent(url);
 
+    // Use URL search params when possible
+    try {
+      const parsed = new URL(decoded);
+      const searchLatLng = parsed.searchParams.get('q') || parsed.searchParams.get('query') || parsed.searchParams.get('ll') || parsed.searchParams.get('center') || parsed.searchParams.get('sll');
+      if (searchLatLng) {
+        const parts = searchLatLng.split(',');
+        if (parts.length >= 2) {
+          const [lat, lng] = parts;
+          if (!Number.isNaN(Number(lat)) && !Number.isNaN(Number(lng))) {
+            return { lat, lng };
+          }
+        }
+      }
+    } catch {
+      // Ignore URL parsing failures and fall back to regexes below
+    }
+
     // ?q=lat,lng or &q=lat,lng (e.g., share link)
     const matchQuery = decoded.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
     if (matchQuery) return { lat: matchQuery[1], lng: matchQuery[2] };
@@ -152,6 +169,10 @@ export default function CreateListing() {
     // place/.../@lat,lng (sometimes without zoom)
     const matchPlace = decoded.match(/place\/[^/]+\/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
     if (matchPlace) return { lat: matchPlace[1], lng: matchPlace[2] };
+
+    // Fallback: first lat,lng pair in the string
+    const matchAnyPair = decoded.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+    if (matchAnyPair) return { lat: matchAnyPair[1], lng: matchAnyPair[2] };
 
     return null;
   };
