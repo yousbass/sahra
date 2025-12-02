@@ -37,15 +37,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       redirect: 'follow',
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; SahraBot/1.0; +https://sahra.camp)',
+        'Accept-Language': 'en-US,en;q=0.9',
       },
     });
 
-    if (!response.ok) {
-      return res.status(400).json({ success: false, error: 'Failed to resolve URL', status: response.status });
+    const finalUrl = response.url;
+    const locationHeader = response.headers.get('location');
+    const resolved = finalUrl || locationHeader;
+
+    if (!response.ok && !resolved) {
+      const text = await response.text().catch(() => '');
+      return res.status(400).json({ success: false, error: 'Failed to resolve URL', status: response.status, body: text?.slice(0, 200) });
+    }
+
+    if (!resolved) {
+      return res.status(400).json({ success: false, error: 'Failed to resolve URL', status: response.status || 400 });
     }
 
     res.setHeader('Access-Control-Allow-Origin', '*');
-    return res.status(200).json({ success: true, resolvedUrl: response.url });
+    return res.status(200).json({ success: true, resolvedUrl: resolved });
   } catch (error) {
     console.error('❌ Vercel map resolve error:', error);
     return res.status(500).json({ success: false, error: 'Internal error resolving URL' });
