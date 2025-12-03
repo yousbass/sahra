@@ -446,7 +446,7 @@ export default function Bookings() {
                                     </Badge>
                                   </div>
                                 </div>
-                                {(!booking.paymentStatus || booking.paymentStatus === 'pending') && (
+                                {booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed' || booking.paymentStatus === 'cancelled') && (
                                   <Button
                                     onClick={() => handlePayPending(booking)}
                                     disabled={payingBookingId === booking.id}
@@ -553,7 +553,7 @@ export default function Bookings() {
                           </DialogContent>
                         </Dialog>
                         
-                        {(!booking.paymentStatus || booking.paymentStatus === 'pending') && (
+                        {booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed' || booking.paymentStatus === 'cancelled') && (
                           <Button
                             onClick={() => handlePayPending(booking)}
                             className="flex-1 sm:flex-none bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold"
