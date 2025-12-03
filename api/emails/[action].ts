@@ -1,7 +1,7 @@
 // Vercel serverless function to send transactional emails via Resend
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function handler(req: any, res: any) {
-  const action = (req.query?.action as string) || '';
+  const action = (req.query?.action as string) || 'booking-confirmation';
   const method = req.method || 'GET';
 
   if (method === 'OPTIONS') {
