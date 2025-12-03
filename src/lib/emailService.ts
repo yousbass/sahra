@@ -123,6 +123,7 @@ export async function sendBookingNotificationToHost(
         bookingData,
         hostEmail,
         htmlContent,
+        guestEmail
       }),
     });
     

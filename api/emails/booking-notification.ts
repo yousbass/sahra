@@ -45,7 +45,7 @@ export default async function handler(req: any, res: any) {
       to: hostEmail,
       subject: bookingData?.campName ? `New Booking - ${bookingData.campName}` : 'New Booking',
       html: htmlContent,
-      reply_to: guestEmail || undefined,
+      replyTo: guestEmail || undefined,
     });
 
     res.setHeader('Access-Control-Allow-Origin', '*');
