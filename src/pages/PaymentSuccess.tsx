@@ -25,6 +25,9 @@ export default function PaymentSuccess() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isPaymentStatusSuccess = ['CAPTURED', 'PAID', 'AUTHORIZED'].includes(paymentStatusParam);
+  const isPaymentStatusFailure = ['FAILED', 'DECLINED', 'CANCELLED', 'VOID', 'REVERSED', 'REFUNDED'].includes(paymentStatusParam);
+
   const authMap: Record<string, { label: string; isSuccess: boolean; message: string }> = {
     Y: { label: 'Authentication Successful', isSuccess: true, message: 'Payment authenticated successfully.' },
     N: { label: 'Not Authenticated', isSuccess: false, message: 'Authentication failed or account not verified.' },
@@ -36,12 +39,22 @@ export default function PaymentSuccess() {
     UNKNOWN: { label: 'Payment Status Unknown', isSuccess: false, message: 'We could not verify the payment status. Please try again or contact support.' },
   };
 
-  const isPaymentStatusSuccess = ['CAPTURED', 'PAID', 'AUTHORIZED'].includes(paymentStatusParam);
   const authInfo =
     authMap[authCode] ||
     (isPaymentStatusSuccess
       ? { label: paymentStatusParam || 'CAPTURED', isSuccess: true, message: 'Payment completed.' }
       : { label: authCode, isSuccess: false, message: 'Payment authentication failed.' });
+
+  // If Tap redirected here with a failure status, send the user to the failure page with context
+  useEffect(() => {
+    if (isPaymentStatusFailure || (!authInfo.isSuccess && paymentStatusParam && !isPaymentStatusSuccess)) {
+      const params = new URLSearchParams();
+      if (bookingId) params.set('bookingId', bookingId);
+      if (paymentStatusParam) params.set('status', paymentStatusParam);
+      params.set('error', authInfo.message || 'Payment failed. Please try again.');
+      navigate(`/payment-failed?${params.toString()}`, { replace: true });
+    }
+  }, [bookingId, authInfo.isSuccess, authInfo.message, isPaymentStatusFailure, paymentStatusParam, navigate, isPaymentStatusSuccess]);
 
   useEffect(() => {
     const fetchBooking = async () => {
