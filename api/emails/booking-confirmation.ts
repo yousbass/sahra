@@ -1,7 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+// Plain handler without @vercel/node types to avoid missing dependency errors
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function handler(req: any, res: any) {
   const method = req.method || 'GET';
 
   if (method === 'OPTIONS') {
