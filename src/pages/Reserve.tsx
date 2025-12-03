@@ -376,7 +376,7 @@ export default function Reserve() {
         currency: 'BHD',
         
         // Status (matching database format)
-        status: 'pending' as const,
+        status: paymentMethod === 'cash_on_arrival' ? ('confirmed' as const) : ('pending' as const),
         paymentStatus: 'pending' as const,
         paymentMethod,
         
