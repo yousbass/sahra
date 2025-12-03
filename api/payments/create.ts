@@ -14,7 +14,8 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  if (!process.env.TAP_SECRET_KEY) {
+  const tapSecret = process.env.TAP_SECRET_KEY || process.env.VITE_TAP_SECRET_KEY;
+  if (!tapSecret) {
     return res.status(500).json({ success: false, error: 'TAP_SECRET_KEY not configured' });
   }
 
@@ -74,7 +75,7 @@ export default async function handler(req: any, res: any) {
     const tapRes = await fetch('https://api.tap.company/v2/charges', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.TAP_SECRET_KEY}`,
+        Authorization: `Bearer ${tapSecret}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentPayload),

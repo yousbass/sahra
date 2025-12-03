@@ -51,7 +51,8 @@ app.post('/api/maps/resolve', async (req, res) => {
 app.post('/api/payments/create', async (req, res) => {
   const { amount, currency = 'BHD', bookingId, customer, redirectUrl } = req.body || {};
   
-  if (!process.env.TAP_SECRET_KEY) {
+  const tapSecret = process.env.TAP_SECRET_KEY || process.env.VITE_TAP_SECRET_KEY;
+  if (!tapSecret) {
     return res.status(500).json({ success: false, error: 'TAP_SECRET_KEY not configured' });
   }
   if (!amount || !bookingId) {
@@ -95,7 +96,7 @@ app.post('/api/payments/create', async (req, res) => {
     const tapRes = await fetch('https://api.tap.company/v2/charges', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.TAP_SECRET_KEY}`,
+        Authorization: `Bearer ${tapSecret}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentPayload),
