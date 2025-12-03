@@ -85,6 +85,7 @@ export async function sendBookingConfirmationToGuest(
     });
     
     const result = await response.json();
+    console.log('📧 Guest email response:', response.status, result);
     
     if (!response.ok) {
       throw new Error(result.error || 'Failed to send email');
@@ -128,6 +129,7 @@ export async function sendBookingNotificationToHost(
     });
     
     const result = await response.json();
+    console.log('📧 Host email response:', response.status, result);
     
     if (!response.ok) {
       throw new Error(result.error || 'Failed to send email');
