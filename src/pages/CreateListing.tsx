@@ -177,7 +177,7 @@ export default function CreateListing() {
     return null;
   };
 
-  const resolveShortGoogleUrl = async (url: string): Promise<string | null> => {
+  const resolveShortGoogleUrl = async (url: string): Promise<{ resolvedUrl?: string; lat?: string; lng?: string } | null> => {
     const devApiBase =
       import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('localhost')
         ? import.meta.env.VITE_API_URL
@@ -195,7 +195,7 @@ export default function CreateListing() {
         });
         if (!response.ok) continue;
         const data = await response.json();
-        if (data?.resolvedUrl) return data.resolvedUrl;
+        if (data?.resolvedUrl || data?.resolvedLat) return { resolvedUrl: data.resolvedUrl, lat: data.resolvedLat, lng: data.resolvedLng };
       } catch (error) {
         console.warn(`Failed to resolve short Google Maps URL via ${target}:`, error);
       }
@@ -209,7 +209,7 @@ export default function CreateListing() {
         });
         if (!response.ok) continue;
         const data = await response.json();
-        if (data?.resolvedUrl) return data.resolvedUrl;
+        if (data?.resolvedUrl || data?.resolvedLat) return { resolvedUrl: data.resolvedUrl, lat: data.resolvedLat, lng: data.resolvedLng };
       } catch (error) {
         console.warn(`Failed to resolve short Google Maps URL via GET ${target}:`, error);
       }
@@ -228,8 +228,14 @@ export default function CreateListing() {
     // If it's a Google short link, try to resolve it to the long URL to extract coordinates.
     if (/^https?:\/\/(maps\.app\.goo\.gl|goo\.gl)\/.+/i.test(url.trim())) {
       const resolved = await resolveShortGoogleUrl(url.trim());
-      if (resolved) {
-        parseTarget = resolved;
+      if (resolved?.lat && resolved?.lng) {
+        setLatitude(resolved.lat);
+        setLongitude(resolved.lng);
+        toast.success('Coordinates extracted from URL!');
+        return;
+      }
+      if (resolved?.resolvedUrl) {
+        parseTarget = resolved.resolvedUrl;
       }
     }
 

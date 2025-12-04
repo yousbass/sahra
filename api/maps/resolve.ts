@@ -36,6 +36,22 @@ export default async function handler(req: any, res: any) {
     url = `https://${url}`;
   }
 
+  const extractCoords = (input: string | undefined | null) => {
+    if (!input) return null;
+    const decoded = decodeURIComponent(input);
+    const regexes = [
+      /@(-?\d+\.?\d*),(-?\d+\.?\d*),/,
+      /[?&](?:q|query|ll|center|sll)=(-?\d+\.?\d*),(-?\d+\.?\d*)/i,
+      /!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/,
+      /(-?\d+\.\d+),\s*(-?\d+\.\d+)/
+    ];
+    for (const rx of regexes) {
+      const m = decoded.match(rx);
+      if (m) return { lat: m[1], lng: m[2] };
+    }
+    return null;
+  };
+
   const attemptResolve = async (redirect: 'follow' | 'manual', method: 'GET' | 'HEAD') => {
     try {
       const response = await fetch(url, {
@@ -73,19 +89,40 @@ export default async function handler(req: any, res: any) {
 
     const { response, resolved } = resolvedData;
 
-    if (!resolved) {
-      const text = response?.text ? await response.text().catch(() => '') : '';
-      const status = response?.status || 400;
+    let resolvedLat: string | undefined;
+    let resolvedLng: string | undefined;
+    const coordFromUrl = extractCoords(resolved);
+
+    if (coordFromUrl) {
+      resolvedLat = coordFromUrl.lat;
+      resolvedLng = coordFromUrl.lng;
+    } else if (response?.text) {
+      const text = await response.text().catch(() => '');
+      const coordFromBody = extractCoords(text);
+      if (coordFromBody) {
+        resolvedLat = coordFromBody.lat;
+        resolvedLng = coordFromBody.lng;
+      }
+      if (!resolved) {
+        const status = response?.status || 400;
+        return res.status(400).json({
+          success: false,
+          error: 'Failed to resolve URL',
+          status,
+          body: text?.slice(0, 200) || 'No response body',
+        });
+      }
+    } else if (!resolved) {
       return res.status(400).json({
         success: false,
         error: 'Failed to resolve URL',
-        status,
-        body: text?.slice(0, 200) || 'No response body',
+        status: response?.status || 400,
+        body: 'No response body',
       });
     }
 
     res.setHeader('Access-Control-Allow-Origin', '*');
-    return res.status(200).json({ success: true, resolvedUrl: resolved });
+    return res.status(200).json({ success: true, resolvedUrl: resolved, resolvedLat, resolvedLng });
   } catch (error) {
     console.error('❌ Vercel map resolve error:', error);
     const message = error instanceof Error ? error.message : 'Internal error resolving URL';
