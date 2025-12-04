@@ -8,6 +8,7 @@ import { AlertCircle, Loader2, Calendar, Users, DollarSign, AlertTriangle } from
 import { calculateHostCancellationRefund, calculateHostPenalty } from '@/lib/refundCalculator';
 import { cancelBookingAsHost } from '@/lib/firestore';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface BookingWithCamp {
   id: string;
@@ -33,14 +34,14 @@ interface HostCancellationDialogProps {
 }
 
 const CANCELLATION_REASONS = [
-  'Property maintenance required',
-  'Emergency repairs needed',
-  'Personal emergency',
-  'Double booking error',
-  'Property no longer available',
-  'Weather-related issues',
-  'Other'
-];
+  'maintenance',
+  'emergencyRepairs',
+  'personalEmergency',
+  'doubleBooking',
+  'unavailable',
+  'weather',
+  'other'
+] as const;
 
 export function HostCancellationDialog({
   booking,
@@ -49,6 +50,7 @@ export function HostCancellationDialog({
   onOpenChange,
   onCancellationComplete,
 }: HostCancellationDialogProps) {
+  const { t, i18n } = useTranslation();
   const [cancelling, setCancelling] = useState(false);
   const [reason, setReason] = useState('');
   const [selectedReason, setSelectedReason] = useState('');
@@ -65,7 +67,7 @@ export function HostCancellationDialog({
   );
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(i18n.language === 'ar' ? 'ar' : 'en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -74,10 +76,10 @@ export function HostCancellationDialog({
   };
 
   const handleCancel = async () => {
-    const finalReason = selectedReason === 'Other' ? customReason : selectedReason;
+    const finalReason = selectedReason === 'other' ? customReason : selectedReason;
     
     if (!finalReason.trim()) {
-      toast.error('Please provide a cancellation reason');
+      toast.error(t('hostCancellation.toastNeedReason'));
       return;
     }
 
@@ -95,18 +97,18 @@ export function HostCancellationDialog({
 
       console.log('✅ Host cancellation successful');
       
-      toast.success('Booking cancelled successfully', {
+      toast.success(t('hostCancellation.toastSuccess'), {
         description: penalty.penaltyAmount > 0
-          ? `Guest will receive full refund. You will be charged a ${penalty.penaltyPercentage}% penalty (${penalty.penaltyAmount.toFixed(2)} BD).`
-          : 'Guest will receive full refund. No penalty applied.'
+          ? t('hostCancellation.toastSuccessDescPenalty', { penalty: penalty.penaltyPercentage, amount: penalty.penaltyAmount.toFixed(2) })
+          : t('hostCancellation.toastSuccessDescNoPenalty')
       });
 
       onCancellationComplete();
       onOpenChange(false);
     } catch (error) {
       console.error('❌ Host cancellation failed:', error);
-      toast.error('Failed to cancel booking', {
-        description: error instanceof Error ? error.message : 'Please try again later'
+      toast.error(t('hostCancellation.toastFail'), {
+        description: error instanceof Error ? error.message : t('hostCancellation.toastFailDesc')
       });
     } finally {
       setCancelling(false);
@@ -117,9 +119,9 @@ export function HostCancellationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900">Cancel Booking (Host)</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">{t('hostCancellation.title')}</DialogTitle>
           <DialogDescription className="text-gray-600">
-            Review the cancellation details and penalties before confirming
+            {t('hostCancellation.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -128,31 +130,31 @@ export function HostCancellationDialog({
           <div className="bg-sand-50 border-2 border-sand-300 rounded-lg p-4">
             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-terracotta-600" />
-              Booking Details
+              {t('hostCancellation.bookingDetails')}
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Guest:</span>
-                <span className="text-gray-900 font-bold">{booking.userName || 'Guest'}</span>
+                <span className="text-gray-700 font-medium">{t('hostCancellation.guest')}</span>
+                <span className="text-gray-900 font-bold">{booking.userName || t('hostCancellation.guest')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Camp:</span>
+                <span className="text-gray-700 font-medium">{t('hostCancellation.camp')}</span>
                 <span className="text-gray-900 font-bold">{booking.campName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Check-in:</span>
+                <span className="text-gray-700 font-medium">{t('hostCancellation.checkIn')}</span>
                 <span className="text-gray-900 font-bold">{formatDate(booking.checkInDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Check-out:</span>
+                <span className="text-gray-700 font-medium">{t('hostCancellation.checkOut')}</span>
                 <span className="text-gray-900 font-bold">{formatDate(booking.checkOutDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Guests:</span>
+                <span className="text-gray-700 font-medium">{t('hostCancellation.guests')}</span>
                 <span className="text-gray-900 font-bold">{booking.numberOfGuests}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-sand-300">
-                <span className="text-gray-900 font-bold">Booking Amount:</span>
+                <span className="text-gray-900 font-bold">{t('hostCancellation.bookingAmount')}</span>
                 <span className="text-terracotta-600 font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
               </div>
             </div>
@@ -162,13 +164,13 @@ export function HostCancellationDialog({
           <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
             <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-green-600" />
-              Guest Refund
+              {t('hostCancellation.guestRefund')}
             </h3>
             <p className="text-sm text-gray-700 mb-3">
-              The guest will receive a <span className="font-bold text-green-600">100% full refund</span> for this host-initiated cancellation.
+              {t('hostCancellation.guestRefundDesc')}
             </p>
             <div className="flex justify-between items-center">
-              <span className="text-gray-900 font-bold">Refund Amount:</span>
+              <span className="text-gray-900 font-bold">{t('hostCancellation.refundAmount')}</span>
               <span className="text-green-600 font-bold text-xl">{guestRefund.refundAmount.toFixed(2)} BD</span>
             </div>
           </div>
@@ -183,7 +185,7 @@ export function HostCancellationDialog({
               <AlertTriangle className={`w-5 h-5 ${
                 penalty.penaltyAmount > 0 ? 'text-red-600' : 'text-blue-600'
               }`} />
-              Host Penalty
+              {t('hostCancellation.hostPenalty')}
             </h3>
             <p className="text-sm text-gray-700 mb-3">
               {penalty.message}
@@ -191,20 +193,20 @@ export function HostCancellationDialog({
             {penalty.penaltyAmount > 0 ? (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-700 font-medium">Penalty Rate:</span>
+                  <span className="text-gray-700 font-medium">{t('hostCancellation.penaltyRate')}</span>
                   <span className="text-gray-900 font-bold">{penalty.penaltyPercentage}%</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-red-300">
-                  <span className="text-gray-900 font-bold">Penalty Amount:</span>
+                  <span className="text-gray-900 font-bold">{t('hostCancellation.penaltyAmount')}</span>
                   <span className="text-red-600 font-bold text-xl">{penalty.penaltyAmount.toFixed(2)} BD</span>
                 </div>
                 <p className="text-xs text-gray-600 mt-2">
-                  💡 This penalty will be deducted from your next payout.
+                  {t('hostCancellation.penaltyNote')}
                 </p>
               </div>
             ) : (
               <p className="text-blue-700 font-semibold">
-                ✓ No penalty applies for cancellations made 30+ days in advance.
+                {t('hostCancellation.noPenalty')}
               </p>
             )}
           </div>
@@ -214,10 +216,9 @@ export function HostCancellationDialog({
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-semibold text-gray-900 mb-1">Important Notice</p>
+                <p className="font-semibold text-gray-900 mb-1">{t('hostCancellation.importantNotice')}</p>
                 <p className="text-sm text-gray-700">
-                  Cancelling bookings can negatively impact your host rating and future bookings. 
-                  Please only cancel if absolutely necessary. The guest will be notified immediately.
+                  {t('hostCancellation.importantDesc')}
                 </p>
               </div>
             </div>
@@ -226,23 +227,23 @@ export function HostCancellationDialog({
           {/* Cancellation Reason */}
           <div className="space-y-3">
             <Label htmlFor="reason" className="text-gray-900 font-semibold">
-              Reason for Cancellation (Required) <span className="text-red-500">*</span>
+              {t('hostCancellation.reasonLabel')} <span className="text-red-500">*</span>
             </Label>
             <Select value={selectedReason} onValueChange={setSelectedReason}>
               <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
-                <SelectValue placeholder="Select a reason..." />
+                <SelectValue placeholder={t('hostCancellation.reasonPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {CANCELLATION_REASONS.map((r) => (
-                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                  <SelectItem key={r} value={r}>{t(`hostCancellation.reasons.${r}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             
-            {selectedReason === 'Other' && (
+            {selectedReason === 'other' && (
               <Textarea
                 id="custom-reason"
-                placeholder="Please provide details about the cancellation..."
+                placeholder={t('hostCancellation.otherReasonPlaceholder')}
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
                 rows={3}
@@ -251,7 +252,7 @@ export function HostCancellationDialog({
             )}
             
             <p className="text-xs text-gray-600">
-              This reason will be shared with the guest in their cancellation notification
+              {t('hostCancellation.reasonHint')}
             </p>
           </div>
         </div>
@@ -264,21 +265,21 @@ export function HostCancellationDialog({
             disabled={cancelling}
             className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
           >
-            Keep Booking
+            {t('hostCancellation.keepBooking')}
           </Button>
           <Button
             type="button"
             onClick={handleCancel}
-            disabled={cancelling || !selectedReason || (selectedReason === 'Other' && !customReason.trim())}
+            disabled={cancelling || !selectedReason || (selectedReason === 'other' && !customReason.trim())}
             className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold"
           >
             {cancelling ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Cancelling...
+                {t('hostCancellation.cancelling')}
               </>
             ) : (
-              'Confirm Cancellation'
+              t('hostCancellation.confirmCancellation')
             )}
           </Button>
         </DialogFooter>

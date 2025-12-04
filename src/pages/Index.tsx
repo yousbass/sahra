@@ -17,6 +17,7 @@ import { RefundPolicyBadge } from '@/components/RefundPolicyBadge';
 import { BAHRAIN_CAMPING_LOCATIONS } from '@/lib/locations';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const DEFAULT_FILTERS: FilterState = {
   priceRange: [0, 1000],
@@ -30,6 +31,7 @@ const DEFAULT_FILTERS: FilterState = {
 
 export default function Index() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [camps, setCamps] = useState<LegacyCamp[]>([]);
   const [loading, setLoading] = useState(true);
@@ -207,7 +209,7 @@ export default function Index() {
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">
-            {filters.bookingDate ? 'Checking availability...' : 'Loading camps...'}
+            {filters.bookingDate ? t('home.checkingAvailability') : t('home.loadingCamps')}
           </p>
         </div>
       </div>
@@ -234,11 +236,11 @@ export default function Index() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
           <div className="text-center px-2">
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              Discover Your Perfect
-              <span className="block text-sand-100 mt-2 text-3xl sm:text-5xl">Desert Escape</span>
+              {t('home.heroTitleTop')}
+              <span className="block text-sand-100 mt-2 text-3xl sm:text-5xl">{t('home.heroTitleBottom')}</span>
             </h1>
             <p className="text-base sm:text-xl text-sand-100 mb-6 sm:mb-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700 px-2">
-              Experience authentic Bahraini camping with luxury tents, stunning locations, and unforgettable memories
+              {t('home.heroSubtitle')}
             </p>
             
             {/* Search Bar */}
@@ -249,7 +251,7 @@ export default function Index() {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <Input
                       type="text"
-                      placeholder="Search by location or camp name..."
+                      placeholder={t('home.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-12 h-12 border-2 border-sand-200 focus:border-terracotta-500 rounded-xl text-gray-900"
@@ -264,7 +266,7 @@ export default function Index() {
                           className="w-full justify-start text-left h-12 border-2 border-sand-200 hover:border-terracotta-400 hover:bg-terracotta-50 rounded-xl font-semibold text-gray-900"
                         >
                           <CalendarIcon className="mr-2 h-5 w-5 text-terracotta-600" />
-                          {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : 'Select a date'}
+                          {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : t('home.datePlaceholder')}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="p-2 border-2 border-sand-200 rounded-2xl shadow-xl w-[320px] sm:w-[360px] max-w-[95vw]" align="start">
@@ -279,7 +281,7 @@ export default function Index() {
                         />
                         <div className="flex justify-between items-center pt-2 px-1">
                           <p className="text-xs text-gray-600">
-                            {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : 'Pick a date'}
+                            {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : t('home.datePickedLabel')}
                           </p>
                           <Button
                             variant="ghost"
@@ -287,7 +289,7 @@ export default function Index() {
                             className="text-terracotta-600 hover:bg-terracotta-50"
                             onClick={() => handleBookingDateChange(undefined)}
                           >
-                            Clear
+                            {t('home.clear')}
                           </Button>
                         </div>
                       </PopoverContent>
@@ -298,12 +300,12 @@ export default function Index() {
                     className="h-12 px-8 bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
                   >
                     <Search className="w-5 h-5 mr-2" />
-                    Search
+                    {t('home.searchButton')}
                   </Button>
                 </div>
                 <p className="text-xs text-gray-600 flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4 text-terracotta-500" />
-                  Pick a date to instantly filter camps with availability checks.
+                  {t('home.availabilityHint')}
                 </p>
               </div>
             </div>
@@ -335,7 +337,7 @@ export default function Index() {
                   className="w-full border-2 border-sand-300 hover:bg-sand-50 h-12 text-base font-medium"
                 >
                   <SlidersHorizontal className="w-5 h-5 mr-2" />
-                  Filters
+                  {t('home.filters')}
                   {activeFilterCount > 0 && (
                     <Badge className="ml-2 bg-terracotta-600 text-white">
                       {activeFilterCount}
@@ -363,7 +365,7 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {filteredCamps.length} {filteredCamps.length === 1 ? 'Camp' : 'Camps'} Available
+                  {t('home.campsAvailable', { count: filteredCamps.length })}
                 </h2>
                 {filters.bookingDate && (
                   <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
@@ -375,20 +377,20 @@ export default function Index() {
                 )}
                 {activeFilterCount > 0 && (
                   <p className="text-sm text-gray-600 mt-1">
-                    {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} applied
+                    {t('home.filterApplied', { count: activeFilterCount })}
                   </p>
                 )}
               </div>
               
               <Select value={filters.sortBy} onValueChange={handleSortChange}>
                 <SelectTrigger className="w-full sm:w-48 border-2 border-sand-300">
-                  <SelectValue placeholder="Sort by" />
+                  <SelectValue placeholder={t('home.sortBy')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                  <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
+                  <SelectItem value="newest">{t('home.sortNewest')}</SelectItem>
+                  <SelectItem value="price_asc">{t('home.sortPriceAsc')}</SelectItem>
+                  <SelectItem value="price_desc">{t('home.sortPriceDesc')}</SelectItem>
+                  <SelectItem value="rating">{t('home.sortRating')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -397,11 +399,11 @@ export default function Index() {
             {filteredCamps.length === 0 ? (
               <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-sand-200">
                 <Tent className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No camps found</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('home.noCampsTitle')}</h3>
                 <p className="text-gray-600 mb-6">
                   {filters.bookingDate 
-                    ? 'No camps available for the selected date. Try a different date or adjust your filters.'
-                    : 'Try adjusting your filters or search terms'}
+                    ? t('home.noCampsDate')
+                    : t('home.noCampsGeneral')}
                 </p>
                 <Button
                   onClick={() => {
@@ -411,7 +413,7 @@ export default function Index() {
                   variant="outline"
                   className="border-2 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
                 >
-                  Clear All Filters
+                  {t('home.clearAll')}
                 </Button>
               </div>
             ) : (
@@ -453,7 +455,7 @@ export default function Index() {
                       <div className="flex items-center gap-2 mb-3">
                         <RatingStars rating={camp.averageRating || 0} />
                         <span className="text-sm text-gray-600">
-                          ({camp.reviewCount || 0} {camp.reviewCount === 1 ? 'review' : 'reviews'})
+                          ({t('home.reviewCount', { count: camp.reviewCount || 0 })})
                         </span>
                       </div>
 
@@ -461,11 +463,11 @@ export default function Index() {
                       <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                         <div className="flex items-center">
                           <Users className="w-4 h-4 mr-1" />
-                          Up to {camp.maxGuests} guests
+                          {t('home.upToGuests', { count: camp.maxGuests })}
                         </div>
                         <div className="flex items-center">
                           <Tent className="w-4 h-4 mr-1" />
-                          {getTotalTents(camp.tentConfiguration)} tents
+                          {t('home.tentsCount', { count: getTotalTents(camp.tentConfiguration) })}
                         </div>
                       </div>
 
@@ -475,7 +477,7 @@ export default function Index() {
                           <span className="text-2xl font-bold text-terracotta-600">
                             {camp.price} BD
                           </span>
-                          <span className="text-sm text-gray-600 ml-1">/ day</span>
+                          <span className="text-sm text-gray-600 ml-1">{t('home.perDay')}</span>
                         </div>
                         <Button 
                           size="sm"
@@ -485,7 +487,7 @@ export default function Index() {
                             handleCampClick(camp.id);
                           }}
                         >
-                          View Details
+                          {t('home.viewDetails')}
                         </Button>
                       </div>
                     </div>
