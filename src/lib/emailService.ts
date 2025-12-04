@@ -8,11 +8,8 @@ import {
   listingApprovedTemplate
 } from './emailTemplates';
 
-// Backend API URL - use same-origin when VITE_API_URL points to localhost to avoid mixed-content issues via HTTPS tunnels
-const API_URL =
-  import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')
-    ? import.meta.env.VITE_API_URL
-    : '';
+// Always hit same-origin API routes in production; avoids localhost misrouting
+const API_URL = '';
 
 interface BookingData {
   bookingId: string;
