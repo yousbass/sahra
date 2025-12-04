@@ -1019,12 +1019,6 @@ export const searchCamps = async (filters: Partial<FilterState>): Promise<Camp[]
     let campsQuery = query(campsCollection, where('status', '==', 'active'));
     console.log('[ERR_FIRESTORE_002] Base query created: status == active');
     
-    // Apply location filter
-    if (filters.locations && filters.locations.length > 0) {
-      console.log(`[ERR_FIRESTORE_002] Applying location filter: ${filters.locations.join(', ')}`);
-      campsQuery = query(campsQuery, where('location', 'in', filters.locations));
-    }
-    
     // Apply minimum guests filter
     if (filters.minGuests) {
       console.log(`[ERR_FIRESTORE_002] Applying minGuests filter: >= ${filters.minGuests}`);
@@ -1078,7 +1072,15 @@ export const searchCamps = async (filters: Partial<FilterState>): Promise<Camp[]
     const normalizedSelectedDate = filters.bookingDate
       ? new Date(new Date(filters.bookingDate).setHours(0, 0, 0, 0))
       : undefined;
-
+    
+    // Apply location filter client-side to avoid Firestore composite index issues
+    if (filters.locations && filters.locations.length > 0) {
+      console.log(`[ERR_FIRESTORE_004] Applying client-side location filter: ${filters.locations.join(', ')}`);
+      const beforeFilter = camps.length;
+      camps = camps.filter(camp => filters.locations!.includes(camp.location));
+      console.log(`[ERR_FIRESTORE_004] Location filter: ${beforeFilter} -> ${camps.length} camps`);
+    }
+    
     // Apply single date filter (client-side) - UPDATED FOR DAILY BOOKINGS
     if (filters.bookingDate) {
       console.log(`[ERR_FIRESTORE_004] Applying client-side single date filter: ${filters.bookingDate.toISOString()}`);
