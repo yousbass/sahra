@@ -774,12 +774,17 @@ export const getBookingsByHost = async (hostId: string): Promise<Booking[]> => {
   const bookingsCollection = collection(db, 'bookings');
   const bookingsQuery = query(
     bookingsCollection,
-    where('hostId', '==', hostId),
-    orderBy('createdAt', 'desc')
+    where('hostId', '==', hostId)
   );
   const snapshot = await getDocs(bookingsQuery);
   
-  return snapshot.docs.map(doc => convertDocData<Booking>(doc));
+  const bookings = snapshot.docs.map(doc => convertDocData<Booking>(doc));
+  bookings.sort((a, b) => {
+    const dateA = typeof a.createdAt === 'string' ? new Date(a.createdAt) : a.createdAt.toDate();
+    const dateB = typeof b.createdAt === 'string' ? new Date(b.createdAt) : b.createdAt.toDate();
+    return dateB.getTime() - dateA.getTime();
+  });
+  return bookings;
 };
 
 // Get bookings by camp - FIXED: Removed orderBy to avoid composite index requirement
