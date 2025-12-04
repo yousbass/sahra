@@ -252,7 +252,7 @@ export function bookingNotificationHostTemplate(data: BookingData, guestEmail: s
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://www.mukhymat.com/host/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View Booking Details</a>
+                    <a href="https://www.mukhymat.com/host/listings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View Booking Details</a>
                   </td>
                 </tr>
               </table>
@@ -513,7 +513,7 @@ export function cancellationNotificationHostTemplate(data: CancellationData): st
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://www.mukhymat.com/host/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View My Bookings</a>
+                    <a href="https://www.mukhymat.com/host/listings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View My Bookings</a>
                   </td>
                 </tr>
               </table>
