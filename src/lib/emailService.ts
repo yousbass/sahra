@@ -347,3 +347,53 @@ export async function sendListingApprovalEmail(
     };
   }
 }
+
+/**
+ * Send listing submission/pending email to host
+ */
+export async function sendListingPendingEmail(
+  listingData: ListingApprovalData,
+  hostEmail: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('📧 Sending listing submission notice to host via backend:', hostEmail);
+    
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; color: #1f2937;">
+        <h2 style="color:#c89666; margin-bottom: 12px;">We received your listing!</h2>
+        <p style="margin: 0 0 12px;">Hi ${listingData.hostName || 'Host'},</p>
+        <p style="margin: 0 0 12px;">Your camp <strong>${listingData.campName}</strong>${listingData.campLocation ? ` in ${listingData.campLocation}` : ''} has been submitted for review. Our team will approve it soon.</p>
+        <p style="margin: 0 0 16px;">You can check your dashboard for status updates.</p>
+        <a href="${listingData.dashboardUrl || 'https://www.mukhymat.com/host/dashboard'}" style="display:inline-block; padding: 12px 24px; background: linear-gradient(135deg, #d4a574 0%, #c89666 100%); color: #fff; border-radius: 6px; text-decoration: none; font-weight: bold;">Go to Dashboard</a>
+        <p style="margin-top:16px; font-size: 12px; color:#6b7280;">Submitted on ${listingData.approvalDate ? new Date(listingData.approvalDate).toLocaleString() : new Date().toLocaleString()}</p>
+      </div>
+    `;
+    
+    const response = await fetch(`${API_URL}/api/emails/listing-pending`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        listingData,
+        hostEmail,
+        htmlContent,
+      }),
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to send listing pending email');
+    }
+    
+    console.log('✅ Listing submission email sent to host');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Failed to send listing submission email:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+}

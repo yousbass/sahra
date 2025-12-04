@@ -548,6 +548,29 @@ export const createCamp = async (campData: Omit<Camp, 'id' | 'createdAt'>, hostI
     views: 0,
     bookingCount: 0
   });
+
+  // Send "listing submitted" email to host (best-effort)
+  try {
+    const hostDoc = await getDoc(doc(db, 'users', hostId));
+    const hostEmail = hostDoc.exists() ? hostDoc.data().email : undefined;
+
+    if (hostEmail) {
+      const emailModule = await import('./emailService');
+      await emailModule.sendListingPendingEmail(
+        {
+          campName: campData.title || 'Your camp',
+          campLocation: campData.location,
+          hostName: hostDoc.data()?.displayName || 'Host',
+          approvalDate: new Date().toISOString(),
+          dashboardUrl: 'https://www.mukhymat.com/host/dashboard'
+        },
+        hostEmail
+      );
+      console.log('✅ Listing submission email sent to host');
+    }
+  } catch (emailError) {
+    console.error('❌ Failed to send listing submission email:', emailError);
+  }
   
   return docRef.id;
 };
@@ -636,7 +659,7 @@ export const updateCamp = async (campId: string, updates: Partial<Camp>): Promis
             campLocation,
             hostName,
             approvalDate: new Date().toISOString(),
-            dashboardUrl: 'https://sahra.camp/host/dashboard'
+            dashboardUrl: 'https://www.mukhymat.com/host/dashboard'
           },
           hostEmail
         );
