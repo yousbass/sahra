@@ -51,7 +51,7 @@ export default function Reserve() {
   const [paying, setPaying] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   // Get check-in and check-out times with defaults
   const checkInTime = camp?.checkInTime || '08:00 AM';
@@ -68,7 +68,7 @@ export default function Reserve() {
     if (loading) return;
 
     if (!user || !userData) {
-      toast.error('Please sign in to make a reservation');
+      toast.error(t('reserve.toastSignInRequired'));
       navigate('/signin');
       return;
     }
@@ -108,12 +108,12 @@ export default function Reserve() {
         console.log('Camp converted to legacy format');
       } else {
         console.log('❌ Camp not found');
-        toast.error('Camp not found');
+        toast.error(t('reserve.campNotFound'));
       }
     } catch (error) {
       console.error('❌ Error loading camp:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Failed to load camp details: ${errorMessage}`);
+      toast.error(t('reserve.toastLoadCampFailed', { error: errorMessage }));
     } finally {
       setLoadingCamp(false);
     }
@@ -179,10 +179,10 @@ export default function Reserve() {
       console.error('❌ Error loading availability:', error);
       const errorCode = (error as { code?: string })?.code;
       if (errorCode === 'permission-denied') {
-        setAvailabilityError('Permission denied when reading bookings. Please sign in again or update Firestore rules to allow authenticated users to read bookings.');
-        toast.error('Sign in is required to check availability.');
+        setAvailabilityError(t('reserve.toastSignInAvailability'));
+        toast.error(t('reserve.toastSignInAvailability'));
       } else {
-        toast.error('Failed to load availability data');
+        toast.error(t('messages.availabilityError'));
       }
     } finally {
       setLoadingAvailability(false);
@@ -207,16 +207,16 @@ export default function Reserve() {
       }
       
       setSelectedDate(date);
-      toast.success('Date selected! Continue to complete your booking.');
+      toast.success(t('reserve.toastSelectDateSuccess'));
       
     } catch (error) {
       console.error('❌ Availability check failed:', error);
       const errorCode = (error as { code?: string })?.code;
       if (errorCode === 'permission-denied') {
-        setAvailabilityError('Permission denied when checking availability. Please sign in again or ensure Firestore rules allow authenticated reads on bookings.');
-        toast.error('Sign in to check availability');
+        setAvailabilityError(t('reserve.toastSignInAvailability'));
+        toast.error(t('reserve.toastSignInAvailability'));
       } else {
-        toast.error('Failed to check availability');
+        toast.error(t('reserve.toastCheckAvailabilityFailed'));
       }
     } finally {
       setCheckingAvailability(false);
@@ -273,34 +273,34 @@ export default function Reserve() {
     console.log('Camp:', camp);
 
     if (!user) {
-      toast.error('Please sign in to make a reservation');
+      toast.error(t('reserve.toastSignInRequired'));
       navigate('/signin');
       return;
     }
 
     if (!camp) {
-      toast.error('Camp information not available');
+      toast.error(t('reserve.toastCampMissing'));
       return;
     }
 
     // Validation
     if (!selectedDate) {
-      toast.error('Please select a date for your reservation');
+      toast.error(t('reserve.toastSelectDate'));
       return;
     }
 
     if (guests < 1) {
-      toast.error('Please select at least 1 guest');
+      toast.error(t('reserve.toastMinGuest'));
       return;
     }
 
     if (camp.maxGuests && guests > camp.maxGuests) {
-      toast.error(`This camp can accommodate up to ${camp.maxGuests} guests`);
+      toast.error(t('reserve.toastMaxGuests', { max: camp.maxGuests }));
       return;
     }
 
     if (!phoneNumber) {
-      toast.error('Please provide a contact phone number');
+      toast.error(t('reserve.toastPhoneRequired'));
       return;
     }
 
@@ -310,12 +310,12 @@ export default function Reserve() {
     try {
       const hasBookingSameDay = await hasUserBookingOnDate(user.uid, bookingDateStr);
       if (hasBookingSameDay) {
-        toast.error('You already have a reservation on this date. Please pick a different date.');
+        toast.error(t('reserve.toastDuplicateBooking'));
         return;
       }
     } catch (error) {
       console.error('❌ Error checking existing bookings for user:', error);
-      toast.error('Could not verify your existing bookings. Please try again.');
+      toast.error(t('reserve.toastExistingBookingError'));
       return;
     }
 
@@ -328,7 +328,7 @@ export default function Reserve() {
       }
     } catch (error) {
       console.error('❌ Final availability check failed:', error);
-      toast.error('Failed to verify availability. Please try again.');
+      toast.error(t('reserve.toastAvailabilityVerifyFailed'));
       return;
     }
 
@@ -487,8 +487,7 @@ export default function Reserve() {
       console.log('✅ Booking created successfully with ID:', newBookingId);
       setBookingId(newBookingId);
       setShowPayment(true);
-      
-      toast.success('Reservation created! Payment integration coming soon.');
+      toast.success(t('reserve.toastReservationCreated'));
       
       // Reload availability to reflect the new booking
       await loadAvailability(camp.id);
@@ -501,7 +500,7 @@ export default function Reserve() {
     } catch (error) {
       console.error('❌ Error creating booking:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Failed to create reservation: ${errorMessage}`);
+      toast.error(t('reserve.toastCreateFailed', { error: errorMessage }));
     } finally {
       setSubmitting(false);
     }
@@ -529,7 +528,7 @@ export default function Reserve() {
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">Loading...</p>
+          <p className="text-gray-700 font-medium">{t('reserve.loading')}</p>
         </div>
       </div>
     );
@@ -539,12 +538,12 @@ export default function Reserve() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 text-center shadow-xl">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Camp not found</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('reserve.campNotFound')}</h2>
           <Button
             onClick={() => navigate('/')}
             className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
           >
-            Back to Search
+            {t('reserve.backToSearch')}
           </Button>
         </Card>
       </div>
@@ -565,13 +564,13 @@ export default function Reserve() {
               variant="outline"
               className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
             >
-              Back to Host Dashboard
+              {t('reserve.backToHost')}
             </Button>
             <Button
               onClick={() => navigate(`/camp/${camp.id}`)}
               className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
             >
-              View Listing
+              {t('reserve.viewListing')}
             </Button>
           </div>
         </Card>
@@ -613,11 +612,11 @@ export default function Reserve() {
                     {loadingAvailability ? (
                       <div className="flex items-center justify-center py-12">
                         <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin" />
-                        <p className="ml-4 text-gray-600">Loading availability...</p>
+                        <p className="ml-4 text-gray-600">{t('messages.loadingAvailability')}</p>
                       </div>
                     ) : availabilityError ? (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
-                        <p className="font-semibold mb-1">We could not load availability.</p>
+                        <p className="font-semibold mb-1">{t('messages.availabilityError')}</p>
                         <p>{availabilityError}</p>
                         <Button
                           type="button"
@@ -625,7 +624,7 @@ export default function Reserve() {
                           className="mt-3 border-red-300 text-red-700 hover:bg-red-100"
                           onClick={() => navigate('/signin')}
                         >
-                          Sign in again
+                          {t('messages.signInAgain')}
                         </Button>
                       </div>
                     ) : (
@@ -645,7 +644,7 @@ export default function Reserve() {
                     {checkingAvailability && (
                       <div className="flex items-center gap-2 text-sm text-gray-600 mt-4">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Checking availability...
+                        {t('reserve.checkingAvailabilityShort')}
                       </div>
                     )}
                   </div>
@@ -654,7 +653,7 @@ export default function Reserve() {
                   <div className="space-y-2">
                     <Label htmlFor="arrivalTime" className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-terracotta-600" />
-                      Expected Arrival Time
+                      {t('reserve.arrivalTime')}
                     </Label>
                     <Input
                       id="arrivalTime"
@@ -663,18 +662,20 @@ export default function Reserve() {
                       onChange={(e) => setArrivalTime(e.target.value)}
                       className="border-sand-300 focus:border-terracotta-500 text-gray-900"
                     />
-                    <p className="text-xs text-gray-600 font-medium">Standard check-in starts at {checkInTime}</p>
+                    <p className="text-xs text-gray-600 font-medium">
+                      {t('reserve.checkinHint', { time: checkInTime })}
+                    </p>
                   </div>
 
                   {/* Guests */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                       <Users className="w-5 h-5 text-terracotta-600" />
-                      Number of Guests
+                      {t('reserve.guests')}
                     </h3>
                     {camp.maxGuests && (
                       <p className="text-sm text-gray-700 font-medium mb-3">
-                        This camp can accommodate up to {camp.maxGuests} guests
+                        {t('reserve.guestsHint', { max: camp.maxGuests })}
                       </p>
                     )}
                     <div className="flex items-center gap-3">
@@ -712,7 +713,7 @@ export default function Reserve() {
                           className="h-12 text-center text-xl font-semibold border-2 border-sand-300 focus:border-terracotta-500 no-spin"
                         />
                         <p className="text-sm text-gray-700 mt-1 text-center font-medium">
-                          Guests
+                          {t('reserve.guestsLabelShort')}
                         </p>
                       </div>
                       <Button
@@ -730,10 +731,10 @@ export default function Reserve() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                       <Phone className="w-5 h-5 text-terracotta-600" />
-                      Contact Information
+                      {t('reserve.contactInfo')}
                     </h3>
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number *</Label>
+                      <Label htmlFor="phone">{t('reserve.phone')}</Label>
                       <Input
                         id="phone"
                         type="tel"
@@ -750,10 +751,10 @@ export default function Reserve() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                       <MessageSquare className="w-5 h-5 text-terracotta-600" />
-                      Special Requests
+                      {t('reserve.specialRequests')}
                     </h3>
                     <Textarea
-                      placeholder="Any special requirements or requests? (dietary preferences, accessibility needs, celebration occasions, etc.)"
+                      placeholder={t('reserve.specialRequestsPlaceholder')}
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
                       rows={4}
@@ -763,7 +764,7 @@ export default function Reserve() {
 
                   {/* Payment Method */}
                   <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Payment Method</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('reserve.paymentMethod')}</h3>
                     <div className="grid sm:grid-cols-2 gap-3">
                       <button
                         type="button"
@@ -774,8 +775,8 @@ export default function Reserve() {
                             : 'border-sand-300 hover:border-terracotta-300 bg-white'
                         }`}
                       >
-                        <p className="font-semibold text-gray-900">Pay Online</p>
-                        <p className="text-sm text-gray-700">BenefitPay / Apple Pay / Card</p>
+                        <p className="font-semibold text-gray-900">{t('reserve.payOnline')}</p>
+                        <p className="text-sm text-gray-700">{t('reserve.payOnlineDesc')}</p>
                       </button>
                       <button
                         type="button"
@@ -786,8 +787,8 @@ export default function Reserve() {
                             : 'border-sand-300 hover:border-terracotta-300 bg-white'
                         }`}
                       >
-                        <p className="font-semibold text-gray-900">Cash on Arrival</p>
-                        <p className="text-sm text-gray-700">Pay in cash when you check in</p>
+                        <p className="font-semibold text-gray-900">{t('reserve.cashOnArrival')}</p>
+                        <p className="text-sm text-gray-700">{t('reserve.cashOnArrivalDesc')}</p>
                       </button>
                     </div>
                   </div>
@@ -797,7 +798,7 @@ export default function Reserve() {
                     disabled={!selectedDate || checkingAvailability || submitting}
                     className="w-full h-14 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {checkingAvailability ? 'Checking Availability...' : submitting ? 'Creating Reservation...' : 'Create Reservation'}
+                    {checkingAvailability ? t('reserve.checkingAvailability') : submitting ? t('reserve.creatingReservation') : t('reserve.createReservation')}
                   </Button>
                 </form>
               </Card>
@@ -810,53 +811,54 @@ export default function Reserve() {
                   
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">Reservation Created Successfully!</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('reserve.paymentSuccessTitle')}</h3>
                     <p className="text-gray-700 font-medium">
                       {paymentMethod === 'cash_on_arrival'
-                        ? 'You chose Cash on Arrival. Pay at check-in or pay online now to confirm faster.'
-                        : 'Complete your payment online to confirm your reservation.'}
+                        ? t('reserve.paymentInstructionCash')
+                        : t('reserve.paymentInstructionOnline')}
                     </p>
                   </div>
 
-                    <div className="space-y-3 text-left bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
-                    <p className="text-sm font-bold text-gray-900 mb-3">Booking Details:</p>
+                  <div className="space-y-3 text-left bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
+                    <p className="text-sm font-bold text-gray-900 mb-3">{t('reserve.bookingDetailsHeading')}</p>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">Booking ID:</span>
+                        <span className="text-sm text-gray-700">{t('reserve.bookingId')}</span>
                         <span className="text-sm font-semibold text-gray-900">{bookingId}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">Status:</span>
+                        <span className="text-sm text-gray-700">{t('reserve.statusLabel')}</span>
                         <div className="flex gap-2 items-center">
                           <Badge variant="secondary" className="bg-amber-100 text-amber-900 border border-amber-300">
-                            Pending Payment
+                            {t('reserve.pendingStatus')}
                           </Badge>
                           <Badge variant="secondary" className="bg-sand-100 text-gray-900 border border-sand-300">
-                            {paymentMethod === 'cash_on_arrival' ? 'Cash on Arrival' : 'Online Payment'}
+                            {paymentMethod === 'cash_on_arrival' ? t('reserve.methodCash') : t('reserve.methodOnline')}
                           </Badge>
                         </div>
                       </div>
                       {selectedDate && (
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-700">Date:</span>
+                          <span className="text-sm text-gray-700">{t('reserve.dateLabel')}</span>
                           <span className="text-sm font-semibold text-gray-900">
                             {format(selectedDate, 'EEEE, MMM dd, yyyy')}
                           </span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">Check-in:</span>
+                        <span className="text-sm text-gray-700">{t('reserve.checkInLabel')}</span>
                         <span className="text-sm font-semibold text-gray-900">{checkInTime}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">Check-out:</span>
+                        <span className="text-sm text-gray-700">{t('reserve.checkOutLabel')}</span>
                         <span className="text-sm font-semibold text-gray-900">{checkOutTime} (next day)</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">Guests:</span>
+                        <span className="text-sm text-gray-700">{t('reserve.guestsLabelPayment')}</span>
                         <span className="text-sm font-semibold text-gray-900">{guests}</span>
                       </div>
                       <div className="flex justify-between pt-2 border-t border-amber-300">
-                        <span className="text-sm font-bold text-gray-900">Total Amount:</span>
+                        <span className="text-sm font-bold text-gray-900">{t('reserve.totalAmountLabel')}</span>
                         <span className="text-lg font-bold text-terracotta-600">
                           {priceBreakdown.total.toFixed(3)} BD
                         </span>
@@ -875,17 +877,17 @@ export default function Reserve() {
                     disabled={paying}
                     className="w-full h-12 bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold shadow-lg disabled:opacity-50"
                   >
-                    {paying ? 'Starting Payment...' : 'Pay Now (BenefitPay / Apple Pay / Card)'}
+                    {paying ? t('reserve.payNowButton') : t('reserve.payNowButton')}
                   </Button>
 
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-left space-y-1">
                     <p className="text-sm font-semibold text-blue-900">
-                      📱 {paymentMethod === 'cash_on_arrival' ? 'Bring cash to your check-in.' : 'Need a different method?'}
+                      📱 {paymentMethod === 'cash_on_arrival' ? t('reserve.bringCash') : t('reserve.whatsNext')}
                     </p>
                     <p className="text-sm text-blue-800">
                       {paymentMethod === 'cash_on_arrival'
-                        ? 'You can still pay online anytime from here or My Bookings.'
-                        : 'BenefitPay, Apple Pay, and cards are supported.'}
+                        ? t('reserve.payAnytime')
+                        : t('reserve.methodsSupported')}
                     </p>
                   </div>
 
@@ -894,14 +896,14 @@ export default function Reserve() {
                       onClick={() => navigate('/bookings')}
                       className="flex-1 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
                     >
-                      View My Bookings
+                      {t('reserve.viewBookings')}
                     </Button>
                     <Button
                       onClick={() => navigate('/')}
                       variant="outline"
                       className="flex-1 border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
                     >
-                      Back to Home
+                      {t('reserve.backHome')}
                     </Button>
                   </div>
                 </div>
@@ -913,7 +915,7 @@ export default function Reserve() {
           <div className="lg:col-span-1">
             <div className="sticky top-4 space-y-4">
               {/* Camp Info */}
-              <Card className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden shadow-xl">
+                  <Card className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden shadow-xl">
                 <img
                   src={camp.photo}
                   alt={camp.title}
@@ -930,13 +932,13 @@ export default function Reserve() {
                     {camp.maxGuests && (
                       <Badge variant="secondary" className="bg-sand-100 text-gray-900 border border-sand-300 font-semibold">
                         <Users className="w-3 h-3 mr-1" />
-                        Up to {camp.maxGuests}
+                        {t('reserve.upToGuests', { max: camp.maxGuests })}
                       </Badge>
                     )}
                     {totalTents > 0 && (
                       <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 font-semibold">
                         <Tent className="w-3 h-3 mr-1" />
-                        {totalTents} Tents
+                        {t('reserve.tentsLabel', { count: totalTents })}
                       </Badge>
                     )}
                   </div>
@@ -951,19 +953,19 @@ export default function Reserve() {
               {/* Price Summary */}
               {selectedDate && (
                 <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-4">Price Breakdown</h3>
+                  <h3 className="font-semibold text-lg text-gray-900 mb-4">{t('reserve.priceBreakdownTitle')}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700"> {camp.price.toFixed(3)} BD per day</span>
+                      <span className="text-gray-700"> {t('reserve.pricePerDay', { price: camp.price.toFixed(3) })}</span>
                       <span className="text-gray-900 font-semibold">{priceBreakdown.basePrice.toFixed(3)} BD</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">Service Fee (10%)</span>
+                      <span className="text-gray-700">{t('reserve.serviceFeeLabel')}</span>
                       <span className="text-gray-900 font-semibold">{priceBreakdown.serviceFee.toFixed(3)} BD</span>
                     </div>
                     <div className="border-t border-sand-300 pt-3">
                       <div className="flex justify-between">
-                        <span className="font-bold text-gray-900">Total</span>
+                        <span className="font-bold text-gray-900">{t('reserve.totalLabel')}</span>
                         <span className="font-bold text-xl text-terracotta-600">
                           {priceBreakdown.total.toFixed(3)} BD
                         </span>
