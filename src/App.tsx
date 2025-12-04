@@ -20,6 +20,8 @@ import SignIn from './pages/SignIn';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import NotFound from './pages/NotFound';
+import './lib/i18n';
+import { useTranslation } from 'react-i18next';
 
 // Admin imports
 import AdminLayout from './components/AdminLayout';
@@ -36,12 +38,13 @@ const queryClient = new QueryClient();
 function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const tabs = [
-    { path: '/', icon: Search, label: 'Search' },
-    { path: '/bookings', icon: Calendar, label: 'Bookings' },
-    { path: '/host', icon: HomeIcon, label: 'Host' },
-    { path: '/profile', icon: User, label: 'Profile' },
+    { path: '/', icon: Search, label: t('nav.search') },
+    { path: '/bookings', icon: Calendar, label: t('nav.bookings') },
+    { path: '/host', icon: HomeIcon, label: t('nav.host') },
+    { path: '/profile', icon: User, label: t('nav.profile') },
   ];
 
   // Don't show bottom nav on certain pages

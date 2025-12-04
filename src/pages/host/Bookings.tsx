@@ -8,12 +8,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { getBookingsByHost, Booking } from '@/lib/firestore';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function HostBookings() {
   const { user, userData, loading } = useAuth();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (loading) return;
@@ -83,22 +85,24 @@ export default function HostBookings() {
               className="flex items-center gap-2 text-sm font-semibold text-terracotta-700 hover:text-terracotta-800"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Host Dashboard
+              {t('host.back')}
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">My Camp Bookings</h1>
-              <p className="text-gray-700 font-medium">{bookings.length} booking{bookings.length === 1 ? '' : 's'}</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('host.bookingsTitle')}</h1>
+              <p className="text-gray-700 font-medium">
+                {t('host.bookingsCount', { count: bookings.length })}
+              </p>
             </div>
           </div>
           <Button variant="outline" onClick={loadBookings} className="border-sand-300">
-            Refresh
+            {t('host.refresh')}
           </Button>
         </div>
 
         {bookings.length === 0 ? (
           <Card className="p-8 bg-white/95 backdrop-blur-sm border-sand-300 text-center shadow-lg">
-            <p className="text-lg font-semibold text-gray-900 mb-2">No bookings yet</p>
-            <p className="text-gray-700">Your camp bookings will appear here once guests reserve.</p>
+            <p className="text-lg font-semibold text-gray-900 mb-2">{t('host.noBookings')}</p>
+            <p className="text-gray-700">{t('host.noBookingsHint')}</p>
           </Card>
         ) : (
           <div className="space-y-4">
