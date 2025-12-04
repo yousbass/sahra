@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, MapPin, Calendar, Users, CreditCard } from 'lucide-react';
+import { Loader2, MapPin, Calendar, Users, CreditCard, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getBookingsByHost, Booking } from '@/lib/firestore';
 import { format } from 'date-fns';
@@ -77,9 +77,18 @@ export default function HostBookings() {
     <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
       <div className="max-w-6xl mx-auto pt-8 pb-20 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Camp Bookings</h1>
-            <p className="text-gray-700 font-medium">{bookings.length} booking{bookings.length === 1 ? '' : 's'}</p>
+          <div className="space-y-2">
+            <button
+              onClick={() => navigate('/host')}
+              className="flex items-center gap-2 text-sm font-semibold text-terracotta-700 hover:text-terracotta-800"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Host Dashboard
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Camp Bookings</h1>
+              <p className="text-gray-700 font-medium">{bookings.length} booking{bookings.length === 1 ? '' : 's'}</p>
+            </div>
           </div>
           <Button variant="outline" onClick={loadBookings} className="border-sand-300">
             Refresh
