@@ -5,10 +5,12 @@ import { Card } from '@/components/ui/card';
 import { Plus, List, BarChart3, Crown, Loader2, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function Host() {
   const navigate = useNavigate();
   const { userData, loading } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!loading && !userData) {
