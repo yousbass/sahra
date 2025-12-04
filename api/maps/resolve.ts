@@ -58,7 +58,7 @@ export default async function handler(req: any, res: any) {
         method,
         redirect,
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; SahraBot/1.0; +https://sahra.camp)',
+          'User-Agent': 'Mozilla/5.0 (compatible; MukhymatBot/1.0; +https://www.mukhymat.com)',
           'Accept-Language': 'en-US,en;q=0.9',
         },
       });
@@ -116,6 +116,36 @@ export default async function handler(req: any, res: any) {
       // No resolved URL/coords; fall back to original URL so client can still parse
       res.setHeader('Access-Control-Allow-Origin', '*');
       return res.status(200).json({ success: true, resolvedUrl: url });
+    }
+
+    // If still no coordinates, try geocoding the place name/id using Google Geocoding API
+    if ((!resolvedLat || !resolvedLng) && process.env.GOOGLE_MAPS_API_KEY) {
+      const parsed = resolved ? new URL(resolved) : new URL(url);
+      const qs = parsed.searchParams;
+      const query =
+        qs.get('q') ||
+        qs.get('query') ||
+        qs.get('ftid') ||
+        parsed.pathname.replace(/^\//, '') ||
+        undefined;
+
+      if (query) {
+        try {
+          const geoResp = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+              query
+            )}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+          );
+          const geoData = await geoResp.json();
+          const firstResult = geoData?.results?.[0]?.geometry?.location;
+          if (firstResult?.lat && firstResult?.lng) {
+            resolvedLat = String(firstResult.lat);
+            resolvedLng = String(firstResult.lng);
+          }
+        } catch (geoError) {
+          console.warn('❌ Geocoding fallback failed:', geoError);
+        }
+      }
     }
 
     res.setHeader('Access-Control-Allow-Origin', '*');
