@@ -1800,9 +1800,42 @@ export const updateCampStatus = async (campId: string, status: 'active' | 'pendi
   if (!db) throw new Error('Firestore is not initialized');
   
   const campDoc = doc(db, 'camps', campId);
+  const prevSnap = await getDoc(campDoc);
+  const prevData = prevSnap.exists() ? prevSnap.data() : null;
+  const prevStatus = prevData?.status;
+
   await updateDoc(campDoc, {
     status: status
   });
+
+  // If moving to active from a non-active state, send approval email
+  if (status === 'active' && prevStatus !== 'active' && prevData) {
+    try {
+      const emailModule = await import('./emailService');
+      let hostEmail: string | undefined;
+
+      if (prevData.hostId) {
+        const hostDoc = await getDoc(doc(db, 'users', prevData.hostId));
+        hostEmail = hostDoc.exists() ? hostDoc.data().email : undefined;
+      }
+
+      if (hostEmail) {
+        await emailModule.sendListingApprovalEmail(
+          {
+            campName: prevData.title || 'Your camp',
+            campLocation: prevData.location,
+            hostName: prevData.hostName || 'Host',
+            approvalDate: new Date().toISOString(),
+            dashboardUrl: 'https://www.mukhymat.com/host/dashboard'
+          },
+          hostEmail
+        );
+        console.log('✅ Listing approval email sent to host (updateCampStatus)');
+      }
+    } catch (emailError) {
+      console.error('❌ Failed to send listing approval email (updateCampStatus):', emailError);
+    }
+  }
 };
 
 // Get user growth statistics
