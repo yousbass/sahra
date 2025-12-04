@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, List, BarChart3, Crown, Loader2 } from 'lucide-react';
+import { Plus, List, BarChart3, Crown, Loader2, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -88,6 +88,21 @@ export default function Host() {
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">Analytics</h3>
                 <p className="text-sm text-gray-700 font-medium">Coming soon</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card
+            onClick={() => navigate('/host/bookings')}
+            className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 cursor-pointer hover:shadow-xl transition-all hover:scale-105 group"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <Calendar className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Bookings</h3>
+                <p className="text-sm text-gray-700 font-medium">See all bookings on your camps</p>
               </div>
             </div>
           </Card>

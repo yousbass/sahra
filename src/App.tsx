@@ -12,6 +12,7 @@ import Host from './pages/Host';
 import CreateListing from './pages/CreateListing';
 import EditListing from './pages/EditListing';
 import MyListings from './pages/MyListings';
+import HostBookings from './pages/host/Bookings';
 import ManageAvailability from './pages/host/ManageAvailability';
 import Profile from './pages/Profile';
 import SignUp from './pages/SignUp';
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="/host/create" element={<CreateListing />} />
             <Route path="/host/listings" element={<MyListings />} />
             <Route path="/host/availability" element={<ManageAvailability />} />
+            <Route path="/host/bookings" element={<HostBookings />} />
             <Route path="/edit-listing/:campId" element={<EditListing />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/signup" element={<SignUp />} />
