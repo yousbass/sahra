@@ -19,6 +19,7 @@ import ReviewForm from '@/components/ReviewForm';
 import { CancellationDialog } from '@/components/CancellationDialog';
 import type { CancellationPolicy } from '@/lib/refundCalculator';
 import { createPaymentSession } from '@/lib/payments';
+import { useTranslation } from 'react-i18next';
 
 interface BookingWithCamp extends Booking {
   camp?: Camp;
@@ -36,6 +37,7 @@ export default function Bookings() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'current' | 'past'>('current');
+  const { t } = useTranslation();
 
   useEffect(() => {
     console.log('=== BOOKINGS PAGE ===');
@@ -269,11 +271,11 @@ export default function Bookings() {
     <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-20">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Bookings</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('bookingsUser.title')}</h1>
           <p className="text-gray-700 font-medium">
             {viewMode === 'current'
-              ? `${currentBookings.length} current reservation${currentBookings.length !== 1 ? 's' : ''}`
-              : `${pastBookings.length} past reservation${pastBookings.length !== 1 ? 's' : ''}`}
+              ? t('bookingsUser.count', { count: currentBookings.length })
+              : t('bookingsUser.count', { count: pastBookings.length })}
           </p>
           <div className="mt-4 inline-flex rounded-xl border-2 border-sand-300 overflow-hidden">
             <button
@@ -285,7 +287,7 @@ export default function Bookings() {
                   : 'bg-white text-gray-900 hover:bg-sand-100'
               }`}
             >
-              Current
+              {t('bookingsUser.current', 'Current')}
             </button>
             <button
               type="button"
@@ -296,7 +298,7 @@ export default function Bookings() {
                   : 'bg-white text-gray-900 hover:bg-sand-100'
               }`}
             >
-              Past
+              {t('bookingsUser.past', 'Past')}
             </button>
           </div>
         </div>
@@ -307,12 +309,12 @@ export default function Bookings() {
               <span className="text-4xl">🏕️</span>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {viewMode === 'current' ? 'No Current Bookings' : 'No Past Bookings'}
+              {viewMode === 'current' ? t('bookingsUser.emptyTitle') : t('bookingsUser.emptyTitle')}
             </h3>
             <p className="text-gray-700 font-medium mb-6">
               {viewMode === 'current'
-                ? 'Start exploring and book your next desert adventure'
-                : 'Future trips await—book your next stay'}
+                ? t('bookingsUser.emptyDesc')
+                : t('bookingsUser.emptyDesc')}
             </p>
             <Button
               onClick={() => navigate('/')}
@@ -406,7 +408,7 @@ export default function Bookings() {
                               variant="outline"
                               className="flex-1 sm:flex-none border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
                             >
-                              View Details
+                              {t('bookingsUser.viewDetails')}
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -419,15 +421,15 @@ export default function Bookings() {
                             <div className="space-y-6 py-4">
                               <div className="flex items-center justify-between pb-4 border-b">
                                 <div>
-                                  <h3 className="font-semibold text-lg">Booking Status</h3>
-                                  <p className="text-sm text-muted-foreground">Current reservation status</p>
+                                  <h3 className="font-semibold text-lg">{t('bookingsUser.statusTitle', 'Booking Status')}</h3>
+                                  <p className="text-sm text-muted-foreground">{t('bookingsUser.statusDesc', 'Current reservation status')}</p>
                                 </div>
                                 <span className={`px-4 py-2 rounded-full text-sm font-medium ${
                                   booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                                   booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                   'bg-red-100 text-red-800'
                                 }`}>
-                                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                  {booking.status === 'confirmed' ? t('status.confirmed') : booking.status === 'pending' ? t('status.pending') : booking.status === 'cancelled' ? t('status.cancelled') : t('status.na')}
                                 </span>
                               </div>
 
@@ -559,7 +561,7 @@ export default function Bookings() {
                             className="flex-1 sm:flex-none bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold"
                             disabled={payingBookingId === booking.id}
                           >
-                            {payingBookingId === booking.id ? 'Starting Payment...' : 'Pay Now'}
+                            {payingBookingId === booking.id ? t('bookingsUser.payNow') : t('bookingsUser.payNow')}
                           </Button>
                         )}
 
@@ -569,7 +571,7 @@ export default function Bookings() {
                             className="flex-1 sm:flex-none bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold"
                           >
                             <Star className="w-4 h-4 mr-2" />
-                            Write Review
+                            {t('bookingsUser.writeReview')}
                           </Button>
                         )}
 
@@ -579,7 +581,7 @@ export default function Bookings() {
                           className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white font-semibold"
                         >
                           <X className="w-4 h-4 mr-2" />
-                          Cancel
+                          {t('bookingsUser.cancel')}
                         </Button>
                       </div>
                     </div>

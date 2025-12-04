@@ -11,6 +11,7 @@ import { X, SlidersHorizontal, Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import RatingStars from './RatingStars';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -31,6 +32,7 @@ export default function FilterSidebar({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     filters.bookingDate ? filters.bookingDate : undefined
   );
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLocalFilters(filters);
@@ -116,7 +118,7 @@ export default function FilterSidebar({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-terracotta-600" />
-          <h3 className="text-lg font-bold text-gray-900">Filters</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t('filters.apply')}</h3>
           {activeFilterCount > 0 && (
             <span className="bg-terracotta-100 text-terracotta-700 text-xs font-semibold px-2 py-1 rounded-full">
               {activeFilterCount}
@@ -134,7 +136,7 @@ export default function FilterSidebar({
         {/* Single Date Filter - UPDATED FOR DAILY BOOKINGS */}
         <div>
           <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-            Booking Date
+            {t('filters.bookingDate')}
           </Label>
           <Popover>
             <PopoverTrigger asChild>
@@ -149,7 +151,7 @@ export default function FilterSidebar({
                 {selectedDate ? (
                   format(selectedDate, "EEEE, MMM dd, yyyy")
                 ) : (
-                  <span>Select a date</span>
+                  <span>{t('filters.selectDate')}</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -170,18 +172,18 @@ export default function FilterSidebar({
               onClick={handleClearDate}
               className="w-full mt-2 text-terracotta-600 hover:text-terracotta-700 hover:bg-terracotta-50"
             >
-              Clear date
+              {t('filters.clearDate')}
             </Button>
           )}
           <p className="text-xs text-gray-600 mt-2">
-            Find camps available for your selected date
+            {t('filters.findAvailable')}
           </p>
         </div>
 
         {/* Price Range */}
         <div>
           <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-            Price Range (BD per day)
+            {t('filters.priceRange')}
           </Label>
           <div className="px-2">
             <Slider
@@ -204,7 +206,7 @@ export default function FilterSidebar({
         {locations.length > 0 && (
           <div>
             <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-              Location
+              {t('filters.location')}
             </Label>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {locations.map((location) => (
@@ -229,7 +231,7 @@ export default function FilterSidebar({
         {/* Guest Capacity */}
         <div>
           <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-            Minimum Guests
+            {t('filters.minGuests')}
           </Label>
           <div className="flex items-center gap-2">
             <Button
@@ -259,13 +261,13 @@ export default function FilterSidebar({
         {/* Tent Types */}
         <div>
           <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-            Tent Types
+            {t('filters.tentTypes')}
           </Label>
           <div className="space-y-2">
-            {[
-              { value: 'large' as const, label: 'Large Tents' },
-              { value: 'small' as const, label: 'Small Tents' },
-              { value: 'entertainment' as const, label: 'Entertainment Tents' }
+              {[
+              { value: 'large' as const, label: t('filters.largeTents') },
+              { value: 'small' as const, label: t('filters.smallTents') },
+              { value: 'entertainment' as const, label: t('filters.entertainmentTents') }
             ].map(({ value, label }) => (
               <div key={value} className="flex items-center space-x-2">
                 <Checkbox
@@ -288,7 +290,7 @@ export default function FilterSidebar({
         {amenities.length > 0 && (
           <div>
             <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-              Amenities
+              {t('filters.amenities')}
             </Label>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {amenities.map((amenity) => (
@@ -313,7 +315,7 @@ export default function FilterSidebar({
         {/* Minimum Rating */}
         <div>
           <Label className="text-sm font-semibold text-gray-900 mb-3 block">
-            Minimum Rating
+            {t('filters.minRating')}
           </Label>
           <div className="space-y-2">
             {[0, 3, 4, 5].map((rating) => (
@@ -328,11 +330,11 @@ export default function FilterSidebar({
                   className="text-sm font-normal cursor-pointer flex items-center gap-2"
                 >
                   {rating === 0 ? (
-                    'All ratings'
+                    t('filters.allRatings')
                   ) : (
                     <>
                       <RatingStars rating={rating} size="sm" />
-                      <span>& up</span>
+                      <span>{t('filters.up')}</span>
                     </>
                   )}
                 </Label>
@@ -348,14 +350,14 @@ export default function FilterSidebar({
           onClick={handleApply}
           className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
         >
-          Apply Filters
+          {t('filters.apply')}
         </Button>
         <Button
           variant="outline"
           onClick={handleReset}
           className="w-full border-2 border-sand-300 hover:bg-sand-50"
         >
-          Reset All
+          {t('filters.reset')}
         </Button>
       </div>
     </Card>
