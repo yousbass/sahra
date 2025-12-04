@@ -109,7 +109,7 @@ const resources = {
         entertainmentTents: 'Entertainment Tents',
         allRatings: 'All ratings',
         up: 'and up'
-      }
+      },
       status: {
         confirmed: 'Confirmed',
         pending: 'Pending',
