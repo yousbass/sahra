@@ -57,13 +57,13 @@ export default function HostBookings() {
   const statusBadge = (status?: string) => {
     switch (status) {
       case 'confirmed':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Confirmed</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200">{t('status.confirmed', 'Confirmed')}</Badge>;
       case 'pending':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pending</Badge>;
+        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">{t('status.pending', 'Pending')}</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Cancelled</Badge>;
+        return <Badge className="bg-red-100 text-red-800 border-red-200">{t('status.cancelled', 'Cancelled')}</Badge>;
       default:
-        return <Badge variant="secondary">N/A</Badge>;
+        return <Badge variant="secondary">{t('status.na', 'N/A')}</Badge>;
     }
   };
 

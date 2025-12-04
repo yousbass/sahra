@@ -44,8 +44,8 @@ export default function Host() {
               <Crown className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Host Dashboard</h1>
-              <p className="text-gray-700 font-medium">Manage your desert camp listings</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{t('host.dashboardTitle')}</h1>
+              <p className="text-gray-700 font-medium">{t('host.dashboardSubtitle')}</p>
             </div>
           </div>
         </div>
@@ -61,8 +61,8 @@ export default function Host() {
                 <Plus className="w-7 h-7 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Create New Listing</h3>
-                <p className="text-sm text-gray-700 font-medium">Add a new camp to your portfolio</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('host.createTitle')}</h3>
+                <p className="text-sm text-gray-700 font-medium">{t('host.createDesc')}</p>
               </div>
             </div>
           </Card>
@@ -76,8 +76,8 @@ export default function Host() {
                 <List className="w-7 h-7 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">My Listings</h3>
-                <p className="text-sm text-gray-700 font-medium">View and manage your camps</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('host.manageTitle')}</h3>
+                <p className="text-sm text-gray-700 font-medium">{t('host.manageDesc')}</p>
               </div>
             </div>
           </Card>
@@ -88,8 +88,8 @@ export default function Host() {
                 <BarChart3 className="w-7 h-7 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Analytics</h3>
-                <p className="text-sm text-gray-700 font-medium">Coming soon</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('host.analyticsTitle')}</h3>
+                <p className="text-sm text-gray-700 font-medium">{t('host.analyticsDesc')}</p>
               </div>
             </div>
           </Card>
@@ -103,8 +103,8 @@ export default function Host() {
                 <Calendar className="w-7 h-7 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Bookings</h3>
-                <p className="text-sm text-gray-700 font-medium">See all bookings on your camps</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('host.bookingsCardTitle')}</h3>
+                <p className="text-sm text-gray-700 font-medium">{t('host.bookingsCardDesc')}</p>
               </div>
             </div>
           </Card>
@@ -114,10 +114,10 @@ export default function Host() {
         <Card className="bg-gradient-to-br from-terracotta-500 via-terracotta-600 to-terracotta-700 text-white p-8 shadow-xl">
           <div className="max-w-2xl">
             <h2 className="text-2xl md:text-3xl font-bold mb-3 drop-shadow-lg">
-              Welcome to Your Host Dashboard! 🏜️
+              {t('host.heroTitle')}
             </h2>
             <p className="text-white/90 mb-6 drop-shadow font-medium">
-              Start sharing your desert camps with travelers from around the world. Create your first listing or manage existing ones to grow your hosting business.
+              {t('host.heroDesc')}
             </p>
             <div className="flex flex-wrap gap-3">
               <Button
@@ -125,14 +125,14 @@ export default function Host() {
                 className="bg-white text-terracotta-600 hover:bg-white/90 font-semibold shadow-lg"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Create First Listing
+                {t('host.heroCreate')}
               </Button>
               <Button
                 onClick={() => navigate('/host/listings')}
                 className="bg-white text-terracotta-600 hover:bg-white/90 font-semibold shadow-lg"
               >
                 <List className="w-4 h-4 mr-2" />
-                View My Listings
+                {t('host.heroManage')}
               </Button>
             </div>
           </div>
