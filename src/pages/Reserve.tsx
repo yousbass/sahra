@@ -428,7 +428,7 @@ export default function Reserve() {
         const { getDoc, doc } = await import('firebase/firestore');
         const { db } = await import('@/lib/firebase');
 
-        const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@sahra.camp';
+        const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@mukhymat.com';
         const fallbackHostEmail = camp.hostEmail || supportEmail;
 
         // Prepare booking data for emails

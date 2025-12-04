@@ -140,7 +140,7 @@ export function bookingConfirmationGuestTemplate(data: BookingData): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://sahra.camp/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #d4a574 0%, #c89666 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View My Bookings</a>
+                    <a href="https://www.mukhymat.com/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #d4a574 0%, #c89666 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View My Bookings</a>
                   </td>
                 </tr>
               </table>
@@ -151,7 +151,7 @@ export function bookingConfirmationGuestTemplate(data: BookingData): string {
           <tr>
             <td style="background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #d4a574; text-decoration: none;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #d4a574; text-decoration: none;">support@mukhymat.com</a>
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © 2024 Sahra Camping. All rights reserved.
@@ -252,7 +252,7 @@ export function bookingNotificationHostTemplate(data: BookingData, guestEmail: s
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://sahra.camp/host/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View Booking Details</a>
+                    <a href="https://www.mukhymat.com/host/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View Booking Details</a>
                   </td>
                 </tr>
               </table>
@@ -263,7 +263,7 @@ export function bookingNotificationHostTemplate(data: BookingData, guestEmail: s
           <tr>
             <td style="background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #4CAF50; text-decoration: none;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #4CAF50; text-decoration: none;">support@mukhymat.com</a>
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © 2024 Sahra Camping. All rights reserved.
@@ -315,7 +315,7 @@ export function listingApprovedTemplate(data: ListingApprovalData): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 24px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${data.dashboardUrl || 'https://sahra.camp/host/dashboard'}"
+                    <a href="${data.dashboardUrl || 'https://www.mukhymat.com/host/dashboard'}"
                        style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">
                       Open Host Dashboard
                     </a>
@@ -418,7 +418,7 @@ export function cancellationNotificationGuestTemplate(data: CancellationData): s
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://sahra.camp" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #d4a574 0%, #c89666 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Browse Other Camps</a>
+                    <a href="https://www.mukhymat.com" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #d4a574 0%, #c89666 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Browse Other Camps</a>
                   </td>
                 </tr>
               </table>
@@ -429,7 +429,7 @@ export function cancellationNotificationGuestTemplate(data: CancellationData): s
           <tr>
             <td style="background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #d4a574; text-decoration: none;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #d4a574; text-decoration: none;">support@mukhymat.com</a>
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © 2024 Sahra Camping. All rights reserved.
@@ -513,7 +513,7 @@ export function cancellationNotificationHostTemplate(data: CancellationData): st
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://sahra.camp/host/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View My Bookings</a>
+                    <a href="https://www.mukhymat.com/host/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View My Bookings</a>
                   </td>
                 </tr>
               </table>
@@ -524,7 +524,7 @@ export function cancellationNotificationHostTemplate(data: CancellationData): st
           <tr>
             <td style="background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #ff9800; text-decoration: none;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #ff9800; text-decoration: none;">support@mukhymat.com</a>
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © 2024 Sahra Camping. All rights reserved.
@@ -619,7 +619,7 @@ export function refundConfirmationTemplate(data: RefundData): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://sahra.camp" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Browse Camps</a>
+                    <a href="https://www.mukhymat.com" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Browse Camps</a>
                   </td>
                 </tr>
               </table>
@@ -630,7 +630,7 @@ export function refundConfirmationTemplate(data: RefundData): string {
           <tr>
             <td style="background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #2196F3; text-decoration: none;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #2196F3; text-decoration: none;">support@mukhymat.com</a>
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © 2024 Sahra Camping. All rights reserved.
@@ -687,7 +687,7 @@ export function reviewReminderTemplate(data: BookingData): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://sahra.camp/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Write a Review</a>
+                    <a href="https://www.mukhymat.com/bookings" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Write a Review</a>
                   </td>
                 </tr>
               </table>
@@ -702,7 +702,7 @@ export function reviewReminderTemplate(data: BookingData): string {
           <tr>
             <td style="background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #FFC107; text-decoration: none;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #FFC107; text-decoration: none;">support@mukhymat.com</a>
               </p>
               <p style="margin: 0; color: #999999; font-size: 12px;">
                 © 2024 Sahra Camping. All rights reserved.

@@ -87,7 +87,7 @@ export function reviewReminderTemplate(booking: BookingData): string {
                 <div style="font-size: 40px; margin-bottom: 20px;">
                   ⭐⭐⭐⭐⭐
                 </div>
-                <a href="https://sahra.camp/bookings" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #9F7AEA 0%, #805AD5 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(159, 122, 234, 0.3);">
+                <a href="https://www.mukhymat.com/bookings" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #9F7AEA 0%, #805AD5 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(159, 122, 234, 0.3);">
                   Write Your Review
                 </a>
               </div>
@@ -128,7 +128,7 @@ export function reviewReminderTemplate(booking: BookingData): string {
           <tr>
             <td style="padding: 0 40px 30px;">
               <p style="margin: 0; color: #718096; font-size: 14px; text-align: center; line-height: 1.6;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #805AD5; text-decoration: none; font-weight: 600;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #805AD5; text-decoration: none; font-weight: 600;">support@mukhymat.com</a>
               </p>
             </td>
           </tr>

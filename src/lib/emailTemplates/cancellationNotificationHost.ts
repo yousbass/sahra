@@ -148,7 +148,7 @@ export function cancellationNotificationHostTemplate(cancellation: CancellationD
           <!-- CTA Button -->
           <tr>
             <td style="padding: 0 40px 30px;" align="center">
-              <a href="https://sahra.camp/host/bookings" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(237, 137, 54, 0.3);">
+              <a href="https://www.mukhymat.com/host/bookings" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(237, 137, 54, 0.3);">
                 View Your Bookings
               </a>
             </td>
@@ -158,7 +158,7 @@ export function cancellationNotificationHostTemplate(cancellation: CancellationD
           <tr>
             <td style="padding: 0 40px 30px;">
               <p style="margin: 0; color: #718096; font-size: 14px; text-align: center; line-height: 1.6;">
-                Questions? Contact us at <a href="mailto:support@sahra.camp" style="color: #DD6B20; text-decoration: none; font-weight: 600;">support@sahra.camp</a>
+                Questions? Contact us at <a href="mailto:support@mukhymat.com" style="color: #DD6B20; text-decoration: none; font-weight: 600;">support@mukhymat.com</a>
               </p>
             </td>
           </tr>

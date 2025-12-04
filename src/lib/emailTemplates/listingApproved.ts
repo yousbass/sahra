@@ -80,7 +80,7 @@ export function listingApprovedTemplate(data: ListingApprovalData): string {
 
           <tr>
             <td style="padding: 0 32px 28px; text-align: center;">
-              <a href="${data.dashboardUrl || 'https://sahra.camp/host/dashboard'}" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #D4A574 0%, #C89968 100%); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 6px rgba(212, 165, 116, 0.3);">
+              <a href="${data.dashboardUrl || 'https://www.mukhymat.com/host/dashboard'}" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #D4A574 0%, #C89968 100%); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 6px rgba(212, 165, 116, 0.3);">
                 View listing
               </a>
             </td>
@@ -97,7 +97,7 @@ export function listingApprovedTemplate(data: ListingApprovalData): string {
           <tr>
             <td style="padding: 26px 32px; background-color: #F7FAFC; border-top: 1px solid #E2E8F0; border-radius: 0 0 12px 12px; text-align: center;">
               <p style="margin: 0; color: #718096; font-size: 12px; line-height: 1.6;">
-                Need help? Contact us at <a href="mailto:support@sahra.camp" style="color: #D4A574; font-weight: 600; text-decoration: none;">support@sahra.camp</a><br />
+                Need help? Contact us at <a href="mailto:support@mukhymat.com" style="color: #D4A574; font-weight: 600; text-decoration: none;">support@mukhymat.com</a><br />
                 © ${new Date().getFullYear()} Sahra Camping. All rights reserved.
               </p>
             </td>

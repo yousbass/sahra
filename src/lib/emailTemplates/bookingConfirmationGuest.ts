@@ -139,7 +139,7 @@ export function bookingConfirmationGuestTemplate(booking: BookingData): string {
           <!-- CTA Button -->
           <tr>
             <td style="padding: 0 40px 30px;" align="center">
-              <a href="https://sahra.camp/bookings" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #D4A574 0%, #C89968 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(212, 165, 116, 0.3);">
+              <a href="https://www.mukhymat.com/bookings" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #D4A574 0%, #C89968 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(212, 165, 116, 0.3);">
                 View Booking Details
               </a>
             </td>
@@ -149,7 +149,7 @@ export function bookingConfirmationGuestTemplate(booking: BookingData): string {
           <tr>
             <td style="padding: 0 40px 30px;">
               <p style="margin: 0; color: #718096; font-size: 14px; text-align: center; line-height: 1.6;">
-                Need help? Contact us at <a href="mailto:support@sahra.camp" style="color: #D4A574; text-decoration: none; font-weight: 600;">support@sahra.camp</a>
+                Need help? Contact us at <a href="mailto:support@mukhymat.com" style="color: #D4A574; text-decoration: none; font-weight: 600;">support@mukhymat.com</a>
               </p>
             </td>
           </tr>

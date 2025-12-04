@@ -129,7 +129,7 @@ export function refundConfirmationTemplate(refund: RefundData): string {
                 <p style="margin: 0 0 20px; color: #4A5568; font-size: 14px;">
                   Explore our amazing desert camps and book your next unforgettable experience
                 </p>
-                <a href="https://sahra.camp" style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #D4A574 0%, #C89968 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;">
+                <a href="https://www.mukhymat.com" style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #D4A574 0%, #C89968 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;">
                   Browse Camps
                 </a>
               </div>
@@ -140,7 +140,7 @@ export function refundConfirmationTemplate(refund: RefundData): string {
           <tr>
             <td style="padding: 0 40px 30px;">
               <p style="margin: 0; color: #718096; font-size: 14px; text-align: center; line-height: 1.6;">
-                Questions about your refund? Contact us at <a href="mailto:support@sahra.camp" style="color: #319795; text-decoration: none; font-weight: 600;">support@sahra.camp</a>
+                Questions about your refund? Contact us at <a href="mailto:support@mukhymat.com" style="color: #319795; text-decoration: none; font-weight: 600;">support@mukhymat.com</a>
               </p>
             </td>
           </tr>
