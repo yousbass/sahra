@@ -18,6 +18,7 @@ import { getBlockedDates, getBlockedDatesList } from '@/lib/dateBlocking';
 import { checkAvailability } from '@/lib/availability';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
 import { createPaymentSession } from '@/lib/payments';
+import { useTranslation } from 'react-i18next';
 
 export default function Reserve() {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ export default function Reserve() {
   const [paying, setPaying] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { t, i18n } = useTranslation();
 
   // Get check-in and check-out times with defaults
   const checkInTime = camp?.checkInTime || '08:00 AM';
@@ -97,12 +99,12 @@ export default function Reserve() {
           checkInTime: legacyCamp.checkInTime || '08:00 AM',
           checkOutTime: legacyCamp.checkOutTime || '03:00 AM',
         };
-        setCamp(mergedCamp);
-        if (mergedCamp.status && mergedCamp.status !== 'active') {
-          setBlockedStatus(mergedCamp.status);
-        } else {
-          setBlockedStatus(null);
-        }
+      setCamp(mergedCamp);
+      if (mergedCamp.status && mergedCamp.status !== 'active') {
+        setBlockedStatus(mergedCamp.status);
+      } else {
+        setBlockedStatus(null);
+      }
         console.log('Camp converted to legacy format');
       } else {
         console.log('❌ Camp not found');
@@ -553,9 +555,9 @@ export default function Reserve() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 text-center shadow-xl max-w-xl">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Booking unavailable</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">{t('reserve.bookingUnavailable')}</h2>
           <p className="text-gray-700 font-medium mb-6">
-            This listing is currently {blockedStatus.replace('-', ' ')}. Booking will be available once it is activated.
+            {t('reserve.bookingUnavailableDesc', { status: blockedStatus.replace('-', ' ') })}
           </p>
           <div className="flex gap-3 justify-center">
             <Button
@@ -588,18 +590,15 @@ export default function Reserve() {
           className="mb-4 sm:mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('reserve.back')}
         </Button>
 
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            {showPayment ? 'Reservation Created' : 'Complete Your Reservation'}
+            {showPayment ? t('reserve.reserveCreated') : t('reserve.completeTitle')}
           </h1>
           <p className="text-gray-700 font-medium">
-            {showPayment 
-              ? 'Payment integration coming soon with Tap Payments' 
-              : `Book your camp for a full day experience (${checkInTime} - ${checkOutTime} next day)`
-            }
+            {showPayment ? '' : `${t('reserve.completeTitle')} (${checkInTime} - ${checkOutTime} next day)`}
           </p>
         </div>
 
