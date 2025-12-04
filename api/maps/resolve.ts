@@ -113,12 +113,9 @@ export default async function handler(req: any, res: any) {
         });
       }
     } else if (!resolved) {
-      return res.status(400).json({
-        success: false,
-        error: 'Failed to resolve URL',
-        status: response?.status || 400,
-        body: 'No response body',
-      });
+      // No resolved URL/coords; fall back to original URL so client can still parse
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      return res.status(200).json({ success: true, resolvedUrl: url });
     }
 
     res.setHeader('Access-Control-Allow-Origin', '*');
