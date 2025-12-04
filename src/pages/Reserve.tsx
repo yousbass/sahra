@@ -49,6 +49,7 @@ export default function Reserve() {
   const [blockedStatus, setBlockedStatus] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Get check-in and check-out times with defaults
   const checkInTime = camp?.checkInTime || '08:00 AM';
@@ -330,6 +331,8 @@ export default function Reserve() {
     }
 
     try {
+      if (submitting) return;
+      setSubmitting(true);
       // Create booking for single day with custom check-in/check-out times
       const nextDay = addDays(selectedDate, 1);
       const nextDayStr = format(nextDay, 'yyyy-MM-dd');
@@ -497,6 +500,8 @@ export default function Reserve() {
       console.error('❌ Error creating booking:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       toast.error(`Failed to create reservation: ${errorMessage}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -790,10 +795,10 @@ export default function Reserve() {
 
                   <Button
                     type="submit"
-                    disabled={!selectedDate || checkingAvailability}
+                    disabled={!selectedDate || checkingAvailability || submitting}
                     className="w-full h-14 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {checkingAvailability ? 'Checking Availability...' : 'Create Reservation'}
+                    {checkingAvailability ? 'Checking Availability...' : submitting ? 'Creating Reservation...' : 'Create Reservation'}
                   </Button>
                 </form>
               </Card>
