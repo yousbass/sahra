@@ -15,12 +15,14 @@ import ReviewForm from '@/components/ReviewForm';
 import { RefundPolicyBadge } from '@/components/RefundPolicyBadge';
 import type { CancellationPolicy } from '@/lib/refundCalculator';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
+import { useTranslation } from 'react-i18next';
 
 export default function CampDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [camp, setCamp] = useState<LegacyCamp | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -75,11 +77,11 @@ export default function CampDetails() {
         });
       } else {
         console.log('❌ Camp not found');
-        toast.error('Camp not found');
+        toast.error(t('campDetails.notFound'));
       }
     } catch (error) {
       console.error('❌ Error loading camp:', error);
-      toast.error('Failed to load camp details');
+      toast.error(t('campDetails.loadCampFailed'));
     } finally {
       setLoading(false);
     }
@@ -111,7 +113,7 @@ export default function CampDetails() {
         checkOutDate: new Date().toISOString()
       });
 
-      toast.success('Review submitted successfully!');
+      toast.success(t('campDetails.reviewSuccess'));
       setShowReviewForm(false);
       setCanReview(false);
       
@@ -208,7 +210,7 @@ export default function CampDetails() {
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">Loading camp details...</p>
+          <p className="text-gray-700 font-medium">{t('campDetails.loading')}</p>
         </div>
       </div>
     );
@@ -218,12 +220,12 @@ export default function CampDetails() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 text-center shadow-xl">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Camp not found</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('campDetails.notFound')}</h2>
           <Button
             onClick={() => navigate('/')}
             className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
           >
-            Back to Search
+            {t('campDetails.backToSearch')}
           </Button>
         </Card>
       </div>
@@ -270,7 +272,7 @@ export default function CampDetails() {
           className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-900 shadow-lg font-semibold"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('campDetails.back')}
         </Button>
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
@@ -300,20 +302,20 @@ export default function CampDetails() {
           <div className="lg:col-span-2 space-y-6">
             {!isActive && (
               <Card className="bg-amber-50 border-amber-200 p-4 text-amber-900 font-medium">
-                This listing is awaiting approval. Booking will be available once it is activated.
+                {t('reserve.bookingUnavailableDesc', { status: camp.status || 'pending' })}
               </Card>
             )}
             {/* Camp Overview */}
             {(camp.maxGuests || totalTents > 0) && (
               <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Camp Overview</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.overview')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {camp.maxGuests && (
                     <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
                       <Users className="w-6 h-6 text-terracotta-600" />
                       <div>
                         <p className="text-2xl font-bold text-gray-900">{camp.maxGuests}</p>
-                        <p className="text-sm text-gray-700 font-medium">Max Guests</p>
+                        <p className="text-sm text-gray-700 font-medium">{t('campDetails.maxGuests')}</p>
                       </div>
                     </div>
                   )}
@@ -322,7 +324,7 @@ export default function CampDetails() {
                       <Tent className="w-6 h-6 text-terracotta-600" />
                       <div>
                         <p className="text-2xl font-bold text-gray-900">{totalTents}</p>
-                        <p className="text-sm text-gray-700 font-medium">Total Tents</p>
+                        <p className="text-sm text-gray-700 font-medium">{t('campDetails.totalTents')}</p>
                       </div>
                     </div>
                   )}
@@ -332,18 +334,18 @@ export default function CampDetails() {
                 <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="w-5 h-5 text-terracotta-600" />
-                    <h3 className="text-lg font-bold text-gray-900">Camp Hours</h3>
+                    <h3 className="text-lg font-bold text-gray-900">{t('campDetails.campHours')}</h3>
                   </div>
                   <div className="space-y-1">
                     <p className="text-gray-900 font-semibold">
-                      Check-in: <span className="text-terracotta-600">{checkInTime}</span>
+                      {t('campDetails.checkIn')} <span className="text-terracotta-600">{checkInTime}</span>
                     </p>
                     <p className="text-gray-900 font-semibold">
-                      Check-out: <span className="text-terracotta-600">{checkOutTime}</span> <span className="text-sm text-gray-600">(next day)</span>
+                      {t('campDetails.checkOut')} <span className="text-terracotta-600">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
                     </p>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">
-                    Full day camp experience in Bahrain style
+                    {t('campDetails.fullDayHint', { defaultValue: t('reserve.completeTitle') })}
                   </p>
                 </div>
               </Card>

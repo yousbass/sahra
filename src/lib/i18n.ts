@@ -197,6 +197,59 @@ const resources = {
         perDay: '/ day',
         viewDetails: 'View Details'
       },
+      campDetails: {
+        loading: 'Loading camp details...',
+        notFound: 'Camp not found',
+        backToSearch: 'Back to Search',
+        back: 'Back',
+        overview: 'Camp Overview',
+        maxGuests: 'Max Guests',
+        totalTents: 'Total Tents',
+        campHours: 'Camp Hours',
+        checkIn: 'Check-in:',
+        checkOut: 'Check-out:',
+        nextDay: '(next day)',
+        about: 'About This Camp',
+        cancellationPolicy: 'Cancellation Policy',
+        refundNote: 'Refunds are processed within 5-10 business days to your original payment method.',
+        fullDayHint: 'Full day camp experience',
+        amenities: 'Facilities & Amenities',
+        reviews: 'Guest Reviews',
+        writeReview: 'Write a Review',
+        signInReview: 'Sign in to Review',
+        pricePerDay: 'per day',
+        accommodates: 'Accommodates up to {{count}} guests',
+        reserveNow: 'Reserve Now',
+        pendingApproval: 'Pending Approval',
+        reviewSuccess: 'Review submitted successfully!',
+        loadCampFailed: 'Failed to load camp details',
+        policy: {
+          flexible: {
+            name: 'Flexible',
+            description: 'Full refund if cancelled 24+ hours before check-in',
+            detail1: '24+ hours before',
+            detail1Note: 'Full refund (minus service fee)',
+            detail2: 'Less than 24 hours',
+            detail2Note: 'No refund'
+          },
+          moderate: {
+            name: 'Moderate',
+            description: '50% refund if cancelled 48+ hours before check-in',
+            detail1: '48+ hours before',
+            detail1Note: '50% refund',
+            detail2: 'Less than 48 hours',
+            detail2Note: 'No refund'
+          },
+          strict: {
+            name: 'Strict',
+            description: '50% refund if cancelled 7+ days before check-in',
+            detail1: '7+ days before',
+            detail1Note: '50% refund',
+            detail2: 'Less than 7 days',
+            detail2Note: 'No refund'
+          }
+        }
+      },
       hostCancellation: {
         title: 'Cancel Booking (Host)',
         description: 'Review the cancellation details and penalties before confirming',
@@ -436,6 +489,59 @@ const resources = {
         tentsCount: '{{count}} خيمة',
         perDay: '/ اليوم',
         viewDetails: 'عرض التفاصيل'
+      },
+      campDetails: {
+        loading: 'جارٍ تحميل تفاصيل المخيم...',
+        notFound: 'المخيم غير موجود',
+        backToSearch: 'العودة للبحث',
+        back: 'رجوع',
+        overview: 'نظرة عامة على المخيم',
+        maxGuests: 'الحد الأقصى للضيوف',
+        totalTents: 'إجمالي الخيام',
+        campHours: 'أوقات المخيم',
+        checkIn: 'تسجيل الوصول:',
+        checkOut: 'تسجيل المغادرة:',
+        nextDay: '(اليوم التالي)',
+        about: 'عن هذا المخيم',
+        cancellationPolicy: 'سياسة الإلغاء',
+        refundNote: 'تُعاد المبالغ خلال 5-10 أيام عمل إلى وسيلة الدفع الأصلية.',
+        fullDayHint: 'تجربة مخيم ليوم كامل',
+        amenities: 'المرافق والخدمات',
+        reviews: 'مراجعات الضيوف',
+        writeReview: 'اكتب مراجعة',
+        signInReview: 'سجّل الدخول لكتابة مراجعة',
+        pricePerDay: 'في اليوم',
+        accommodates: 'يستوعب حتى {{count}} ضيفاً',
+        reserveNow: 'احجز الآن',
+        pendingApproval: 'قيد الموافقة',
+        reviewSuccess: 'تم إرسال المراجعة بنجاح!',
+        loadCampFailed: 'فشل تحميل تفاصيل المخيم',
+        policy: {
+          flexible: {
+            name: 'مرنة',
+            description: 'استرجاع كامل عند الإلغاء قبل 24 ساعة أو أكثر من تسجيل الوصول',
+            detail1: 'قبل 24 ساعة أو أكثر',
+            detail1Note: 'استرجاع كامل (باستثناء رسوم الخدمة)',
+            detail2: 'أقل من 24 ساعة',
+            detail2Note: 'لا يوجد استرجاع'
+          },
+          moderate: {
+            name: 'متوسطة',
+            description: 'استرجاع 50% عند الإلغاء قبل 48 ساعة أو أكثر من تسجيل الوصول',
+            detail1: 'قبل 48 ساعة أو أكثر',
+            detail1Note: 'استرجاع 50%',
+            detail2: 'أقل من 48 ساعة',
+            detail2Note: 'لا يوجد استرجاع'
+          },
+          strict: {
+            name: 'صارمة',
+            description: 'استرجاع 50% عند الإلغاء قبل 7 أيام أو أكثر من تسجيل الوصول',
+            detail1: 'قبل 7 أيام أو أكثر',
+            detail1Note: 'استرجاع 50%',
+            detail2: 'أقل من 7 أيام',
+            detail2Note: 'لا يوجد استرجاع'
+          }
+        }
       },
       hostCancellation: {
         title: 'إلغاء الحجز (المضيف)',
