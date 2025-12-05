@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { config } from '@/lib/config';
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentFailed() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const error = searchParams.get('error') || 'Payment failed. Please try again.';
+  const { t } = useTranslation();
+  const error = searchParams.get('error') || t('paymentFailed.desc');
   const bookingId = searchParams.get('bookingId');
 
   return (
@@ -29,7 +31,7 @@ export default function PaymentFailed() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Payment Failed</h1>
             <p className="text-lg text-gray-700">
-              We couldn't process your payment. Please try again or use a different payment method.
+              {t('paymentFailed.desc')}
             </p>
           </div>
 
@@ -41,28 +43,28 @@ export default function PaymentFailed() {
           <div className="bg-gradient-to-br from-sand-50 to-orange-50 p-6 md:p-8 rounded-xl text-left space-y-4 border-2 border-sand-300">
             <div className="flex items-center gap-2 mb-2">
               <CreditCard className="h-5 w-5 text-terracotta-600" />
-              <h2 className="font-bold text-lg text-gray-900">Common Issues</h2>
+              <h2 className="font-bold text-lg text-gray-900">{t('paymentFailed.commonIssues')}</h2>
             </div>
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start gap-2">
                 <span className="text-terracotta-600 font-bold">•</span>
-                <span><span className="font-semibold">Insufficient funds</span> in your account</span>
+                <span>{t('paymentFailed.issues.insufficient')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-terracotta-600 font-bold">•</span>
-                <span><span className="font-semibold">Card declined</span> by your bank</span>
+                <span>{t('paymentFailed.issues.declined')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-terracotta-600 font-bold">•</span>
-                <span><span className="font-semibold">Incorrect card details</span> entered</span>
+                <span>{t('paymentFailed.issues.incorrect')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-terracotta-600 font-bold">•</span>
-                <span><span className="font-semibold">Card expired</span> or blocked</span>
+                <span>{t('paymentFailed.issues.expired')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-terracotta-600 font-bold">•</span>
-                <span><span className="font-semibold">3D Secure authentication</span> failed</span>
+                <span>{t('paymentFailed.issues.auth')}</span>
               </li>
             </ul>
           </div>
@@ -74,7 +76,7 @@ export default function PaymentFailed() {
                 className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
                 size="lg"
               >
-                Try Again
+                {t('paymentFailed.tryAgain')}
               </Button>
             )}
             <Button 
@@ -83,12 +85,12 @@ export default function PaymentFailed() {
               className="border-2 border-sand-300 hover:bg-sand-50 font-semibold"
               size="lg"
             >
-              Back to Home
+              {t('paymentFailed.backHome')}
             </Button>
           </div>
 
           <div className="pt-6 border-t-2 border-sand-300 space-y-3">
-            <p className="text-sm font-semibold text-gray-900">Need Help?</p>
+            <p className="text-sm font-semibold text-gray-900">{t('paymentFailed.needHelp')}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
               <a 
                 href={`mailto:${config.supportEmail}`}

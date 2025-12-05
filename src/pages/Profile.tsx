@@ -23,10 +23,12 @@ import {
   FirebaseError
 } from 'firebase/auth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { userData, loading, signOut, becomeHost, user } = useAuth();
+  const { t } = useTranslation();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
@@ -89,14 +91,14 @@ export default function Profile() {
       // Update in Firestore
       await updateUserProfile(user.uid, updates);
       
-      toast.success('Profile updated successfully!');
+      toast.success(t('profile.toasts.updated'));
       setIsEditing(false);
       
       // Reload to reflect changes
       window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile');
+      toast.error(t('profile.toasts.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -108,33 +110,33 @@ export default function Profile() {
     console.log('=== CHANGING PASSWORD ===');
     
     if (!user) {
-      toast.error('You must be signed in to change password');
+      toast.error(t('profile.toasts.mustSignIn'));
       return;
     }
 
     // Validation
     if (!currentPassword) {
-      toast.error('Please enter your current password');
+      toast.error(t('profile.toasts.enterCurrent'));
       return;
     }
 
     if (!newPassword) {
-      toast.error('Please enter a new password');
+      toast.error(t('profile.toasts.enterNew'));
       return;
     }
 
     if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
+      toast.error(t('profile.toasts.minLength'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error(t('profile.toasts.mismatch'));
       return;
     }
 
     if (currentPassword === newPassword) {
-      toast.error('New password must be different from current password');
+      toast.error(t('profile.toasts.samePassword'));
       return;
     }
 
@@ -157,7 +159,7 @@ export default function Profile() {
       console.log('✅ Password updated successfully');
 
       // Success!
-      toast.success('Password changed successfully!');
+      toast.success(t('profile.toasts.pwdChanged'));
       
       // Clear form and close dialog
       setCurrentPassword('');
@@ -171,15 +173,15 @@ export default function Profile() {
       // Handle specific Firebase errors
       const firebaseError = error as FirebaseError;
       if (firebaseError.code === 'auth/wrong-password') {
-        toast.error('Current password is incorrect');
+        toast.error(t('profile.toasts.wrongPassword'));
       } else if (firebaseError.code === 'auth/weak-password') {
-        toast.error('New password is too weak. Use at least 6 characters.');
+        toast.error(t('profile.toasts.weakPassword'));
       } else if (firebaseError.code === 'auth/requires-recent-login') {
-        toast.error('For security, please sign out and sign in again before changing password');
+        toast.error(t('profile.toasts.recentLogin'));
       } else if (firebaseError.code === 'auth/network-request-failed') {
-        toast.error('Network error. Please check your connection.');
+        toast.error(t('profile.toasts.network'));
       } else {
-        toast.error(firebaseError.message || 'Failed to change password');
+        toast.error(firebaseError.message || t('profile.toasts.changeFailed'));
       }
     } finally {
       setChangingPassword(false);
@@ -202,13 +204,13 @@ export default function Profile() {
             <div className="w-20 h-20 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-full mx-auto flex items-center justify-center mb-4">
               <User className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Sahra</h2>
-            <p className="text-gray-700 font-medium mb-6">Sign in to access your profile and bookings</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('profile.welcome')}</h2>
+            <p className="text-gray-700 font-medium mb-6">{t('profile.signInPrompt')}</p>
             <Button
               onClick={() => navigate('/signin')}
               className="w-full h-12 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
             >
-              Sign In
+              {t('profile.signIn')}
             </Button>
           </Card>
         </div>
@@ -224,7 +226,7 @@ export default function Profile() {
     <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-20">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('profile.title')}</h1>
           <p className="text-gray-700 font-medium">Manage your account settings and preferences</p>
         </div>
 
@@ -243,39 +245,39 @@ export default function Profile() {
                     className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
                   >
                     <Edit2 className="w-4 h-4 mr-2" />
-                    Edit Profile
+                    {t('profile.editProfile')}
                   </Button>
                 ) : (
                   <div className="flex gap-2">
-                    <Button
-                      onClick={cancelEditing}
-                      variant="outline"
-                      size="sm"
-                      className="border-2 border-sand-300 text-gray-700 hover:bg-sand-50"
-                    >
-                      <X className="w-4 h-4 mr-1" />
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={saveProfile}
-                      disabled={saving}
-                      size="sm"
-                      className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
-                    >
-                      {saving ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                          Saving...
+                   <Button
+                     onClick={cancelEditing}
+                     variant="outline"
+                     size="sm"
+                     className="border-2 border-sand-300 text-gray-700 hover:bg-sand-50"
+                   >
+                     <X className="w-4 h-4 mr-1" />
+                      {t('profile.cancel')}
+                   </Button>
+                   <Button
+                     onClick={saveProfile}
+                     disabled={saving}
+                     size="sm"
+                     className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
+                   >
+                     {saving ? (
+                       <>
+                         <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          {t('profile.saving', { defaultValue: 'Saving...' })}
                         </>
                       ) : (
                         <>
                           <Save className="w-4 h-4 mr-1" />
-                          Save
+                          {t('profile.saveChanges')}
                         </>
                       )}
-                    </Button>
-                  </div>
-                )}
+                   </Button>
+                 </div>
+               )}
               </div>
 
               {/* Profile Picture */}
@@ -292,11 +294,11 @@ export default function Profile() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{userData.displayName}</h3>
-                  <p className="text-sm text-gray-600 font-medium">Member since {memberSince}</p>
+                  <p className="text-sm text-gray-600 font-medium">{t('profile.memberSince', { date: memberSince })}</p>
                   {userData.isHost && (
                     <div className="mt-2 inline-flex items-center gap-1 bg-gradient-to-r from-terracotta-500 to-terracotta-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
                       <Crown className="w-3 h-3" />
-                      Host
+                      {t('profile.hostActive')}
                     </div>
                   )}
                 </div>
@@ -307,13 +309,13 @@ export default function Profile() {
                 <div className="space-y-2">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
                     <User className="w-4 h-4 text-terracotta-600" />
-                    Full Name
+                    {t('profile.name')}
                   </Label>
                   {isEditing ? (
                     <Input
                       value={editedName}
                       onChange={(e) => setEditedName(e.target.value)}
-                      placeholder="Enter your full name"
+                      placeholder={t('profile.name')}
                       className="border-sand-300 focus:border-terracotta-500 text-gray-900"
                     />
                   ) : (
@@ -324,24 +326,24 @@ export default function Profile() {
                 <div className="space-y-2">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
                     <Mail className="w-4 h-4 text-terracotta-600" />
-                    Email Address
+                    {t('auth.email')}
                   </Label>
                   <div className="flex items-center gap-2">
                     <p className="text-gray-800 font-medium">{userData.email}</p>
                     <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-semibold">
                       <Shield className="w-3 h-3" />
-                      Verified
+                      {t('profile.verified', { defaultValue: 'Verified' })}
                     </span>
                   </div>
                   <p className="text-xs text-gray-600 font-medium">
-                    Contact support to change your email address
+                    {t('profile.changeEmail', { defaultValue: 'Contact support to change your email address' })}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
                     <Phone className="w-4 h-4 text-terracotta-600" />
-                    Phone Number
+                    {t('profile.phone')}
                   </Label>
                   {isEditing ? (
                     <Input
@@ -351,22 +353,22 @@ export default function Profile() {
                       className="border-sand-300 focus:border-terracotta-500 text-gray-900"
                     />
                   ) : (
-                    <p className="text-gray-800 font-medium">{userData.phone || 'Not provided'}</p>
+                    <p className="text-gray-800 font-medium">{userData.phone || t('profile.notProvided', { defaultValue: 'Not provided' })}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-900 font-semibold">Bio</Label>
+                  <Label className="text-gray-900 font-semibold">{t('profile.bio')}</Label>
                   {isEditing ? (
                     <textarea
                       value={editedBio}
                       onChange={(e) => setEditedBio(e.target.value)}
-                      placeholder="Tell us about yourself..."
+                      placeholder={t('profile.bioPlaceholder', { defaultValue: 'Tell us about yourself...' })}
                       rows={3}
                       className="w-full px-3 py-2 border border-sand-300 rounded-md focus:border-terracotta-500 focus:outline-none text-gray-900 placeholder:text-gray-400 resize-none"
                     />
                   ) : (
-                    <p className="text-gray-800 font-medium">{userData.bio || 'No bio added yet'}</p>
+                    <p className="text-gray-800 font-medium">{userData.bio || t('profile.noBio', { defaultValue: 'No bio added yet' })}</p>
                   )}
                 </div>
               </div>
@@ -376,13 +378,13 @@ export default function Profile() {
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Shield className="w-5 h-5 text-terracotta-600" />
-                Account Security
+                {t('profile.password.title')}
               </h2>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-sand-50 rounded-lg border border-sand-300">
                   <div>
-                    <p className="font-semibold text-gray-900 mb-1">Password</p>
-                    <p className="text-sm text-gray-600 font-medium">Last changed recently</p>
+                    <p className="font-semibold text-gray-900 mb-1">{t('profile.password.title')}</p>
+                    <p className="text-sm text-gray-600 font-medium">{t('profile.password.lastChanged', { defaultValue: 'Last changed recently' })}</p>
                   </div>
                   <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
                     <DialogTrigger asChild>
@@ -392,27 +394,27 @@ export default function Profile() {
                         className="border-2 border-sand-300 text-gray-900 hover:bg-sand-100 font-semibold"
                       >
                         <Key className="mr-2 h-4 w-4" />
-                        Change
+                        {t('profile.password.change')}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
-                        <DialogTitle>Change Password</DialogTitle>
+                        <DialogTitle>{t('profile.password.title')}</DialogTitle>
                         <DialogDescription>
-                          Enter your current password and choose a new one
+                          {t('profile.password.description', { defaultValue: 'Enter your current password and choose a new one' })}
                         </DialogDescription>
                       </DialogHeader>
                       <form onSubmit={handlePasswordChange} className="space-y-4 py-4">
                         {/* Current Password */}
                         <div className="space-y-2">
-                          <Label htmlFor="current-password">Current Password</Label>
+                          <Label htmlFor="current-password">{t('profile.password.current')}</Label>
                           <div className="relative">
                             <Input
                               id="current-password"
                               type={showCurrentPassword ? "text" : "password"}
                               value={currentPassword}
                               onChange={(e) => setCurrentPassword(e.target.value)}
-                              placeholder="Enter current password"
+                              placeholder={t('profile.password.current')}
                               required
                             />
                             <Button
@@ -433,14 +435,14 @@ export default function Profile() {
 
                         {/* New Password */}
                         <div className="space-y-2">
-                          <Label htmlFor="new-password">New Password</Label>
+                          <Label htmlFor="new-password">{t('profile.password.new')}</Label>
                           <div className="relative">
                             <Input
                               id="new-password"
                               type={showNewPassword ? "text" : "password"}
                               value={newPassword}
                               onChange={(e) => setNewPassword(e.target.value)}
-                              placeholder="Enter new password (min 6 characters)"
+                              placeholder={t('profile.password.new')}
                               required
                               minLength={6}
                             />
@@ -462,14 +464,14 @@ export default function Profile() {
 
                         {/* Confirm New Password */}
                         <div className="space-y-2">
-                          <Label htmlFor="confirm-password">Confirm New Password</Label>
+                          <Label htmlFor="confirm-password">{t('profile.password.confirm')}</Label>
                           <div className="relative">
                             <Input
                               id="confirm-password"
                               type={showConfirmPassword ? "text" : "password"}
                               value={confirmPassword}
                               onChange={(e) => setConfirmPassword(e.target.value)}
-                              placeholder="Confirm new password"
+                              placeholder={t('profile.password.confirm')}
                               required
                             />
                             <Button
@@ -500,22 +502,22 @@ export default function Profile() {
                             }}
                             disabled={changingPassword}
                           >
-                            Cancel
+                            {t('profile.cancel')}
                           </Button>
                           <Button type="submit" disabled={changingPassword}>
                             {changingPassword ? (
                               <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Changing...
+                                {t('profile.password.changing', { defaultValue: 'Changing...' })}
                               </>
                             ) : (
-                              'Change Password'
+                              t('profile.password.change')
                             )}
-                          </Button>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
+                         </Button>
+                       </DialogFooter>
+                     </form>
+                   </DialogContent>
+                 </Dialog>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-sand-50 rounded-lg border border-sand-300">
@@ -544,7 +546,7 @@ export default function Profile() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4">
                   <Crown className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold mb-2">Become a Host</h3>
+                <h3 className="text-lg font-bold mb-2">{t('profile.becomeHost')}</h3>
                 <p className="text-white/90 text-sm mb-4 font-medium">
                   Share your desert camp with travelers and start earning
                 </p>
@@ -566,33 +568,33 @@ export default function Profile() {
                 <div className="w-12 h-12 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                   <Crown className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Host Dashboard</h3>
-                <p className="text-gray-700 text-sm font-medium">Manage your camp listings</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('host.dashboardTitle', { defaultValue: 'Host Dashboard' })}</h3>
+                <p className="text-gray-700 text-sm font-medium">{t('host.manageDesc')}</p>
               </Card>
             )}
 
             {/* Quick Stats */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Stats</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.statsTitle', { defaultValue: 'Account Stats' })}</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700 font-medium">Total Bookings</span>
+                  <span className="text-sm text-gray-700 font-medium">{t('profile.totalBookings', { defaultValue: 'Total Bookings' })}</span>
                   <span className="text-lg font-bold text-terracotta-600">0</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700 font-medium">Account Status</span>
-                  <span className="text-sm font-semibold text-green-600">Active</span>
+                  <span className="text-sm text-gray-700 font-medium">{t('profile.accountStatus', { defaultValue: 'Account Status' })}</span>
+                  <span className="text-sm font-semibold text-green-600">{t('profile.active', { defaultValue: 'Active' })}</span>
                 </div>
                 {userData.isHost && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700 font-medium">Listings</span>
+                    <span className="text-sm text-gray-700 font-medium">{t('profile.listings', { defaultValue: 'Listings' })}</span>
                     <span className="text-lg font-bold text-terracotta-600">0</span>
                   </div>
                 )}
               </div>
             </Card>
 
-            {/* Sign Out Card */}
+          {/* Sign Out Card */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
               <Button
                 onClick={handleSignOut}
@@ -600,7 +602,7 @@ export default function Profile() {
                 className="w-full h-12 border-2 border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 font-semibold"
               >
                 <LogOut className="w-5 h-5 mr-2" />
-                Sign Out
+                {t('profile.signOut')}
               </Button>
             </Card>
           </div>

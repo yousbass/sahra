@@ -345,7 +345,7 @@ export default function CampDetails() {
                     </p>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">
-                    {t('campDetails.fullDayHint', { defaultValue: t('reserve.completeTitle') })}
+                    {t('campDetails.fullDayHint')}
                   </p>
                 </div>
               </Card>
@@ -353,7 +353,7 @@ export default function CampDetails() {
 
             {/* Description */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Camp</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.about')}</h2>
               <p className="text-gray-700 leading-relaxed font-medium">{camp.description}</p>
             </Card>
 
@@ -361,7 +361,7 @@ export default function CampDetails() {
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
               <div className="flex items-center gap-3 mb-4">
                 {policyDetails.icon}
-                <h2 className="text-2xl font-bold text-gray-900">Cancellation Policy</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('campDetails.cancellationPolicy')}</h2>
               </div>
               
               <div className="mb-4">
@@ -374,12 +374,12 @@ export default function CampDetails() {
                       : 'bg-orange-100 text-orange-800 border-orange-300'
                   } border-2`}
                 >
-                  {policyDetails.name} Cancellation
+                  {t(`campDetails.policy.${policyDetails.name.toLowerCase()}.name`)} {t('campDetails.cancellationPolicy')}
                 </Badge>
               </div>
 
               <p className="text-gray-700 font-medium mb-4">
-                {policyDetails.description}
+                {t(`campDetails.policy.${policyDetails.name.toLowerCase()}.description`)}
               </p>
 
               <div className="space-y-3">
@@ -398,24 +398,21 @@ export default function CampDetails() {
                       <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                     )}
                     <div>
-                      <p className="font-semibold text-gray-900">{detail.description}</p>
-                      <p className="text-sm text-gray-700">Cancel {detail.time} check-in</p>
-                      {detail.refund === '100%' && (
-                        <p className="text-xs text-gray-600 mt-1">Service fee is non-refundable</p>
-                      )}
+                      <p className="font-semibold text-gray-900">{t(`campDetails.policy.${policyDetails.name.toLowerCase()}.detail${index + 1}`)}</p>
+                      <p className="text-sm text-gray-700">{t(`campDetails.policy.${policyDetails.name.toLowerCase()}.detail${index + 1}Note`)}</p>
                     </div>
                   </div>
                 ))}
               </div>
               
               <p className="text-sm text-gray-600 font-medium pt-4 border-t border-sand-200 mt-4">
-                💡 Refunds are processed within 5-10 business days to your original payment method.
+                {t('campDetails.refundNote')}
               </p>
             </Card>
 
             {/* Amenities */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Facilities & Amenities</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.amenities')}</h2>
               {camp.amenities && camp.amenities.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {camp.amenities.map((amenity, index) => (
@@ -431,7 +428,7 @@ export default function CampDetails() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-700 font-medium">No amenities listed for this camp.</p>
+                <p className="text-gray-700 font-medium">{t('campDetails.notFound')}</p>
               )}
             </Card>
 
@@ -439,33 +436,33 @@ export default function CampDetails() {
             {tentDetails.length > 0 && (
               <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">Tent Details</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">{t('campDetails.tentDetails', { defaultValue: 'Tent Details' })}</h2>
                   <Badge className="bg-terracotta-100 text-terracotta-900 border border-terracotta-200">
-                    {tentDetails.length} tent{tentDetails.length !== 1 ? 's' : ''}
+                    {t('campDetails.tentsLabel', { count: tentDetails.length, defaultValue: `${tentDetails.length} tents` })}
                   </Badge>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   {tentDetails.map((tent: any, idx: number) => {
                     const features: string[] = [];
-                    if (tent.furnished) features.push('Furnished');
-                    if (tent.carpeted) features.push('Carpeted');
-                    if (tent.tv) features.push('TV');
-                    if (tent.sofas) features.push('Sofas');
-                    if (tent.teaSets) features.push('Tea Sets');
-                    if (tent.pingPongTable) features.push('Ping Pong');
-                    if (tent.foosballTable) features.push('Foosball');
-                    if (tent.airHockeyTable) features.push('Air Hockey');
-                    if (tent.volleyballField) features.push('Volleyball');
-                    if (tent.footballField) features.push('Football');
+                    if (tent.furnished) features.push(t('campDetails.tentFeatures.furnished', { defaultValue: 'Furnished' }));
+                    if (tent.carpeted) features.push(t('campDetails.tentFeatures.carpeted', { defaultValue: 'Carpeted' }));
+                    if (tent.tv) features.push(t('campDetails.tentFeatures.tv', { defaultValue: 'TV' }));
+                    if (tent.sofas) features.push(t('campDetails.tentFeatures.sofas', { defaultValue: 'Sofas' }));
+                    if (tent.teaSets) features.push(t('campDetails.tentFeatures.teaSets', { defaultValue: 'Tea Sets' }));
+                    if (tent.pingPongTable) features.push(t('campDetails.tentFeatures.pingPong', { defaultValue: 'Ping Pong' }));
+                    if (tent.foosballTable) features.push(t('campDetails.tentFeatures.foosball', { defaultValue: 'Foosball' }));
+                    if (tent.airHockeyTable) features.push(t('campDetails.tentFeatures.airHockey', { defaultValue: 'Air Hockey' }));
+                    if (tent.volleyballField) features.push(t('campDetails.tentFeatures.volleyball', { defaultValue: 'Volleyball' }));
+                    if (tent.footballField) features.push(t('campDetails.tentFeatures.football', { defaultValue: 'Football' }));
 
                     const typeLabel =
                       tent.type === 'large'
-                        ? 'Large Tent'
+                        ? t('campDetails.tentTypes.large', { defaultValue: 'Large Tent' })
                         : tent.type === 'small'
-                        ? 'Small Tent'
+                        ? t('campDetails.tentTypes.small', { defaultValue: 'Small Tent' })
                         : tent.type === 'entertainment'
-                        ? 'Entertainment Tent'
-                        : 'Tent';
+                        ? t('campDetails.tentTypes.entertainment', { defaultValue: 'Entertainment Tent' })
+                        : t('campDetails.tentTypes.generic', { defaultValue: 'Tent' });
 
                     return (
                       <div
@@ -477,7 +474,7 @@ export default function CampDetails() {
                             {typeLabel} #{idx + 1}
                           </p>
                           <Badge className="bg-sand-100 text-gray-900 border border-sand-300 text-xs font-semibold">
-                            {features.length > 0 ? `${features.length} features` : 'No features set'}
+                            {features.length > 0 ? t('campDetails.tentFeatures.count', { count: features.length, defaultValue: `${features.length} features` }) : t('campDetails.tentFeatures.none', { defaultValue: 'No features set' })}
                           </Badge>
                         </div>
                         {features.length > 0 && (
@@ -499,7 +496,7 @@ export default function CampDetails() {
                           </p>
                         )}
                         {!tent.description && features.length === 0 && (
-                          <p className="text-xs text-gray-500">No details provided for this tent.</p>
+                          <p className="text-xs text-gray-500">{t('campDetails.tentFeatures.noDetails', { defaultValue: 'No details provided for this tent.' })}</p>
                         )}
                       </div>
                     );
@@ -511,13 +508,13 @@ export default function CampDetails() {
             {/* Reviews Section */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Guest Reviews</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('campDetails.reviews')}</h2>
                 {user && canReview && (
                   <Button
                     onClick={() => setShowReviewForm(true)}
                     className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
                   >
-                    Write a Review
+                    {t('campDetails.writeReview')}
                   </Button>
                 )}
                 {!user && (
@@ -526,7 +523,7 @@ export default function CampDetails() {
                     variant="outline"
                     className="border-terracotta-500 text-terracotta-600 hover:bg-terracotta-50"
                   >
-                    Sign in to Review
+                    {t('campDetails.signInReview')}
                   </Button>
                 )}
               </div>
@@ -551,14 +548,14 @@ export default function CampDetails() {
                   <span className="text-4xl font-bold text-terracotta-600">{camp.price}</span>
                   <span className="text-lg text-gray-700 font-medium">BD</span>
                 </div>
-                <p className="text-sm text-gray-600 font-medium">per day</p>
+                <p className="text-sm text-gray-600 font-medium">{t('campDetails.pricePerDay')}</p>
               </div>
 
               {camp.maxGuests && (
                 <div className="mb-4 p-3 bg-sand-50 rounded-lg border border-sand-300">
                   <p className="text-sm text-gray-900 font-semibold">
                     <Users className="w-4 h-4 inline mr-1" />
-                    Accommodates up to {camp.maxGuests} guests
+                    {t('campDetails.accommodates', { count: camp.maxGuests })}
                   </p>
                 </div>
               )}
@@ -568,7 +565,7 @@ export default function CampDetails() {
                 disabled={!isActive}
                 className="w-full h-14 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg mb-4"
               >
-                {isActive ? 'Reserve Now' : 'Pending Approval'}
+                {isActive ? t('campDetails.reserveNow') : t('campDetails.pendingApproval')}
               </Button>
 
               <div className="space-y-3 pt-4 border-t border-sand-300">
@@ -600,7 +597,7 @@ export default function CampDetails() {
       <Dialog open={showReviewForm} onOpenChange={setShowReviewForm}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Write a Review</DialogTitle>
+          <DialogTitle>{t('campDetails.reviewDialog')}</DialogTitle>
           </DialogHeader>
           <ReviewForm
             campId={camp.id}

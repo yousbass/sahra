@@ -7,10 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Mail, Lock, LogIn, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function SignIn() {
   const navigate = useNavigate();
   const { signIn, signInWithGoogle, resetPassword } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export default function SignIn() {
 
   const handleResetPassword = async () => {
     if (!email) {
-      toast.error('Enter your email first, then click forgot password.');
+      toast.error(t('auth.enterEmailFirst'));
       return;
     }
 
@@ -61,22 +63,22 @@ export default function SignIn() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🏜️</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-700 font-medium">Sign in to continue your desert adventure</p>
-        </div>
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4">🏜️</div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.welcomeBack')}</h1>
+            <p className="text-gray-700 font-medium">{t('auth.signInSubtitle')}</p>
+          </div>
 
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 shadow-xl">
           <form onSubmit={handleEmailSignIn} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-900 font-semibold">Email</Label>
+              <Label htmlFor="email" className="text-gray-900 font-semibold">{t('auth.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t('auth.email')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -88,14 +90,14 @@ export default function SignIn() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-gray-900 font-semibold">Password</Label>
+                <Label htmlFor="password" className="text-gray-900 font-semibold">{t('auth.password')}</Label>
                 <button
                   type="button"
                   onClick={handleResetPassword}
                   disabled={resetting || loading}
                   className="text-sm text-terracotta-600 hover:text-terracotta-700 font-semibold disabled:opacity-50"
                 >
-                  {resetting ? 'Sending...' : 'Forgot password?'}
+                  {resetting ? t('auth.sending') : t('auth.forgot')}
                 </button>
               </div>
               <div className="relative">
@@ -121,12 +123,12 @@ export default function SignIn() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Signing in...
+                  {t('auth.signingIn')}
                 </>
               ) : (
                 <>
                   <LogIn className="w-5 h-5 mr-2" />
-                  Sign In
+                  {t('auth.signIn')}
                 </>
               )}
             </Button>
@@ -136,8 +138,8 @@ export default function SignIn() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-sand-300"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-700 font-medium">Or continue with</span>
+              <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-gray-700 font-medium">{t('auth.orContinue')}</span>
             </div>
           </div>
 
@@ -170,16 +172,16 @@ export default function SignIn() {
                 />
               </svg>
             )}
-            Continue with Google
+            {t('auth.google')}
           </Button>
 
           <div className="mt-6 text-center text-sm text-gray-700 font-medium">
-            Don't have an account?{' '}
+            {t('auth.noAccount')}{' '}
             <button
               onClick={() => navigate('/signup')}
               className="text-terracotta-600 hover:text-terracotta-700 font-semibold"
             >
-              Sign Up
+              {t('auth.signUp')}
             </button>
           </div>
         </Card>

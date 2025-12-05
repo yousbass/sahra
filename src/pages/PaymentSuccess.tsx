@@ -14,10 +14,12 @@ import type { Booking } from '@/lib/firestore';
 import { format } from 'date-fns';
 import { config } from '@/lib/config';
 import { updateBooking } from '@/lib/firestore';
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const bookingId = searchParams.get('bookingId');
   const authStatus = (searchParams.get('auth_status') || '').toUpperCase();
   const paymentStatusParam = (searchParams.get('status') || '').toUpperCase();
@@ -29,21 +31,21 @@ export default function PaymentSuccess() {
   const isPaymentStatusFailure = ['FAILED', 'DECLINED', 'CANCELLED', 'VOID', 'REVERSED', 'REFUNDED'].includes(paymentStatusParam);
 
   const authMap: Record<string, { label: string; isSuccess: boolean; message: string }> = {
-    Y: { label: 'Authentication Successful', isSuccess: true, message: 'Payment authenticated successfully.' },
-    N: { label: 'Not Authenticated', isSuccess: false, message: 'Authentication failed or account not verified.' },
-    U: { label: 'Authentication Unavailable', isSuccess: false, message: 'Authentication unavailable, please try again.' },
-    R: { label: 'Authentication Rejected', isSuccess: false, message: 'Authentication rejected. Please use a different method.' },
-    E: { label: 'Authentication Server Error', isSuccess: false, message: 'Authentication server error. Please retry.' },
-    AI: { label: 'Policy Error', isSuccess: false, message: 'Payment blocked by gateway policy.' },
-    C: { label: 'Authentication Cancelled', isSuccess: false, message: 'Authentication cancelled by user.' },
-    UNKNOWN: { label: 'Payment Status Unknown', isSuccess: false, message: 'We could not verify the payment status. Please try again or contact support.' },
+    Y: { label: t('payment.auth.Y'), isSuccess: true, message: t('payment.messages.Y') },
+    N: { label: t('payment.auth.N'), isSuccess: false, message: t('payment.messages.N') },
+    U: { label: t('payment.auth.U'), isSuccess: false, message: t('payment.messages.U') },
+    R: { label: t('payment.auth.R'), isSuccess: false, message: t('payment.messages.R') },
+    E: { label: t('payment.auth.E'), isSuccess: false, message: t('payment.messages.E') },
+    AI: { label: t('payment.auth.AI'), isSuccess: false, message: t('payment.messages.AI') },
+    C: { label: t('payment.auth.C'), isSuccess: false, message: t('payment.messages.C') },
+    UNKNOWN: { label: t('payment.auth.UNKNOWN'), isSuccess: false, message: t('payment.messages.UNKNOWN') },
   };
 
   const authInfo =
     authMap[authCode] ||
     (isPaymentStatusSuccess
-      ? { label: paymentStatusParam || 'CAPTURED', isSuccess: true, message: 'Payment completed.' }
-      : { label: authCode, isSuccess: false, message: 'Payment authentication failed.' });
+      ? { label: paymentStatusParam || 'CAPTURED', isSuccess: true, message: t('payment.messages.completed') }
+      : { label: authCode, isSuccess: false, message: t('payment.messages.failed') });
 
   // If Tap redirected here with a failure status, send the user to the failure page with context
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function PaymentSuccess() {
       const params = new URLSearchParams();
       if (bookingId) params.set('bookingId', bookingId);
       if (paymentStatusParam) params.set('status', paymentStatusParam);
-      params.set('error', authInfo.message || 'Payment failed. Please try again.');
+      params.set('error', authInfo.message || t('payment.messages.failed'));
       navigate(`/payment-failed?${params.toString()}`, { replace: true });
     }
   }, [bookingId, authInfo.isSuccess, authInfo.message, isPaymentStatusFailure, paymentStatusParam, navigate, isPaymentStatusSuccess]);
@@ -132,12 +134,12 @@ export default function PaymentSuccess() {
           
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              {authInfo.isSuccess ? 'Payment Successful!' : 'Payment Pending Review'}
+              {authInfo.isSuccess ? t('payment.successTitle') : t('payment.pendingTitle')}
             </h1>
             <p className="text-lg text-gray-700">
               {authInfo.isSuccess
-                ? 'Your booking has been confirmed. We\'ve sent a confirmation email with all the details.'
-                : 'We could not confirm payment. Please check your payment method or try again.'}
+                ? t('payment.successDesc')
+                : t('payment.pendingDesc')}
             </p>
           </div>
 
@@ -172,7 +174,7 @@ export default function PaymentSuccess() {
                   <div className="flex items-start gap-3">
                     <Calendar className="h-5 w-5 text-terracotta-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-600 font-medium">Check-in</p>
+                      <p className="text-sm text-gray-600 font-medium">{t('payment.checkIn')}</p>
                       <p className="font-semibold text-gray-900">
                         {format(new Date(booking.checkInDate), 'MMM dd, yyyy')}
                       </p>
@@ -183,7 +185,7 @@ export default function PaymentSuccess() {
                   <div className="flex items-start gap-3">
                     <Calendar className="h-5 w-5 text-terracotta-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-600 font-medium">Check-out</p>
+                      <p className="text-sm text-gray-600 font-medium">{t('payment.checkOut')}</p>
                       <p className="font-semibold text-gray-900">
                         {format(new Date(booking.checkOutDate), 'MMM dd, yyyy')}
                       </p>
@@ -196,15 +198,15 @@ export default function PaymentSuccess() {
                   <div className="flex items-start gap-3">
                     <Users className="h-5 w-5 text-terracotta-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-600 font-medium">Guests</p>
-                      <p className="font-semibold text-gray-900">{booking.guests} guest{booking.guests !== 1 ? 's' : ''}</p>
+                      <p className="text-sm text-gray-600 font-medium">{t('payment.guests')}</p>
+                      <p className="font-semibold text-gray-900">{t('campDetails.accommodates', { count: booking.guests })}</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <CreditCard className="h-5 w-5 text-terracotta-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-600 font-medium">Total Paid</p>
+                      <p className="text-sm text-gray-600 font-medium">{t('payment.totalPaid')}</p>
                       <p className="font-bold text-xl text-terracotta-600">
                         {booking.totalPrice?.toFixed(3)} BD
                       </p>
@@ -215,8 +217,8 @@ export default function PaymentSuccess() {
 
               <div className="pt-4 border-t-2 border-sand-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 font-medium">Booking ID</span>
-                  <span className="font-mono text-sm font-semibold text-gray-900">{booking.id}</span>
+                  <span className="text-sm text-gray-600 font-medium">{t('payment.bookingId')}</span>
+                <span className="font-mono text-sm font-semibold text-gray-900">{booking.id}</span>
                 </div>
               </div>
             </div>
@@ -228,7 +230,7 @@ export default function PaymentSuccess() {
               className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
               size="lg"
             >
-              View My Bookings
+              {t('payment.viewBookings')}
             </Button>
             <Button 
               onClick={() => navigate('/')} 
@@ -236,12 +238,12 @@ export default function PaymentSuccess() {
               className="border-2 border-sand-300 hover:bg-sand-50 font-semibold"
               size="lg"
             >
-              Back to Home
+              {t('payment.backHome')}
             </Button>
           </div>
 
           <p className="text-sm text-gray-600 pt-4">
-            Questions? Contact us at <a href={`mailto:${config.supportEmail}`} className="text-terracotta-600 hover:underline font-semibold">{config.supportEmail}</a>
+            {t('payment.contact')} <a href={`mailto:${config.supportEmail}`} className="text-terracotta-600 hover:underline font-semibold">{config.supportEmail}</a>
           </p>
         </Card>
       </div>

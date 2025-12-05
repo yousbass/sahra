@@ -6,10 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Mail, Lock, UserPlus, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
   const navigate = useNavigate();
   const { signUp, signInWithGoogle } = useAuth();
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,20 +48,20 @@ export default function SignUp() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🏜️</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Sahra</h1>
-          <p className="text-gray-700 font-medium">Start your desert camping adventure today</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('authSignUp.join')}</h1>
+          <p className="text-gray-700 font-medium">{t('authSignUp.subtitle')}</p>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 shadow-xl">
           <form onSubmit={handleEmailSignUp} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-900 font-semibold">Full Name</Label>
+              <Label htmlFor="name" className="text-gray-900 font-semibold">{t('authSignUp.fullName')}</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
                 <Input
                   id="name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder={t('authSignUp.fullName')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -70,13 +72,13 @@ export default function SignUp() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-900 font-semibold">Email</Label>
+              <Label htmlFor="email" className="text-gray-900 font-semibold">{t('authSignUp.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t('authSignUp.email')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -87,7 +89,7 @@ export default function SignUp() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-900 font-semibold">Password</Label>
+              <Label htmlFor="password" className="text-gray-900 font-semibold">{t('authSignUp.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
                 <Input
@@ -102,7 +104,7 @@ export default function SignUp() {
                   className="pl-11 border-sand-300 focus:border-terracotta-500 text-gray-900"
                 />
               </div>
-              <p className="text-xs text-gray-600 font-medium">Must be at least 6 characters</p>
+              <p className="text-xs text-gray-600 font-medium">{t('authSignUp.passwordHint')}</p>
             </div>
 
             <Button
@@ -113,12 +115,12 @@ export default function SignUp() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Creating account...
+                  {t('authSignUp.creating')}
                 </>
               ) : (
                 <>
                   <UserPlus className="w-5 h-5 mr-2" />
-                  Create Account
+                  {t('authSignUp.createAccount')}
                 </>
               )}
             </Button>
@@ -129,7 +131,7 @@ export default function SignUp() {
               <div className="w-full border-t border-sand-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-700 font-medium">Or continue with</span>
+              <span className="px-4 bg-white text-gray-700 font-medium">{t('authSignUp.orContinue')}</span>
             </div>
           </div>
 
@@ -162,16 +164,16 @@ export default function SignUp() {
                 />
               </svg>
             )}
-            Continue with Google
+            {t('authSignUp.google')}
           </Button>
 
           <div className="mt-6 text-center text-sm text-gray-700 font-medium">
-            Already have an account?{' '}
+            {t('authSignUp.haveAccount')}{' '}
             <button
               onClick={() => navigate('/signin')}
               className="text-terracotta-600 hover:text-terracotta-700 font-semibold"
             >
-              Sign In
+              {t('authSignUp.signIn')}
             </button>
           </div>
         </Card>
