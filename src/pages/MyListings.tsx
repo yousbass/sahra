@@ -7,10 +7,12 @@ import { ArrowLeft, Plus, MapPin, Edit, Trash2, Loader2, Users, Tent, Eye, Calen
 import { useAuth } from '@/hooks/useAuth';
 import { getCampsByHost, deleteCamp, Camp } from '@/lib/firestore';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function MyListings() {
   const navigate = useNavigate();
   const { user, userData, loading } = useAuth();
+  const { t } = useTranslation();
   const [listings, setListings] = useState<Camp[]>([]);
   const [loadingListings, setLoadingListings] = useState(true);
 
@@ -24,10 +26,10 @@ export default function MyListings() {
     if (loading) return;
 
     if (!user || !userData) {
-      toast.error('Please sign in to view your listings');
+      toast.error(t('hostListings.signInRequired'));
       navigate('/signin');
     } else if (!userData.isHost) {
-      toast.error('You need to become a host first');
+      toast.error(t('hostListings.hostRequired'));
       navigate('/profile');
     } else {
       loadListings();
@@ -51,14 +53,14 @@ export default function MyListings() {
     } catch (error) {
       console.error('❌ Error loading listings:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Failed to load your listings: ${errorMessage}`);
+      toast.error(t('hostListings.loadFail', { error: errorMessage }));
     } finally {
       setLoadingListings(false);
     }
   };
 
   const handleDelete = async (campId: string, campTitle: string) => {
-    if (!confirm(`Are you sure you want to delete "${campTitle}"?`)) return;
+    if (!confirm(t('hostListings.deleteConfirm', { title: campTitle }))) return;
 
     try {
       console.log('=== DELETING LISTING ===');
@@ -68,11 +70,11 @@ export default function MyListings() {
       console.log('✅ Listing deleted successfully');
       
       await loadListings();
-      toast.success('Listing deleted successfully');
+      toast.success(t('hostListings.deleteSuccess'));
     } catch (error) {
       console.error('❌ Error deleting listing:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Failed to delete listing: ${errorMessage}`);
+      toast.error(t('hostListings.deleteFail', { error: errorMessage }));
     }
   };
 
@@ -100,7 +102,7 @@ export default function MyListings() {
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">Loading your listings...</p>
+          <p className="text-gray-700 font-medium">{t('hostListings.loading')}</p>
         </div>
       </div>
     );
@@ -120,14 +122,14 @@ export default function MyListings() {
           className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
+          {t('hostListings.backToDashboard')}
         </Button>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">My Listings</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{t('hostListings.title')}</h1>
             <p className="text-gray-700 font-medium">
-              {listings.length} listing{listings.length !== 1 ? 's' : ''}
+              {t('hostListings.count', { count: listings.length })}
             </p>
           </div>
           <div className="flex gap-3">
@@ -137,14 +139,14 @@ export default function MyListings() {
               className="border-2 border-terracotta-300 text-terracotta-700 hover:bg-terracotta-50 hover:border-terracotta-400 font-semibold"
             >
               <Calendar className="w-4 h-4 mr-2" />
-              Manage Availability
+              {t('hostListings.buttons.manageAvailability')}
             </Button>
             <Button
               onClick={() => navigate('/host/create')}
               className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
-              New Listing
+              {t('hostListings.buttons.newListing', { defaultValue: 'New Listing' })}
             </Button>
           </div>
         </div>
@@ -155,13 +157,13 @@ export default function MyListings() {
               <span className="text-4xl">🏕️</span>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Listings Yet</h3>
-            <p className="text-gray-700 font-medium mb-6">Create your first camp listing to start hosting</p>
+            <p className="text-gray-700 font-medium mb-6">{t('hostListings.emptyDesc')}</p>
             <Button
               onClick={() => navigate('/host/create')}
               className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create First Listing
+              {t('hostListings.createFirst')}
             </Button>
           </Card>
         ) : (
@@ -199,28 +201,28 @@ export default function MyListings() {
                     <div className="flex flex-wrap gap-2 mb-3">
                       {listing.status && (
                         <Badge
-                          variant="secondary"
-                          className={`text-xs font-semibold ${
-                            listing.status === 'active'
-                              ? 'bg-green-100 text-green-800 border border-green-300'
-                              : 'bg-amber-100 text-amber-800 border border-amber-300'
-                          }`}
-                        >
-                          {listing.status === 'active' ? 'Active' : 'Pending Approval'}
-                        </Badge>
-                      )}
-                      {listing.maxGuests && (
-                        <Badge variant="secondary" className="bg-sand-100 text-gray-900 border border-sand-300 font-semibold">
-                          <Users className="w-3 h-3 mr-1" />
-                          Up to {listing.maxGuests}
-                        </Badge>
-                      )}
-                      {totalTents > 0 && (
-                        <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 font-semibold">
-                          <Tent className="w-3 h-3 mr-1" />
-                          {totalTents} Tents
-                        </Badge>
-                      )}
+                      variant="secondary"
+                      className={`text-xs font-semibold ${
+                        listing.status === 'active'
+                          ? 'bg-green-100 text-green-800 border border-green-300'
+                          : 'bg-amber-100 text-amber-800 border border-amber-300'
+                      }`}
+                    >
+                          {listing.status === 'active' ? t('hostListings.status.active') : t('hostListings.status.pending')}
+                    </Badge>
+                  )}
+                  {listing.maxGuests && (
+                    <Badge variant="secondary" className="bg-sand-100 text-gray-900 border border-sand-300 font-semibold">
+                      <Users className="w-3 h-3 mr-1" />
+                          {t('hostListings.guestsLabel', { count: listing.maxGuests })}
+                    </Badge>
+                  )}
+                  {totalTents > 0 && (
+                    <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 font-semibold">
+                      <Tent className="w-3 h-3 mr-1" />
+                          {t('hostListings.tentsLabel', { count: totalTents })}
+                    </Badge>
+                  )}
                     </div>
 
                     <div className="flex items-center justify-between mb-3">
@@ -228,9 +230,10 @@ export default function MyListings() {
                         <p className="text-2xl font-bold text-terracotta-600">
                           {listing.price} <span className="text-base text-gray-700">BD</span>
                         </p>
-                        <p className="text-sm text-gray-600 font-medium">per day</p>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-600 font-medium">per day</p>
+                        <p className="text-sm text-gray-600 font-medium">{t('home.perDay')}</p>
+                  </div>
+                </div>
 
                     {/* Amenities Display */}
                     {listing.amenities && listing.amenities.length > 0 && (
@@ -245,14 +248,14 @@ export default function MyListings() {
                               {amenity}
                             </Badge>
                           ))}
-                          {listing.amenities.length > 3 && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 text-xs font-semibold"
-                            >
-                              +{listing.amenities.length - 3} more
-                            </Badge>
-                          )}
+                      {listing.amenities.length > 3 && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 text-xs font-semibold"
+                        >
+                              +{listing.amenities.length - 3} {t('hostListings.more', { defaultValue: 'more' })}
+                        </Badge>
+                      )}
                         </div>
                       </div>
                     )}
@@ -264,7 +267,7 @@ export default function MyListings() {
                         className="flex-1 border-2 border-sand-300 text-gray-900 hover:bg-sand-50 hover:border-sand-400 font-semibold"
                       >
                         <Eye className="w-4 h-4 mr-1" />
-                        View
+                        {t('hostListings.buttons.view')}
                       </Button>
                       <Button
                         onClick={() => handleEditCamp(listing.id)}
@@ -272,7 +275,7 @@ export default function MyListings() {
                         className="flex-1 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 font-semibold"
                       >
                         <Edit className="w-4 h-4 mr-1" />
-                        Edit
+                        {t('hostListings.buttons.edit')}
                       </Button>
                       <Button
                         onClick={() => handleDelete(listing.id, listing.title)}

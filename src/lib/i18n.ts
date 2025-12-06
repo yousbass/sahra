@@ -441,6 +441,69 @@ const resources = {
           photos: 'Photos'
         }
       },
+      hostListings: {
+        backToDashboard: 'Back to Dashboard',
+        title: 'My Listings',
+        count: '{{count}} listing',
+        count_plural: '{{count}} listings',
+        manageAvailability: 'Manage Availability',
+        newListing: 'New Listing',
+        emptyTitle: 'No Listings Yet',
+        emptyDesc: 'Create your first camp listing to start hosting',
+        createFirst: 'Create First Listing',
+        loading: 'Loading your listings...',
+        signInRequired: 'Please sign in to view your listings',
+        hostRequired: 'You need to become a host first',
+        deleteConfirm: 'Are you sure you want to delete "{{title}}"?',
+        deleteSuccess: 'Listing deleted successfully',
+        deleteFail: 'Failed to delete listing: {{error}}',
+        loadFail: 'Failed to load your listings: {{error}}',
+        tentsLabel: '{{count}} tents',
+        guestsLabel: 'Up to {{count}} guests',
+        status: {
+          active: 'Active',
+          pending: 'Pending',
+          inactive: 'Inactive'
+        },
+        buttons: {
+          edit: 'Edit',
+          delete: 'Delete',
+          view: 'View',
+          manageAvailability: 'Manage Availability',
+          newListing: 'New Listing'
+        },
+        more: 'more'
+      },
+      editListing: {
+        title: 'Edit Listing',
+        back: 'Back',
+        subtitle: 'Update your camp information',
+        loading: 'Loading camp data...',
+        notFound: 'Camp not found',
+        noPermission: 'You do not have permission to edit this listing',
+        invalidId: 'Invalid camp ID',
+        signInRequired: 'Please sign in to edit listings',
+        hostRequired: 'You need to be a host to edit listings',
+        saveChanges: 'Save Changes',
+        saving: 'Saving...',
+        success: 'Listing updated successfully!',
+        updateFail: 'Failed to update listing: {{error}}',
+        deleteImageFail: 'Failed to delete image: {{error}}',
+        cancelConfirm: 'Are you sure you want to cancel? Any unsaved changes will be lost.',
+        map: {
+          unableLocation: 'Unable to get your location. Please use Google Maps URL instead.',
+          geoUnsupported: 'Geolocation is not supported by your browser',
+          parseError: 'Could not extract coordinates from URL. Please check the format.'
+        },
+        validations: {
+          locationRequired: 'Please select a location from the dropdown',
+          coordinatesRequired: 'Please set your location using "Use My Current Location" button or paste a Google Maps URL',
+          maxGuests: 'Please specify maximum number of guests',
+          tents: 'Please add at least one tent',
+          images: 'Please upload at least one image',
+          uploading: 'Please wait for all images to finish uploading'
+        }
+      },
       cancelSelector: {
         title: 'Cancellation Policy *',
         subtitle: 'Choose how flexible you want to be with cancellations',
@@ -459,6 +522,69 @@ const resources = {
           name: 'Strict',
           line1: '50% refund if cancelled 7+ days before check-in',
           line2: 'Guests get half their money back only if they cancel at least 7 days before check-in'
+        }
+      },
+      hostListings: {
+        backToDashboard: 'العودة للوحة التحكم',
+        title: 'قوائمي',
+        count: '{{count}} إعلان',
+        count_plural: '{{count}} إعلان',
+        manageAvailability: 'إدارة التوفر',
+        newListing: 'إعلان جديد',
+        emptyTitle: 'لا توجد إعلانات بعد',
+        emptyDesc: 'أنشئ أول إعلان لمخيمك لبدء الاستضافة',
+        createFirst: 'إنشاء أول إعلان',
+        loading: 'جارٍ تحميل إعلاناتك...',
+        signInRequired: 'يرجى تسجيل الدخول لعرض إعلاناتك',
+        hostRequired: 'يجب أن تصبح مضيفاً أولاً',
+        deleteConfirm: 'هل أنت متأكد أنك تريد حذف "{{title}}"؟',
+        deleteSuccess: 'تم حذف الإعلان بنجاح',
+        deleteFail: 'فشل حذف الإعلان: {{error}}',
+        loadFail: 'فشل تحميل الإعلانات: {{error}}',
+        tentsLabel: '{{count}} خيمة',
+        guestsLabel: 'حتى {{count}} ضيف',
+        status: {
+          active: 'نشط',
+          pending: 'قيد المراجعة',
+          inactive: 'غير نشط'
+        },
+        buttons: {
+          edit: 'تعديل',
+          delete: 'حذف',
+          view: 'عرض',
+          manageAvailability: 'إدارة التوفر',
+          newListing: 'إعلان جديد'
+        },
+        more: 'أخرى'
+      },
+      editListing: {
+        title: 'تعديل الإعلان',
+        back: 'رجوع',
+        subtitle: 'حدث معلومات مخيمك',
+        loading: 'جارٍ تحميل بيانات المخيم...',
+        notFound: 'المخيم غير موجود',
+        noPermission: 'ليست لديك صلاحية لتعديل هذا الإعلان',
+        invalidId: 'معرف المخيم غير صالح',
+        signInRequired: 'يرجى تسجيل الدخول لتعديل الإعلانات',
+        hostRequired: 'يجب أن تكون مضيفاً لتعديل الإعلانات',
+        saveChanges: 'حفظ التعديلات',
+        saving: 'جارٍ الحفظ...',
+        success: 'تم تحديث الإعلان بنجاح!',
+        updateFail: 'فشل تحديث الإعلان: {{error}}',
+        deleteImageFail: 'فشل حذف الصورة: {{error}}',
+        cancelConfirm: 'هل أنت متأكد من الإلغاء؟ أي تغييرات غير محفوظة ستضيع.',
+        map: {
+          unableLocation: 'تعذر الحصول على موقعك. يرجى استخدام رابط خرائط جوجل.',
+          geoUnsupported: 'المتصفح لا يدعم تحديد الموقع',
+          parseError: 'تعذر استخراج الإحداثيات من الرابط. يرجى التحقق من الصيغة.'
+        },
+        validations: {
+          locationRequired: 'يرجى اختيار موقع من القائمة',
+          coordinatesRequired: 'يرجى تحديد موقعك عبر زر موقعي الحالي أو لصق رابط خرائط جوجل',
+          maxGuests: 'يرجى تحديد الحد الأقصى للضيوف',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          images: 'يرجى رفع صورة واحدة على الأقل',
+          uploading: 'يرجى الانتظار حتى اكتمال رفع الصور'
         }
       },
       nav: {
