@@ -689,10 +689,10 @@ export default function CreateListing() {
                 <div className="space-y-3">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
                     <span className="text-2xl">📸</span>
-                    Camp Photos <span className="text-red-600">*</span>
+                    {t('createListing.photosTitle')} <span className="text-red-600">*</span>
                   </Label>
                   <p className="text-sm text-gray-600 font-medium">
-                    Upload high-quality photos of your camp. Images are automatically compressed and optimized.
+                    {t('createListing.photosHelper')}
                   </p>
 
                   <ImageUploadManager
@@ -705,10 +705,10 @@ export default function CreateListing() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-gray-900 font-semibold">Camp Description</Label>
+                  <Label htmlFor="description" className="text-gray-900 font-semibold">{t('createListing.description')}</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe your camp, its unique features, atmosphere, and what makes it special..."
+                    placeholder={t('createListing.descriptionPlaceholder')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
@@ -732,7 +732,7 @@ export default function CreateListing() {
                   <Input
                     id="maxGuests"
                     type="number"
-                    placeholder="e.g., 20"
+                    placeholder={t('createListing.maxGuestsPlaceholder')}
                     value={maxGuests}
                     onChange={(e) => setMaxGuests(e.target.value)}
                     required
@@ -749,7 +749,7 @@ export default function CreateListing() {
                   <Input
                     id="campArea"
                     type="number"
-                    placeholder={t('createListing.campArea')}
+                    placeholder={t('createListing.campAreaPlaceholder')}
                     value={campArea}
                     onChange={(e) => setCampArea(e.target.value)}
                     min="0"
@@ -954,7 +954,7 @@ export default function CreateListing() {
                           }
                         >
                           {isSelected && <Check className="w-3 h-3 mr-1" />}
-                          {amenity}
+                          {t(`createListing.amenityItems.${amenity}`, { defaultValue: amenity })}
                         </Button>
                       );
                     })}

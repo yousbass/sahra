@@ -294,7 +294,7 @@ const resources = {
         basicInfo: 'Basic Information',
         locationPricing: 'Location & Pricing',
         capacityTents: 'Camp Capacity & Tents',
-       amenitiesSection: 'Amenities',
+        amenitiesSection: 'Amenities',
         amenitiesHelper: 'Select all facilities and amenities available at your camp',
         amenityCategories: {
           essential: '🏕️ Essential Facilities',
@@ -305,9 +305,42 @@ const resources = {
           other: '📌 Other'
         },
         selectedAmenities: 'Selected Amenities ({{count}}):',
+        amenityItems: {
+          Restrooms: 'Restrooms',
+          Kitchen: 'Kitchen',
+          Electricity: 'Electricity',
+          Lighting: 'Lighting',
+          'Water Supply': 'Water Supply',
+          'Fire Pit': 'Fire Pit',
+          'BBQ Grill': 'BBQ Grill',
+          'Cooking Equipment': 'Cooking Equipment',
+          'Dining Area': 'Dining Area',
+          'Sound System': 'Sound System',
+          'TV Available': 'TV Available',
+          'Volleyball Court': 'Volleyball Court',
+          'Soccer Court': 'Soccer Court',
+          'Bouncy Castle': 'Bouncy Castle',
+          'Furnished Tents': 'Furnished Tents',
+          'Carpeted Tents': 'Carpeted Tents',
+          'Sofas & Seating': 'Sofas & Seating',
+          'Tea Sets': 'Tea Sets',
+          'Air Conditioning': 'Air Conditioning',
+          'Dune Buggies': 'Dune Buggies',
+          'Desert Tours': 'Desert Tours',
+          'Camel Rides': 'Camel Rides',
+          'Stargazing Area': 'Stargazing Area',
+          Biking: 'Biking',
+          Parking: 'Parking',
+          'Pet Friendly': 'Pet Friendly',
+          'Family Friendly': 'Family Friendly',
+          'Security/Guards': 'Security/Guards',
+          'Food Truck Access': 'Food Truck Access'
+        },
         featuresRules: 'Special Features & Rules',
         cancellationTimes: 'Cancellation & Times',
         imageGallery: 'Image Gallery',
+        photosTitle: 'Camp Photos',
+        photosHelper: 'Upload high-quality photos of your camp. Images are automatically compressed and optimized.',
         campName: 'Camp Name',
         campLocation: 'Camp Location',
         selectLocation: 'Select camp location...',
@@ -317,14 +350,20 @@ const resources = {
         optional: 'optional',
         gettingLocation: 'Getting location...',
         clear: 'Clear',
+        or: 'Or',
         latitude: 'Latitude',
         longitude: 'Longitude',
         price: 'Price (BD per day)',
+        pricePlaceholder: 'e.g., 25',
         description: 'Description',
+        descriptionPlaceholder: 'Describe your camp, its unique features, atmosphere, and what makes it special...',
         checkIn: 'Check-in Time',
         checkOut: 'Check-out Time',
+        nextDay: 'next day',
         maxGuests: 'Max Guests',
+        maxGuestsPlaceholder: 'e.g., 20',
         campArea: 'Camp Area (sqm)',
+        campAreaPlaceholder: 'e.g., 500',
         amenities: 'Amenities',
         specialFeatures: 'Special Features',
         rules: 'House Rules',
@@ -400,6 +439,26 @@ const resources = {
         sections: {
           details: 'Camp Details',
           photos: 'Photos'
+        }
+      },
+      cancelSelector: {
+        title: 'Cancellation Policy *',
+        subtitle: 'Choose how flexible you want to be with cancellations',
+        mostPopular: 'Most Popular',
+        flexible: {
+          name: 'Flexible',
+          line1: 'Full refund if cancelled 24+ hours before check-in',
+          line2: 'Guests get their money back if they cancel at least 24 hours before check-in'
+        },
+        moderate: {
+          name: 'Moderate',
+          line1: '50% refund if cancelled 48+ hours before check-in',
+          line2: 'Guests get half their money back if they cancel at least 48 hours before check-in'
+        },
+        strict: {
+          name: 'Strict',
+          line1: '50% refund if cancelled 7+ days before check-in',
+          line2: 'Guests get half their money back only if they cancel at least 7 days before check-in'
         }
       },
       nav: {
@@ -1054,11 +1113,16 @@ const resources = {
        latitude: 'خط العرض',
        longitude: 'خط الطول',
        price: 'السعر (د.ب في اليوم)',
-       description: 'الوصف',
-       checkIn: 'وقت تسجيل الوصول',
-       checkOut: 'وقت تسجيل المغادرة',
-       maxGuests: 'الحد الأقصى للضيوف',
-       campArea: 'مساحة المخيم (م²)',
+        description: 'الوصف',
+        photosTitle: 'صور المخيم',
+        photosHelper: 'حمّل صوراً عالية الجودة لمخيمك. يتم ضغط الصور وتحسينها تلقائياً.',
+        checkIn: 'وقت تسجيل الوصول',
+        checkOut: 'وقت تسجيل المغادرة',
+        nextDay: 'اليوم التالي',
+        maxGuests: 'الحد الأقصى للضيوف',
+        maxGuestsPlaceholder: 'مثال: 20',
+        campArea: 'مساحة المخيم (م²)',
+        campAreaPlaceholder: 'مثال: 500',
        amenities: 'الخدمات والمرافق',
         amenitiesHelper: 'اختر كل الخدمات والمرافق المتاحة في مخيمك',
         amenityCategories: {
@@ -1070,6 +1134,37 @@ const resources = {
           other: '📌 أخرى'
         },
         selectedAmenities: 'المرافق المختارة ({{count}}):',
+        amenityItems: {
+          Restrooms: 'دورات مياه',
+          Kitchen: 'مطبخ',
+          Electricity: 'كهرباء',
+          Lighting: 'إضاءة',
+          'Water Supply': 'مياه متوفرة',
+          'Fire Pit': 'مكان للشواء',
+          'BBQ Grill': 'شواية',
+          'Cooking Equipment': 'أدوات طبخ',
+          'Dining Area': 'منطقة طعام',
+          'Sound System': 'نظام صوتي',
+          'TV Available': 'تلفزيون متوفر',
+          'Volleyball Court': 'ملعب كرة طائرة',
+          'Soccer Court': 'ملعب كرة قدم',
+          'Bouncy Castle': 'ألعاب نفخ',
+          'Furnished Tents': 'خيام مفروشة',
+          'Carpeted Tents': 'خيام بسجاد',
+          'Sofas & Seating': 'أرائك ومقاعد',
+          'Tea Sets': 'أطقم شاي',
+          'Air Conditioning': 'تكييف',
+          'Dune Buggies': 'سيارات الكثبان',
+          'Desert Tours': 'رحلات صحراوية',
+          'Camel Rides': 'ركوب الجمال',
+          'Stargazing Area': 'منطقة مشاهدة النجوم',
+          Biking: 'دراجات',
+          Parking: 'مواقف سيارات',
+          'Pet Friendly': 'مسموح بالحيوانات الأليفة',
+          'Family Friendly': 'مناسب للعائلات',
+          'Security/Guards': 'حراسة',
+          'Food Truck Access': 'مناسب لعربات الطعام'
+        },
        specialFeatures: 'مميزات خاصة',
        rules: 'قواعد المخيم',
        cancellationPolicy: 'سياسة الإلغاء',
@@ -1145,6 +1240,27 @@ const resources = {
           details: 'تفاصيل المخيم',
           photos: 'الصور'
         }
+      },
+      cancelSelector: {
+        title: 'سياسة الإلغاء *',
+        subtitle: 'اختر مدى المرونة في الإلغاءات',
+        mostPopular: 'الأكثر شعبية',
+        flexible: {
+          name: 'مرنة',
+          line1: 'استرجاع كامل عند الإلغاء قبل 24 ساعة أو أكثر من تسجيل الوصول',
+          line2: 'يحصل الضيف على أمواله كاملة إذا ألغى قبل 24 ساعة على الأقل'
+        },
+        moderate: {
+          name: 'متوسطة',
+          line1: 'استرجاع 50% عند الإلغاء قبل 48 ساعة أو أكثر من تسجيل الوصول',
+          line2: 'يحصل الضيف على نصف المبلغ إذا ألغى قبل 48 ساعة على الأقل'
+        },
+        strict: {
+          name: 'صارمة',
+          line1: 'استرجاع 50% عند الإلغاء قبل 7 أيام أو أكثر من تسجيل الوصول',
+          line2: 'يحصل الضيف على نصف المبلغ فقط إذا ألغى قبل 7 أيام على الأقل'
+        }
+      },
       },
 };
 
