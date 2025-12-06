@@ -17,6 +17,7 @@ import { BAHRAIN_CAMPING_LOCATIONS, getLocationLabel } from '@/lib/locations';
 import { CancellationPolicySelector } from '@/components/CancellationPolicySelector';
 import { ImageUploadManager } from '@/components/ImageUploadManager';
 import type { CancellationPolicy } from '@/lib/refundCalculator';
+import { useTranslation } from 'react-i18next';
 
 // Bahrain-specific camp amenities organized by category
 const AMENITIES = {
@@ -56,6 +57,7 @@ interface ImageData {
 export default function CreateListing() {
   const navigate = useNavigate();
   const { user, userData, loading } = useAuth();
+  const { t } = useTranslation();
   
   // Basic Information
   const [title, setTitle] = useState('');
@@ -98,10 +100,10 @@ export default function CreateListing() {
     if (loading) return;
 
     if (!user || !userData) {
-      toast.error('Please sign in to create a listing');
+      toast.error(t('createListing.signInRequired'));
       navigate('/signin');
     } else if (!userData.isHost) {
-      toast.error('You need to become a host first');
+      toast.error(t('createListing.hostRequired'));
       navigate('/profile');
     }
   }, [user, userData, loading, navigate]);
@@ -114,16 +116,16 @@ export default function CreateListing() {
           setLatitude(position.coords.latitude.toFixed(6));
           setLongitude(position.coords.longitude.toFixed(6));
           setGoogleMapsUrl('');
-          toast.success('Location captured successfully!');
+          toast.success(t('createListing.locationCaptured'));
           setGettingLocation(false);
         },
         () => {
-          toast.error('Unable to get your location. Please use Google Maps URL instead.');
+          toast.error(t('createListing.locationFailed'));
           setGettingLocation(false);
         }
       );
     } else {
-      toast.error('Geolocation is not supported by your browser');
+      toast.error(t('createListing.geoUnsupported'));
       setGettingLocation(false);
     }
   };
@@ -245,7 +247,7 @@ export default function CreateListing() {
       setLongitude(coords.lng);
       toast.success('Coordinates extracted from URL!');
     } else {
-      toast.error('Could not extract coordinates from URL. Please check the format.');
+      toast.error(t('createListing.map.parseError', { defaultValue: 'Could not extract coordinates from URL. Please check the format.' }));
     }
   };
 
@@ -329,7 +331,7 @@ export default function CreateListing() {
       }
 
       if (!latitude || !longitude) {
-        toast.error('Please set your location using "Use My Current Location" button or paste a Google Maps URL');
+      toast.error(t('createListing.locationRequired', { defaultValue: 'Please set your location using "Use My Current Location" or paste a Google Maps URL' }));
         setSubmitting(false);
         return;
       }
@@ -446,8 +448,8 @@ export default function CreateListing() {
         </Button>
 
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Create New Camp Listing</h1>
-          <p className="text-gray-700 font-medium">Share your Bahrain desert camp with travelers</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{t('createListing.title')}</h1>
+          <p className="text-gray-700 font-medium">{t('createListing.subtitle')}</p>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 md:p-8 shadow-xl">
@@ -456,17 +458,17 @@ export default function CreateListing() {
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-2xl">📋</span>
-                Basic Information
+                {t('createListing.basicInfo')}
               </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="title" className="text-gray-900 font-semibold">
-                    Camp Name <span className="text-red-600">*</span>
+                    {t('createListing.campName')} <span className="text-red-600">*</span>
                   </Label>
                   <Input
                     id="title"
                     type="text"
-                    placeholder="e.g., Golden Dunes Desert Camp"
+                    placeholder={t('createListing.campName')}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
@@ -477,7 +479,7 @@ export default function CreateListing() {
                 <div className="space-y-2">
                   <Label htmlFor="location" className="text-gray-900 font-semibold flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-terracotta-600" />
-                    Camp Location <span className="text-red-600">*</span>
+                    {t('createListing.campLocation')} <span className="text-red-600">*</span>
                   </Label>
                   <Popover open={locationOpen} onOpenChange={setLocationOpen}>
                     <PopoverTrigger asChild>
@@ -489,13 +491,13 @@ export default function CreateListing() {
                       >
                         {selectedLocation
                           ? getLocationLabel(selectedLocation)
-                          : "Select camp location..."}
+                          : t('createListing.selectLocation')}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0" align="start">
                       <Command>
-                        <CommandInput placeholder="Search locations..." className="h-9" />
+                        <CommandInput placeholder={t('createListing.searchLocations')} className="h-9" />
                         <CommandList>
                           <CommandEmpty>No location found.</CommandEmpty>
                           <CommandGroup>
@@ -525,18 +527,18 @@ export default function CreateListing() {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <p className="text-sm text-gray-600 font-medium">Select your camp's official location in Bahrain (based on 2023-2024 season zones)</p>
+                  <p className="text-sm text-gray-600 font-medium">{t('createListing.locationHelper', { defaultValue: "Select your camp's official location" })}</p>
                 </div>
 
                 {/* Location Coordinates */}
-                <div className="space-y-3 p-4 bg-sand-50 border-2 border-sand-300 rounded-lg">
-                  <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <Navigation className="w-4 h-4 text-terracotta-600" />
-                    Set Camp GPS Coordinates <span className="text-red-600">*</span>
-                  </Label>
-                  <p className="text-sm text-gray-600 font-medium mb-3">
-                    Choose one of the following methods to set your camp's GPS coordinates:
-                  </p>
+                  <div className="space-y-3 p-4 bg-sand-50 border-2 border-sand-300 rounded-lg">
+                    <Label className="text-gray-900 font-semibold flex items-center gap-2">
+                      <Navigation className="w-4 h-4 text-terracotta-600" />
+                      {t('createListing.map.setCoordinates')} <span className="text-red-600">*</span>
+                    </Label>
+                    <p className="text-sm text-gray-600 font-medium mb-3">
+                      {t('createListing.map.chooseMethod')}
+                    </p>
 
                   <Button
                     type="button"
@@ -547,12 +549,12 @@ export default function CreateListing() {
                     {gettingLocation ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Getting Your Location...
+                        {t('createListing.gettingLocation')}
                       </>
                     ) : (
                       <>
                         <Navigation className="w-5 h-5 mr-2" />
-                        Use My Current Location
+                        {t('createListing.useMyLocation')}
                       </>
                     )}
                   </Button>
@@ -562,25 +564,25 @@ export default function CreateListing() {
                       <span className="w-full border-t border-sand-300" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-sand-50 px-2 text-gray-600 font-semibold">Or</span>
+                      <span className="bg-sand-50 px-2 text-gray-600 font-semibold">{t('createListing.or', { defaultValue: 'Or' })}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="googleMapsUrl" className="text-sm text-gray-700 font-semibold flex items-center gap-2">
                       <LinkIcon className="w-4 h-4" />
-                      Paste Google Maps Link
+                      {t('createListing.map.pasteLink')}
                     </Label>
                     <Input
                       id="googleMapsUrl"
                       type="url"
-                      placeholder="https://maps.google.com/?q=26.0667,50.5577"
+                      placeholder={t('createListing.googleMapsUrl')}
                       value={googleMapsUrl}
                       onChange={(e) => handleGoogleMapsUrlChange(e.target.value)}
                       className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
                     />
                     <p className="text-xs text-gray-600 font-medium">
-                      Open Google Maps, right-click on your camp location, and paste the link here
+                      {t('createListing.map.pasteHelper')}
                     </p>
                   </div>
 
@@ -588,10 +590,10 @@ export default function CreateListing() {
                     <div className="p-3 bg-green-50 border border-green-300 rounded-lg">
                       <p className="text-sm font-semibold text-green-900 mb-1 flex items-center gap-2">
                         <Check className="w-4 h-4" />
-                        Location Set Successfully
+                        {t('createListing.map.locationSet')}
                       </p>
                       <p className="text-xs text-green-800 font-medium">
-                        Coordinates: {latitude}, {longitude}
+                        {t('createListing.map.coordinates', { lat: latitude, lng: longitude })}
                       </p>
                     </div>
                   )}
@@ -613,12 +615,12 @@ export default function CreateListing() {
 
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-gray-900 font-semibold">
-                    Price per Day (BD) <span className="text-red-600">*</span>
+                    {t('createListing.pricing.perDay')} <span className="text-red-600">*</span>
                   </Label>
                   <Input
                     id="price"
                     type="number"
-                    placeholder="e.g., 25"
+                    placeholder={t('createListing.price')}
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
@@ -626,59 +628,59 @@ export default function CreateListing() {
                     step="0.01"
                     className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
                   />
-                  <p className="text-sm text-gray-600 font-medium">Price for one full day reservation</p>
+                  <p className="text-sm text-gray-600 font-medium">{t('createListing.pricing.helper')}</p>
                 </div>
 
                 {/* Check-in and Check-out Times */}
                 <div className="space-y-3 p-4 bg-terracotta-50 border-2 border-terracotta-200 rounded-lg">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
                     <Clock className="w-5 h-5 text-terracotta-600" />
-                    Check-in & Check-out Times <span className="text-red-600">*</span>
+                    {t('createListing.checkIn')} & {t('createListing.checkOut')} <span className="text-red-600">*</span>
                   </Label>
                   <p className="text-sm text-gray-700 font-medium mb-3">
-                    Set your camp's check-in and check-out times. This is a full-day reservation from check-in to check-out the next day.
+                    {t('createListing.times.helper')}
                   </p>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="checkInTime" className="text-gray-900 font-semibold">
-                        Check-in Time <span className="text-red-600">*</span>
+                        {t('createListing.checkIn')} <span className="text-red-600">*</span>
                       </Label>
                       <Input
                         id="checkInTime"
                         type="text"
-                        placeholder="e.g., 08:00 AM"
+                        placeholder="08:00 AM"
                         value={checkInTime}
                         onChange={(e) => setCheckInTime(e.target.value)}
                         required
                         className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
                       />
-                      <p className="text-xs text-gray-600 font-medium">Format: HH:MM AM/PM (e.g., 08:00 AM)</p>
+                      <p className="text-xs text-gray-600 font-medium">{t('createListing.times.checkInHelper')}</p>
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="checkOutTime" className="text-gray-900 font-semibold">
-                        Check-out Time (Next Day) <span className="text-red-600">*</span>
+                        {t('createListing.checkOut')} ( {t('createListing.nextDay', { defaultValue: 'Next Day' })} ) <span className="text-red-600">*</span>
                       </Label>
                       <Input
                         id="checkOutTime"
                         type="text"
-                        placeholder="e.g., 03:00 AM"
+                        placeholder="03:00 AM"
                         value={checkOutTime}
                         onChange={(e) => setCheckOutTime(e.target.value)}
                         required
                         className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
                       />
-                      <p className="text-xs text-gray-600 font-medium">Format: HH:MM AM/PM (e.g., 03:00 AM)</p>
+                      <p className="text-xs text-gray-600 font-medium">{t('createListing.times.checkOutHelper')}</p>
                     </div>
                   </div>
 
                   <div className="p-3 bg-white border border-terracotta-300 rounded-lg">
                     <p className="text-sm font-semibold text-gray-900 mb-1">
-                      📅 Full Day Reservation
+                      📅 {t('createListing.map.fullDay')}
                     </p>
                     <p className="text-sm text-gray-700">
-                      Check-in: <span className="font-bold text-terracotta-700">{checkInTime}</span> → Check-out: <span className="font-bold text-terracotta-700">{checkOutTime} (next day)</span>
+                      {t('createListing.checkIn')}: <span className="font-bold text-terracotta-700">{checkInTime}</span> → {t('createListing.checkOut')}: <span className="font-bold text-terracotta-700">{checkOutTime} ({t('createListing.nextDay', { defaultValue: 'next day' })})</span>
                     </p>
                   </div>
                 </div>
@@ -720,12 +722,12 @@ export default function CreateListing() {
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Users className="w-6 h-6 text-terracotta-600" />
-                Camp Capacity & Size
+                {t('createListing.capacity.title')}
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="maxGuests" className="text-gray-900 font-semibold">
-                    Maximum Guests <span className="text-red-600">*</span>
+                    {t('createListing.maxGuests')} <span className="text-red-600">*</span>
                   </Label>
                   <Input
                     id="maxGuests"
@@ -737,23 +739,23 @@ export default function CreateListing() {
                     min="1"
                     className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
                   />
-                  <p className="text-sm text-gray-600 font-medium">Total number of people your camp can accommodate</p>
+                  <p className="text-sm text-gray-600 font-medium">{t('createListing.capacity.maxGuestsHelper')}</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="campArea" className="text-gray-900 font-semibold">
-                    Camp Area (sq meters)
+                    {t('createListing.campArea')}
                   </Label>
                   <Input
                     id="campArea"
                     type="number"
-                    placeholder="e.g., 500"
+                    placeholder={t('createListing.campArea')}
                     value={campArea}
                     onChange={(e) => setCampArea(e.target.value)}
                     min="0"
                     className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
                   />
-                  <p className="text-sm text-gray-600 font-medium">Optional: Total area of your camp</p>
+                  <p className="text-sm text-gray-600 font-medium">{t('createListing.capacity.areaHelper')}</p>
                 </div>
               </div>
             </div>
@@ -762,10 +764,10 @@ export default function CreateListing() {
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
                 <Tent className="w-6 h-6 text-terracotta-600" />
-                Tent Configuration
+                {t('createListing.capacityTents')}
               </h3>
               <p className="text-sm text-gray-600 font-medium mb-4">
-                Add tents and configure each one individually with amenities
+                {t('createListing.tents.helper', { defaultValue: 'Add tents and configure each one individually with amenities' })}
               </p>
 
               <div className="flex flex-wrap gap-3 mb-6">
@@ -776,7 +778,7 @@ export default function CreateListing() {
                   className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Large Tent
+                  {t('createListing.tents.addLarge')}
                 </Button>
                 <Button
                   type="button"
@@ -785,7 +787,7 @@ export default function CreateListing() {
                   className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Small Tent
+                  {t('createListing.tents.addSmall')}
                 </Button>
                 <Button
                   type="button"
@@ -794,7 +796,7 @@ export default function CreateListing() {
                   className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Entertainment Tent
+                  {t('createListing.tents.addEntertainment')}
                 </Button>
               </div>
 
@@ -803,22 +805,28 @@ export default function CreateListing() {
                   {tents.map((tent, index) => (
                     <Card key={tent.id} className="bg-sand-50 border-2 border-sand-300 p-4">
                       <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Tent className="w-5 h-5 text-terracotta-600" />
-                          <h4 className="font-semibold text-gray-900">
-                            {getTentTypeName(tent.type)} #{index + 1}
-                          </h4>
-                        </div>
-                        <Button
-                          type="button"
-                          onClick={() => removeTent(tent.id)}
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
+                      <div className="flex items-center gap-2">
+                        <Tent className="w-5 h-5 text-terracotta-600" />
+                        <h4 className="font-semibold text-gray-900">
+                          {t(
+                            tent.type === 'large'
+                              ? 'createListing.tents.largeLabel'
+                              : tent.type === 'small'
+                              ? 'createListing.tents.smallLabel'
+                              : 'createListing.tents.entertainmentLabel'
+                          )} #{index + 1}
+                        </h4>
                       </div>
+                      <Button
+                        type="button"
+                        onClick={() => removeTent(tent.id)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
                       
                       <div className="space-y-3">
                         <div>
@@ -838,11 +846,11 @@ export default function CreateListing() {
                                 }
                               >
                                 {tent[feature] && <Check className="w-3 h-3 mr-1" />}
-                                {feature === 'furnished' && 'Furnished'}
-                                {feature === 'carpeted' && 'Carpeted'}
-                                {feature === 'tv' && 'TV Available'}
-                                {feature === 'sofas' && 'Sofas & Couches'}
-                                {feature === 'teaSets' && 'Tea Sets'}
+                                {feature === 'furnished' && t('createListing.tents.featureLabels.furnished')}
+                                {feature === 'carpeted' && t('createListing.tents.featureLabels.carpeted')}
+                                {feature === 'tv' && t('createListing.tents.featureLabels.tv')}
+                                {feature === 'sofas' && t('createListing.tents.featureLabels.sofas')}
+                                {feature === 'teaSets' && t('createListing.tents.featureLabels.teaSets')}
                               </Button>
                             ))}
                           </div>
@@ -865,22 +873,22 @@ export default function CreateListing() {
                                 }
                               >
                                 {tent[feature] && <Check className="w-3 h-3 mr-1" />}
-                                {feature === 'pingPongTable' && '🏓 Ping-Pong Table'}
-                                {feature === 'foosballTable' && '⚽ Foosball Table'}
-                                {feature === 'airHockeyTable' && '🏒 Air Hockey Table'}
-                                {feature === 'volleyballField' && '🏐 Volleyball Field'}
-                                {feature === 'footballField' && '⚽ Football Field'}
+                                {feature === 'pingPongTable' && t('createListing.tents.featureLabels.pingPongTable')}
+                                {feature === 'foosballTable' && t('createListing.tents.featureLabels.foosballTable')}
+                                {feature === 'airHockeyTable' && t('createListing.tents.featureLabels.airHockeyTable')}
+                                {feature === 'volleyballField' && t('createListing.tents.featureLabels.volleyballField')}
+                                {feature === 'footballField' && t('createListing.tents.featureLabels.footballField')}
                               </Button>
                             ))}
                           </div>
                         </div>
 
                         <div>
-                          <Label className="text-xs font-semibold text-gray-700 mb-2 block">Description (optional)</Label>
+                          <Label className="text-xs font-semibold text-gray-700 mb-2 block">{t('createListing.tents.descriptionLabel', { defaultValue: 'Description (optional)' })}</Label>
                           <Textarea
                             value={tent.description || ''}
                             onChange={(e) => updateTentDescription(tent.id, e.target.value)}
-                            placeholder="Add a short note about this tent (size, view, special setup, etc.)"
+                            placeholder={t('createListing.tents.descriptionPlaceholder')}
                             rows={2}
                             className="text-sm border-sand-300 focus:border-terracotta-500"
                           />
@@ -892,18 +900,18 @@ export default function CreateListing() {
               ) : (
                 <div className="text-center p-8 bg-sand-50 border-2 border-sand-300 rounded-lg">
                   <Tent className="w-12 h-12 text-sand-400 mx-auto mb-3" />
-                  <p className="text-gray-700 font-medium">No tents added yet. Click the buttons above to add tents.</p>
+                  <p className="text-gray-700 font-medium">{t('createListing.tents.none', { defaultValue: 'No tents added yet. Click the buttons above to add tents.' })}</p>
                 </div>
               )}
 
               {tents.length > 0 && (
                 <div className="mt-4 p-4 bg-terracotta-50 border-2 border-terracotta-200 rounded-lg">
-                  <p className="font-semibold text-gray-900 mb-2">Tent Summary:</p>
+                  <p className="font-semibold text-gray-900 mb-2">{t('createListing.tents.sectionTitle')}</p>
                   <p className="text-gray-800">
-                    <span className="font-bold">{counts.total}</span> Total Tents
-                    {counts.large > 0 && <span> • {counts.large} Large</span>}
-                    {counts.small > 0 && <span> • {counts.small} Small</span>}
-                    {counts.entertainment > 0 && <span> • {counts.entertainment} Entertainment</span>}
+                    <span className="font-bold">{counts.total}</span> {t('createListing.tents.sectionTitle')}
+                    {counts.large > 0 && <span> • {counts.large} {t('createListing.tents.largeLabel')}</span>}
+                    {counts.small > 0 && <span> • {counts.small} {t('createListing.tents.smallLabel')}</span>}
+                    {counts.entertainment > 0 && <span> • {counts.entertainment} {t('createListing.tents.entertainmentLabel')}</span>}
                   </p>
                 </div>
               )}
@@ -913,21 +921,21 @@ export default function CreateListing() {
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
                 <span className="text-2xl">✨</span>
-                Facilities & Amenities
+                {t('createListing.amenitiesSection')}
               </h3>
               <p className="text-sm text-gray-600 font-medium mb-4">
-                Select all facilities and amenities available at your camp
+                {t('createListing.amenitiesHelper', { defaultValue: 'Select all facilities and amenities available at your camp' })}
               </p>
 
               {Object.entries(AMENITIES).map(([category, items]) => (
                 <div key={category} className="mb-6">
                   <h4 className="font-semibold text-gray-900 mb-3 capitalize">
-                    {category === 'essential' && '🏕️ Essential Facilities'}
-                    {category === 'cooking' && '🍖 Cooking & Dining'}
-                    {category === 'entertainment' && '🎉 Entertainment'}
-                    {category === 'comfort' && '🛋️ Comfort & Furnishing'}
-                    {category === 'activities' && '🏜️ Activities'}
-                    {category === 'other' && '📌 Other'}
+                    {category === 'essential' && t('createListing.amenityCategories.essential', { defaultValue: '🏕️ Essential Facilities' })}
+                    {category === 'cooking' && t('createListing.amenityCategories.cooking', { defaultValue: '🍖 Cooking & Dining' })}
+                    {category === 'entertainment' && t('createListing.amenityCategories.entertainment', { defaultValue: '🎉 Entertainment' })}
+                    {category === 'comfort' && t('createListing.amenityCategories.comfort', { defaultValue: '🛋️ Comfort & Furnishing' })}
+                    {category === 'activities' && t('createListing.amenityCategories.activities', { defaultValue: '🏜️ Activities' })}
+                    {category === 'other' && t('createListing.amenityCategories.other', { defaultValue: '📌 Other' })}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {items.map((amenity) => {
@@ -957,7 +965,7 @@ export default function CreateListing() {
               {selectedAmenities.length > 0 && (
                 <div className="mt-4 p-4 bg-sand-50 border-2 border-sand-300 rounded-lg">
                   <p className="text-sm font-semibold text-gray-900 mb-2">
-                    Selected Amenities ({selectedAmenities.length}):
+                    {t('createListing.selectedAmenities', { count: selectedAmenities.length, defaultValue: `Selected Amenities (${selectedAmenities.length})` })}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {selectedAmenities.map((amenity) => (
@@ -984,16 +992,16 @@ export default function CreateListing() {
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-2xl">📝</span>
-                Additional Details
+                {t('createListing.sections.details')}
               </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="specialFeatures" className="text-gray-900 font-semibold">
-                    Special Features or Highlights
+                    {t('createListing.specialFeatures')}
                   </Label>
                   <Textarea
                     id="specialFeatures"
-                    placeholder="Any unique features, special services, or highlights of your camp..."
+                    placeholder={t('createListing.specialFeatures')}
                     value={specialFeatures}
                     onChange={(e) => setSpecialFeatures(e.target.value)}
                     rows={3}
@@ -1003,11 +1011,11 @@ export default function CreateListing() {
 
                 <div className="space-y-2">
                   <Label htmlFor="rules" className="text-gray-900 font-semibold">
-                    Camp Rules & Restrictions
+                    {t('createListing.rules')}
                   </Label>
                   <Textarea
                     id="rules"
-                    placeholder="Any rules, restrictions, or important information guests should know..."
+                    placeholder={t('createListing.rules')}
                     value={rules}
                     onChange={(e) => setRules(e.target.value)}
                     rows={3}
@@ -1027,12 +1035,12 @@ export default function CreateListing() {
                 {submitting ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Creating Camp Listing...
+                    {t('createListing.submitting')}
                   </>
                 ) : (
                   <>
                     <Save className="w-5 h-5 mr-2" />
-                    Create Camp Listing
+                    {t('createListing.createListing')}
                   </>
                 )}
               </Button>
