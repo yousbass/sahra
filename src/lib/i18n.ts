@@ -26,6 +26,70 @@ const resources = {
         goBack: 'Go Back'
       },
       
+      // Listing Type
+      listingType: {
+        camp: {
+          title: 'Camp',
+          description: 'Desert camping experience with tents',
+          badge: 'Camp',
+          features: 'Tents, desert activities, traditional camping'
+        },
+        kashta: {
+          title: 'Kashta',
+          description: 'Beachfront sitting area by the sea',
+          badge: 'Kashta',
+          features: 'Beach access, water activities, sea views'
+        },
+        all: 'All Listings',
+        selectType: 'Select Listing Type'
+      },
+      
+      // Kashta specific
+      kashta: {
+        seatingCapacity: '{{count}} seats',
+        beachfront: 'Beachfront',
+        shade: {
+          tent: 'Tent Shade',
+          umbrella: 'Beach Umbrella',
+          pergola: 'Pergola',
+          natural: 'Natural Shade'
+        },
+        view: {
+          sea: 'Sea View',
+          beach: 'Beach View',
+          mixed: 'Mixed View'
+        },
+        activities: {
+          swimming: 'Swimming',
+          fishing: 'Fishing',
+          snorkeling: 'Snorkeling',
+          boating: 'Boating'
+        },
+        form: {
+          seatingCapacity: 'Seating Capacity',
+          seatingCapacityPlaceholder: 'Number of people',
+          seatingCapacityHelper: 'Maximum number of people for the sitting area',
+          beachfrontAccess: 'Direct Beachfront Access',
+          beachfrontAccessHelper: 'Does this kashta have direct access to the beach?',
+          shadeType: 'Shade Type',
+          shadeTypePlaceholder: 'Select shade type',
+          viewType: 'View Type',
+          amenities: 'Kashta Amenities',
+          waterActivities: 'Water Activities'
+        }
+      },
+      
+      // Amenity Categories
+      amenityCategories: {
+        essential: 'Essential',
+        comfort: 'Comfort',
+        cooking: 'Cooking',
+        entertainment: 'Entertainment',
+        activities: 'Activities',
+        seating: 'Seating',
+        other: 'Other'
+      },
+      
       // Auth - Sign In page
       auth: {
         welcomeBack: 'Welcome Back',
@@ -182,6 +246,10 @@ const resources = {
         subtitle: 'Share your camping space with travelers',
         signInRequired: 'Please sign in to create a listing',
         hostRequired: 'You need to be a host to create listings',
+        selectType: 'Select Listing Type',
+        typeLockedWarning: 'Listing type cannot be changed after you start filling the form',
+        campDetails: 'Camp Details',
+        kashtaDetails: 'Kashta Details',
         basicInfo: 'Basic Information',
         campName: 'Camp Name',
         campLocation: 'Camp Location',
@@ -349,7 +417,9 @@ const resources = {
         minRating: 'Minimum Rating',
         allRatings: 'All Ratings',
         apply: 'Apply Filters',
-        reset: 'Reset'
+        reset: 'Reset',
+        listingType: 'Listing Type',
+        allTypes: 'All Types'
       },
       
       // Header
@@ -679,7 +749,9 @@ const resources = {
       
       // Common
       common: {
-        cancel: 'Cancel'
+        cancel: 'Cancel',
+        currency: 'BD',
+        night: 'night'
       },
       
       // Status labels
@@ -720,6 +792,70 @@ const resources = {
         description: 'الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها.',
         returnHome: 'العودة للصفحة الرئيسية',
         goBack: 'رجوع'
+      },
+      
+      // Listing Type
+      listingType: {
+        camp: {
+          title: 'مخيم',
+          description: 'تجربة تخييم صحراوية مع خيام',
+          badge: 'مخيم',
+          features: 'خيام، أنشطة صحراوية، تخييم تقليدي'
+        },
+        kashta: {
+          title: 'كشتة',
+          description: 'منطقة جلوس على شاطئ البحر',
+          badge: 'كشتة',
+          features: 'وصول للشاطئ، أنشطة مائية، إطلالات بحرية'
+        },
+        all: 'جميع القوائم',
+        selectType: 'اختر نوع القائمة'
+      },
+      
+      // Kashta specific
+      kashta: {
+        seatingCapacity: '{{count}} مقعد',
+        beachfront: 'على الشاطئ',
+        shade: {
+          tent: 'خيمة ظل',
+          umbrella: 'مظلة شاطئ',
+          pergola: 'برجولا',
+          natural: 'ظل طبيعي'
+        },
+        view: {
+          sea: 'إطلالة بحرية',
+          beach: 'إطلالة على الشاطئ',
+          mixed: 'إطلالة مختلطة'
+        },
+        activities: {
+          swimming: 'سباحة',
+          fishing: 'صيد السمك',
+          snorkeling: 'غطس',
+          boating: 'قوارب'
+        },
+        form: {
+          seatingCapacity: 'سعة الجلوس',
+          seatingCapacityPlaceholder: 'عدد الأشخاص',
+          seatingCapacityHelper: 'الحد الأقصى لعدد الأشخاص في منطقة الجلوس',
+          beachfrontAccess: 'وصول مباشر للشاطئ',
+          beachfrontAccessHelper: 'هل لهذه الكشتة وصول مباشر للشاطئ؟',
+          shadeType: 'نوع الظل',
+          shadeTypePlaceholder: 'اختر نوع الظل',
+          viewType: 'نوع الإطلالة',
+          amenities: 'مرافق الكشتة',
+          waterActivities: 'الأنشطة المائية'
+        }
+      },
+      
+      // Amenity Categories
+      amenityCategories: {
+        essential: 'أساسي',
+        comfort: 'راحة',
+        cooking: 'طبخ',
+        entertainment: 'ترفيه',
+        activities: 'أنشطة',
+        seating: 'جلوس',
+        other: 'أخرى'
       },
       
       // Auth - Sign In page
@@ -878,6 +1014,10 @@ const resources = {
         subtitle: 'شارك مساحة التخييم الخاصة بك مع المسافرين',
         signInRequired: 'يرجى تسجيل الدخول لإنشاء إعلان',
         hostRequired: 'تحتاج إلى أن تكون مضيفاً لإنشاء إعلانات',
+        selectType: 'اختر نوع القائمة',
+        typeLockedWarning: 'لا يمكن تغيير نوع القائمة بعد بدء ملء النموذج',
+        campDetails: 'تفاصيل المخيم',
+        kashtaDetails: 'تفاصيل الكشتة',
         basicInfo: 'المعلومات الأساسية',
         campName: 'اسم المخيم',
         campLocation: 'موقع المخيم',
@@ -1045,7 +1185,9 @@ const resources = {
         minRating: 'الحد الأدنى للتقييم',
         allRatings: 'جميع التقييمات',
         apply: 'تطبيق الفلاتر',
-        reset: 'إعادة تعيين'
+        reset: 'إعادة تعيين',
+        listingType: 'نوع القائمة',
+        allTypes: 'جميع الأنواع'
       },
       
       // Header
@@ -1375,7 +1517,9 @@ const resources = {
       
       // Common
       common: {
-        cancel: 'إلغاء'
+        cancel: 'إلغاء',
+        currency: 'د.ب',
+        night: 'ليلة'
       },
       
       // Status labels

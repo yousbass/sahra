@@ -49,19 +49,29 @@ export interface Camp {
   checkOutTime?: string;
   cancellationPolicy?: 'flexible' | 'moderate' | 'strict';
   
-  // Tent configuration
+  // Listing type - NEW
+  listingType?: 'camp' | 'kashta';
+  
+  // Tent configuration (for camps)
   tentConfig: {
     largeTents: number;
     smallTents: number;
     entertainmentTents: number;
   };
   
-  // Pricing per tent type
+  // Pricing per tent type (for camps)
   pricing: {
     largeTent: number;
     smallTent: number;
     entertainmentTent: number;
   };
+  
+  // Kashta-specific fields - NEW
+  seatingCapacity?: number;
+  beachfrontAccess?: boolean;
+  shadeType?: 'tent' | 'umbrella' | 'pergola' | 'natural';
+  viewType?: 'sea' | 'beach' | 'mixed';
+  waterActivities?: string[];
   
   // Availability
   availability?: {
@@ -236,6 +246,7 @@ export interface FilterState {
   minRating: number;
   sortBy: 'price_asc' | 'price_desc' | 'rating' | 'newest';
   bookingDate?: Date;  // Changed from dateRange to single bookingDate
+  listingType?: 'all' | 'camp' | 'kashta';  // NEW
 }
 
 // Admin Statistics Interface
@@ -419,6 +430,11 @@ const convertDocData = <T>(doc: QueryDocumentSnapshot<DocumentData> | DocumentSn
     updatedAt: data.updatedAt ? timestampToString(data.updatedAt) : undefined,
   };
   
+  // Handle listingType - default to 'camp' if not specified
+  if (!('listingType' in data)) {
+    normalized.listingType = 'camp';
+  }
+  
   // Handle photo -> images conversion
   if ('photo' in data && !('images' in data)) {
     console.log(`[ERR_FIRESTORE_NORMALIZE] Converting 'photo' to 'images'`);
@@ -477,6 +493,7 @@ const convertDocData = <T>(doc: QueryDocumentSnapshot<DocumentData> | DocumentSn
     hasImages: !!normalized.images,
     hasPricePerNight: !!normalized.pricePerNight,
     hasTentConfig: !!normalized.tentConfig,
+    listingType: normalized.listingType,
     images: normalized.images,
     pricePerNight: normalized.pricePerNight,
     tentConfig: normalized.tentConfig
@@ -543,6 +560,7 @@ export const createCamp = async (campData: Omit<Camp, 'id' | 'createdAt'>, hostI
     hostId,
     createdAt: serverTimestamp(),
     status: campData.status || 'pending',
+    listingType: campData.listingType || 'camp',  // Default to 'camp'
     rating: 0,
     reviewCount: 0,
     views: 0,
@@ -1077,6 +1095,14 @@ export const searchCamps = async (filters: Partial<FilterState>): Promise<Camp[]
     const normalizedSelectedDate = filters.bookingDate
       ? new Date(new Date(filters.bookingDate).setHours(0, 0, 0, 0))
       : undefined;
+    
+    // Apply listing type filter (client-side)
+    if (filters.listingType && filters.listingType !== 'all') {
+      console.log(`[ERR_FIRESTORE_004] Applying client-side listing type filter: ${filters.listingType}`);
+      const beforeFilter = camps.length;
+      camps = camps.filter(camp => (camp.listingType || 'camp') === filters.listingType);
+      console.log(`[ERR_FIRESTORE_004] Listing type filter: ${beforeFilter} -> ${camps.length} camps`);
+    }
     
     // Apply location filter client-side to avoid Firestore composite index issues
     if (filters.locations && filters.locations.length > 0) {
