@@ -299,7 +299,7 @@ export default function Index() {
       </div>
 
       {/* Search & Filter Bar - NEW PROMINENT SECTION */}
-      <div className="sticky top-0 z-40 bg-white shadow-lg border-b-2 border-sand-200">
+      <div className="relative z-40 bg-white shadow-lg border-b-2 border-sand-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Listing Type Selector */}
           <div className="mb-6">
@@ -532,7 +532,7 @@ export default function Index() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop Filters Sidebar */}
           <div className="hidden lg:block lg:w-80 flex-shrink-0">
-            <div className="sticky top-[280px]">
+            <div className="sticky top-4">
               <FilterSidebar
                 filters={filters}
                 onFilterChange={handleFilterChange}
