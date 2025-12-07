@@ -57,7 +57,7 @@ export default function Header() {
           {/* Logo */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <div className="w-10 h-10 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">S</span>
@@ -81,7 +81,7 @@ export default function Header() {
                     variant="outline"
                     className="border-2 border-terracotta-500 text-terracotta-700 hover:bg-terracotta-50 font-semibold"
                   >
-                    <Shield className="w-4 h-4 mr-2" />
+                    <Shield className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
                     {t('header.admin')}
                   </Button>
                 )}
@@ -92,7 +92,7 @@ export default function Header() {
                   variant="outline"
                   className="border-2 border-amber-300 hover:bg-amber-50"
                 >
-                  <User className="w-4 h-4 mr-2" />
+                  <User className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
                   {t('header.profile')}
                 </Button>
 
@@ -102,7 +102,7 @@ export default function Header() {
                   variant="outline"
                   className="border-2 border-gray-300 hover:bg-gray-50"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
+                  <LogOut className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
                   {t('header.signOut')}
                 </Button>
               </>
