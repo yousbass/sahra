@@ -23,6 +23,7 @@ import NotFound from './pages/NotFound';
 import './lib/i18n';
 import { useTranslation } from 'react-i18next';
 import { LoadingProvider } from './contexts/LoadingContext';
+import { LanguageDirectionHandler } from './components/LanguageDirectionHandler';
 
 // Admin imports
 import AdminLayout from './components/AdminLayout';
@@ -90,6 +91,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LoadingProvider>
+        <LanguageDirectionHandler />
         <Toaster />
         <BrowserRouter>
           <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100 pb-16">
