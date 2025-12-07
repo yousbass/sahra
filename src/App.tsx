@@ -22,6 +22,7 @@ import PaymentFailed from './pages/PaymentFailed';
 import NotFound from './pages/NotFound';
 import './lib/i18n';
 import { useTranslation } from 'react-i18next';
+import { LoadingProvider } from './contexts/LoadingContext';
 
 // Admin imports
 import AdminLayout from './components/AdminLayout';
@@ -88,44 +89,46 @@ function BottomNav() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <BrowserRouter>
-        <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100 pb-16">
-          <Header />
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/camp/:slug" element={<CampDetails />} />
-            <Route path="/reserve" element={<Reserve />} />
-            <Route path="/bookings" element={<Bookings />} />
-            <Route path="/host" element={<Host />} />
-            <Route path="/host/create" element={<CreateListing />} />
-            <Route path="/host/listings" element={<MyListings />} />
-            <Route path="/host/availability" element={<ManageAvailability />} />
-            <Route path="/host/bookings" element={<HostBookings />} />
-            <Route path="/edit-listing/:campId" element={<EditListing />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/payment/success" element={<PaymentSuccess />} />
-            <Route path="/payment/failed" element={<PaymentFailed />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="camps" element={<AdminCamps />} />
-              <Route path="bookings" element={<AdminBookings />} />
-              <Route path="reviews" element={<AdminReviews />} />
-              <Route path="analytics" element={<AdminAnalytics />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BottomNav />
-        </div>
-      </BrowserRouter>
+      <LoadingProvider>
+        <Toaster />
+        <BrowserRouter>
+          <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100 pb-16">
+            <Header />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Index />} />
+              <Route path="/camp/:slug" element={<CampDetails />} />
+              <Route path="/reserve" element={<Reserve />} />
+              <Route path="/bookings" element={<Bookings />} />
+              <Route path="/host" element={<Host />} />
+              <Route path="/host/create" element={<CreateListing />} />
+              <Route path="/host/listings" element={<MyListings />} />
+              <Route path="/host/availability" element={<ManageAvailability />} />
+              <Route path="/host/bookings" element={<HostBookings />} />
+              <Route path="/edit-listing/:campId" element={<EditListing />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/failed" element={<PaymentFailed />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="camps" element={<AdminCamps />} />
+                <Route path="bookings" element={<AdminBookings />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <BottomNav />
+          </div>
+        </BrowserRouter>
+      </LoadingProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
