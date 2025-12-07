@@ -56,14 +56,15 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           className={cn(
-            'flex items-center justify-between h-16 gap-3 flex-wrap',
-            i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'
+            'flex items-center gap-3 flex-wrap h-auto md:h-16 md:flex-nowrap',
+            i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row',
+            'justify-center md:justify-between'
           )}
         >
           {/* Logo */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0"
           >
             <div className="w-10 h-10 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">S</span>
@@ -74,7 +75,12 @@ export default function Header() {
           </button>
 
           {/* Navigation */}
-          <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              'flex items-center gap-2 flex-wrap w-full md:w-auto',
+              i18n.language === 'ar' ? 'justify-start md:justify-end' : 'justify-end'
+            )}
+          >
             {/* Language Switcher */}
             <LanguageSwitcher />
             
