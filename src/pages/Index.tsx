@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Search, MapPin, Users, Tent, Loader2, SlidersHorizontal, Calendar as CalendarIcon, Waves } from 'lucide-react';
+import { Search, MapPin, Users, Tent, Loader2, SlidersHorizontal, Calendar as CalendarIcon, Waves, X, Grid3x3, List } from 'lucide-react';
 import { getCampsWithFilters, getCampAmenities, FilterState } from '@/lib/firestore';
 import { toast } from 'sonner';
 import FilterSidebar from '@/components/FilterSidebar';
@@ -44,6 +44,7 @@ export default function Index() {
   const [locations, setLocations] = useState<string[]>([]);
   const [amenities, setAmenities] = useState<string[]>([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     loadInitialData();
@@ -182,6 +183,43 @@ export default function Index() {
     setFilters({ ...filters, bookingDate: value || undefined });
   };
 
+  const removeFilter = (filterType: 'location' | 'amenity' | 'tentType' | 'rating' | 'price' | 'date' | 'listingType', value?: string) => {
+    const newFilters = { ...filters };
+    
+    switch (filterType) {
+      case 'location':
+        newFilters.locations = newFilters.locations.filter(l => l !== value);
+        break;
+      case 'amenity':
+        newFilters.amenities = newFilters.amenities.filter(a => a !== value);
+        break;
+      case 'tentType':
+        newFilters.tentTypes = newFilters.tentTypes.filter(t => t !== value);
+        break;
+      case 'rating':
+        newFilters.minRating = 0;
+        break;
+      case 'price':
+        newFilters.priceRange = [0, 1000];
+        break;
+      case 'date':
+        newFilters.bookingDate = undefined;
+        break;
+      case 'listingType':
+        newFilters.listingType = 'all';
+        setSelectedListingType('all');
+        break;
+    }
+    
+    setFilters(newFilters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters(DEFAULT_FILTERS);
+    setSelectedListingType('all');
+    setSearchQuery('');
+  };
+
   const filteredCamps = camps.filter(
     (camp) =>
       camp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -203,12 +241,11 @@ export default function Index() {
     });
   };
 
-  // UPDATED: Changed from dateRange to bookingDate
+  // Calculate active filter count
   const activeFilterCount = 
-    (filters.locations.length > 0 ? 1 : 0) +
-    (filters.minGuests > 1 ? 1 : 0) +
-    (filters.amenities.length > 0 ? 1 : 0) +
-    (filters.tentTypes.length > 0 ? 1 : 0) +
+    (filters.locations.length > 0 ? filters.locations.length : 0) +
+    (filters.amenities.length > 0 ? filters.amenities.length : 0) +
+    (filters.tentTypes.length > 0 ? filters.tentTypes.length : 0) +
     (filters.minRating > 0 ? 1 : 0) +
     (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000 ? 1 : 0) +
     (filters.bookingDate ? 1 : 0) +
@@ -223,7 +260,7 @@ export default function Index() {
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">
+          <p className="text-gray-700 font-medium text-lg">
             {filters.bookingDate ? t('home.checkingAvailability') : t('home.loadingCamps')}
           </p>
         </div>
@@ -233,7 +270,7 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200">
-      {/* Hero Section */}
+      {/* Hero Section - Simplified */}
       <div className="relative overflow-hidden bg-gradient-to-br from-terracotta-500 via-terracotta-600 to-terracotta-700 text-white">
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -248,119 +285,129 @@ export default function Index() {
           </svg>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-          <div className="text-center px-2">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="text-center">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
               {t('home.heroTitleTop')}
-              <span className="block text-sand-100 mt-2 text-3xl sm:text-5xl">{t('home.heroTitleBottom')}</span>
+              <span className="block text-sand-100 mt-2">{t('home.heroTitleBottom')}</span>
             </h1>
-            <p className="text-base sm:text-xl text-sand-100 mb-6 sm:mb-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700 px-2">
+            <p className="text-lg sm:text-xl text-sand-100 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700">
               {t('home.heroSubtitle')}
             </p>
-            
-            {/* Listing Type Selector */}
-            <div className="max-w-3xl mx-auto mb-6 animate-in fade-in slide-in-from-bottom-8 delay-250 duration-700">
-              <ListingTypeSelector
-                value={selectedListingType}
-                onChange={setSelectedListingType}
-                variant="tabs"
-                campCount={campCount}
-                kashtaCount={kashtaCount}
-              />
-            </div>
-            
-            {/* Search Bar */}
-            <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-300 duration-700">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-3 sm:p-4 space-y-3">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <Input
-                      type="text"
-                      placeholder={t('home.searchPlaceholder')}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 h-12 border-2 border-sand-200 focus:border-terracotta-500 rounded-xl text-gray-900"
-                    />
-                  </div>
-                  <div className="w-full sm:w-64">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full justify-start text-left h-12 border-2 border-sand-200 hover:border-terracotta-400 hover:bg-terracotta-50 rounded-xl font-semibold text-gray-900"
-                        >
-                          <CalendarIcon className="mr-2 h-5 w-5 text-terracotta-600" />
-                          {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : t('home.datePlaceholder')}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-2 border-2 border-sand-200 rounded-2xl shadow-xl w-[320px] sm:w-[360px] max-w-[95vw]" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={filters.bookingDate}
-                          onSelect={(date) => handleBookingDateChange(date || undefined)}
-                          disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                          initialFocus
-                          variant="compact"
-                          hideLegend
-                        />
-                        <div className="flex justify-between items-center pt-2 px-1">
-                          <p className="text-xs text-gray-600">
-                            {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : t('home.datePickedLabel')}
-                          </p>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-terracotta-600 hover:bg-terracotta-50"
-                            onClick={() => handleBookingDateChange(undefined)}
-                          >
-                            {t('home.clear')}
-                          </Button>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <Button 
-                    onClick={() => loadCamps()}
-                    className="h-12 px-8 bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
-                  >
-                    <Search className="w-5 h-5 mr-2" />
-                    {t('home.searchButton')}
-                  </Button>
-                </div>
-                <p className="text-xs text-gray-600 flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 text-terracotta-500" />
-                  {t('home.availabilityHint')}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Filters Sidebar */}
-          <div className="hidden lg:block lg:w-80 flex-shrink-0">
-            <div className="sticky top-24">
-              <FilterSidebar
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                locations={locations}
-                amenities={amenities}
+      {/* Search & Filter Bar - NEW PROMINENT SECTION */}
+      <div className="sticky top-0 z-40 bg-white shadow-lg border-b-2 border-sand-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Listing Type Selector */}
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+              {t('listingType.sectionTitle')}
+            </h3>
+            <ListingTypeSelector
+              value={selectedListingType}
+              onChange={setSelectedListingType}
+              variant="cards"
+              campCount={campCount}
+              kashtaCount={kashtaCount}
+            />
+          </div>
+
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+              <Input
+                type="text"
+                placeholder={t('home.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-14 h-14 border-2 border-sand-300 focus:border-terracotta-500 rounded-xl text-lg text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
 
-          {/* Mobile Filters */}
-          <div className="lg:hidden">
+          {/* Quick Filters Row */}
+          <div className="flex flex-wrap gap-3 items-center">
+            {/* Date Picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 px-4 border-2 border-sand-300 hover:border-terracotta-400 hover:bg-terracotta-50 rounded-xl font-semibold text-gray-900"
+                >
+                  <CalendarIcon className="mr-2 h-5 w-5 text-terracotta-600" />
+                  {filters.bookingDate ? format(filters.bookingDate, 'MMM d, yyyy') : t('home.datePlaceholder')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-2 border-2 border-sand-200 rounded-2xl shadow-xl w-auto" align="start">
+                <Calendar
+                  mode="single"
+                  selected={filters.bookingDate}
+                  onSelect={(date) => handleBookingDateChange(date || undefined)}
+                  disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                  initialFocus
+                  variant="compact"
+                  hideLegend
+                />
+                <div className="flex justify-between items-center pt-2 px-1">
+                  <p className="text-xs text-gray-600">
+                    {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : t('home.datePickedLabel')}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-terracotta-600 hover:bg-terracotta-50"
+                    onClick={() => handleBookingDateChange(undefined)}
+                  >
+                    {t('home.clear')}
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Guests Selector */}
+            <Select 
+              value={filters.minGuests.toString()} 
+              onValueChange={(value) => setFilters({ ...filters, minGuests: parseInt(value) })}
+            >
+              <SelectTrigger className="h-12 w-40 border-2 border-sand-300 rounded-xl font-semibold">
+                <Users className="w-5 h-5 mr-2 text-terracotta-600" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[1, 2, 3, 4, 5, 6, 8, 10, 15, 20].map(num => (
+                  <SelectItem key={num} value={num.toString()}>
+                    {num} {num === 1 ? 'Guest' : 'Guests'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Advanced Filters Button - Desktop */}
+            <Button
+              variant="outline"
+              className="hidden lg:flex h-12 px-4 border-2 border-sand-300 hover:bg-sand-50 rounded-xl font-semibold"
+              onClick={() => setShowMobileFilters(true)}
+            >
+              <SlidersHorizontal className="w-5 h-5 mr-2" />
+              {t('home.filters')}
+              {activeFilterCount > 0 && (
+                <Badge className="ml-2 bg-terracotta-600 text-white">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+
+            {/* Mobile Filters Button */}
             <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
               <SheetTrigger asChild>
                 <Button 
                   variant="outline" 
-                  className="w-full border-2 border-sand-300 hover:bg-sand-50 h-12 text-base font-medium"
+                  className="lg:hidden h-12 px-4 border-2 border-sand-300 hover:bg-sand-50 rounded-xl font-semibold"
                 >
                   <SlidersHorizontal className="w-5 h-5 mr-2" />
                   {t('home.filters')}
@@ -383,77 +430,204 @@ export default function Index() {
                 />
               </SheetContent>
             </Sheet>
+
+            {/* Search Button */}
+            <Button 
+              onClick={() => loadCamps()}
+              className="h-12 px-6 bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <Search className="w-5 h-5 mr-2" />
+              {t('home.searchButton')}
+            </Button>
           </div>
 
-          {/* Camps Grid */}
+          {/* Active Filters Chips */}
+          {activeFilterCount > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2 items-center">
+              <span className="text-sm font-semibold text-gray-700">Active Filters:</span>
+              
+              {filters.listingType && filters.listingType !== 'all' && (
+                <Badge 
+                  variant="secondary" 
+                  className="h-8 px-3 bg-terracotta-100 text-terracotta-900 border border-terracotta-300 cursor-pointer hover:bg-terracotta-200"
+                  onClick={() => removeFilter('listingType')}
+                >
+                  {filters.listingType === 'camp' ? '🏕️ Camp' : '🏖️ Kashta'}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              )}
+              
+              {filters.locations.map(location => (
+                <Badge 
+                  key={location}
+                  variant="secondary" 
+                  className="h-8 px-3 bg-blue-100 text-blue-900 border border-blue-300 cursor-pointer hover:bg-blue-200"
+                  onClick={() => removeFilter('location', location)}
+                >
+                  📍 {location}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ))}
+              
+              {filters.amenities.map(amenity => (
+                <Badge 
+                  key={amenity}
+                  variant="secondary" 
+                  className="h-8 px-3 bg-green-100 text-green-900 border border-green-300 cursor-pointer hover:bg-green-200"
+                  onClick={() => removeFilter('amenity', amenity)}
+                >
+                  ✨ {amenity}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ))}
+              
+              {filters.minRating > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="h-8 px-3 bg-yellow-100 text-yellow-900 border border-yellow-300 cursor-pointer hover:bg-yellow-200"
+                  onClick={() => removeFilter('rating')}
+                >
+                  ⭐ {filters.minRating}+ Rating
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              )}
+              
+              {filters.bookingDate && (
+                <Badge 
+                  variant="secondary" 
+                  className="h-8 px-3 bg-purple-100 text-purple-900 border border-purple-300 cursor-pointer hover:bg-purple-200"
+                  onClick={() => removeFilter('date')}
+                >
+                  📅 {format(filters.bookingDate, 'MMM d, yyyy')}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              )}
+              
+              {(filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) && (
+                <Badge 
+                  variant="secondary" 
+                  className="h-8 px-3 bg-orange-100 text-orange-900 border border-orange-300 cursor-pointer hover:bg-orange-200"
+                  onClick={() => removeFilter('price')}
+                >
+                  💰 {filters.priceRange[0]} - {filters.priceRange[1]} BD
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              )}
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 font-semibold"
+                onClick={clearAllFilters}
+              >
+                Clear All
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Desktop Filters Sidebar */}
+          <div className="hidden lg:block lg:w-80 flex-shrink-0">
+            <div className="sticky top-[280px]">
+              <FilterSidebar
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                locations={locations}
+                amenities={amenities}
+              />
+            </div>
+          </div>
+
+          {/* Results Section */}
           <div className="flex-1">
             {/* Results Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {selectedListingType === 'all' 
-                    ? t('home.campsAvailable', { count: filteredCamps.length })
-                    : selectedListingType === 'camp'
-                    ? `${campCount} ${t('listingType.camp.title')}${campCount !== 1 ? 's' : ''}`
-                    : `${kashtaCount} ${t('listingType.kashta.title')}${kashtaCount !== 1 ? 's' : ''}`
-                  }
-                </h2>
-                {filters.bookingDate && (
-                  <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                    <CalendarIcon className="w-4 h-4" />
-                    <span>
-                      {format(filters.bookingDate, 'EEEE, MMM dd, yyyy')}
-                    </span>
+            <div className="bg-white rounded-xl shadow-md border-2 border-sand-200 p-6 mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {selectedListingType === 'all' 
+                      ? `Showing ${filteredCamps.length} ${filteredCamps.length === 1 ? 'Listing' : 'Listings'} in Bahrain`
+                      : selectedListingType === 'camp'
+                      ? `${campCount} ${campCount === 1 ? 'Camp' : 'Camps'} Available`
+                      : `${kashtaCount} ${kashtaCount === 1 ? 'Kashta' : 'Kashtas'} Available`
+                    }
+                  </h2>
+                  {filters.bookingDate && (
+                    <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
+                      <CalendarIcon className="w-4 h-4" />
+                      <span>
+                        Available on {format(filters.bookingDate, 'EEEE, MMMM dd, yyyy')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Select value={filters.sortBy} onValueChange={handleSortChange}>
+                    <SelectTrigger className="w-48 h-11 border-2 border-sand-300 rounded-xl font-semibold">
+                      <SelectValue placeholder={t('home.sortBy')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">{t('home.sortNewest')}</SelectItem>
+                      <SelectItem value="price_asc">{t('home.sortPriceAsc')}</SelectItem>
+                      <SelectItem value="price_desc">{t('home.sortPriceDesc')}</SelectItem>
+                      <SelectItem value="rating">{t('home.sortRating')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <div className="hidden sm:flex gap-2">
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'outline'}
+                      size="icon"
+                      className={viewMode === 'grid' ? 'bg-terracotta-600 hover:bg-terracotta-700' : 'border-2 border-sand-300'}
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid3x3 className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'outline'}
+                      size="icon"
+                      className={viewMode === 'list' ? 'bg-terracotta-600 hover:bg-terracotta-700' : 'border-2 border-sand-300'}
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="w-5 h-5" />
+                    </Button>
                   </div>
-                )}
-                {activeFilterCount > 0 && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    {t('home.filterApplied', { count: activeFilterCount })}
-                  </p>
-                )}
+                </div>
               </div>
-              
-              <Select value={filters.sortBy} onValueChange={handleSortChange}>
-                <SelectTrigger className="w-full sm:w-48 border-2 border-sand-300">
-                  <SelectValue placeholder={t('home.sortBy')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">{t('home.sortNewest')}</SelectItem>
-                  <SelectItem value="price_asc">{t('home.sortPriceAsc')}</SelectItem>
-                  <SelectItem value="price_desc">{t('home.sortPriceDesc')}</SelectItem>
-                  <SelectItem value="rating">{t('home.sortRating')}</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
-            {/* Camps Grid */}
+            {/* Listings Grid/List */}
             {filteredCamps.length === 0 ? (
-              <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-sand-200">
+              <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-sand-200">
                 {selectedListingType === 'kashta' ? (
-                  <Waves className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <Waves className="w-20 h-20 text-gray-400 mx-auto mb-4" />
                 ) : (
-                  <Tent className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <Tent className="w-20 h-20 text-gray-400 mx-auto mb-4" />
                 )}
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('home.noCampsTitle')}</h3>
-                <p className="text-gray-600 mb-6">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-3">{t('home.noCampsTitle')}</h3>
+                <p className="text-gray-600 text-lg mb-8">
                   {filters.bookingDate 
                     ? t('home.noCampsDate')
                     : t('home.noCampsGeneral')}
                 </p>
                 <Button
-                  onClick={() => {
-                    setFilters(DEFAULT_FILTERS);
-                    setSearchQuery('');
-                    setSelectedListingType('all');
-                  }}
-                  variant="outline"
-                  className="border-2 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
+                  onClick={clearAllFilters}
+                  size="lg"
+                  className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold h-12 px-8"
                 >
                   {t('home.clearAll')}
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className={viewMode === 'grid' 
+                ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" 
+                : "space-y-6"
+              }>
                 {filteredCamps.map((camp) => {
                   const listingType = (camp.listingType || 'camp') as ListingType;
                   
@@ -494,11 +668,11 @@ export default function Index() {
                   return (
                     <Card
                       key={camp.id}
-                      className="group cursor-pointer overflow-hidden bg-white/95 backdrop-blur-sm border-2 border-sand-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                      className="group cursor-pointer overflow-hidden bg-white border-2 border-sand-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                       onClick={() => handleCampClick(camp.id)}
                     >
                       {/* Camp Image */}
-                      <div className="relative h-56 overflow-hidden">
+                      <div className="relative h-64 overflow-hidden">
                         <img
                           src={camp.photo}
                           alt={camp.title}
@@ -511,56 +685,56 @@ export default function Index() {
                           <RefundPolicyBadge policy={camp.refundPolicy} />
                         </div>
                         <div className="absolute top-4 left-4">
-                          <Badge className="bg-terracotta-600 hover:bg-terracotta-700">
-                            <Tent className="w-3 h-3 mr-1" />
+                          <Badge className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold px-3 py-1">
+                            <Tent className="w-4 h-4 mr-1" />
                             {t('listingType.camp.badge')}
                           </Badge>
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                          <div className="flex items-center text-white text-sm">
-                            <MapPin className="w-4 h-4 mr-1" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                          <div className="flex items-center text-white text-base font-semibold">
+                            <MapPin className="w-5 h-5 mr-2" />
                             {camp.location}
                           </div>
                         </div>
                       </div>
 
                       {/* Camp Details */}
-                      <div className="p-5">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-terracotta-600 transition-colors">
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-terracotta-600 transition-colors">
                           {camp.title}
                         </h3>
 
                         {/* Rating */}
-                        <div className="flex items-center gap-2 mb-3">
-                          <RatingStars rating={camp.averageRating || 0} />
-                          <span className="text-sm text-gray-600">
-                            ({t('home.reviewCount', { count: camp.reviewCount || 0 })})
+                        <div className="flex items-center gap-2 mb-4">
+                          <RatingStars rating={camp.averageRating || 0} size="lg" />
+                          <span className="text-base font-semibold text-gray-700">
+                            ({camp.reviewCount || 0} {camp.reviewCount === 1 ? 'review' : 'reviews'})
                           </span>
                         </div>
 
                         {/* Camp Info */}
-                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                        <div className="flex items-center gap-6 text-base text-gray-700 mb-5 font-medium">
                           <div className="flex items-center">
-                            <Users className="w-4 h-4 mr-1" />
-                            {t('home.upToGuests', { count: camp.maxGuests })}
+                            <Users className="w-5 h-5 mr-2 text-terracotta-600" />
+                            Up to {camp.maxGuests} guests
                           </div>
                           <div className="flex items-center">
-                            <Tent className="w-4 h-4 mr-1" />
-                            {t('home.tentsCount', { count: getTotalTents(camp.tentConfiguration) })}
+                            <Tent className="w-5 h-5 mr-2 text-terracotta-600" />
+                            {getTotalTents(camp.tentConfiguration)} tents
                           </div>
                         </div>
 
-                        {/* Price - UPDATED: Changed from "per night" to "per day" */}
-                        <div className="flex items-center justify-between pt-4 border-t border-sand-200">
+                        {/* Price */}
+                        <div className="flex items-center justify-between pt-5 border-t-2 border-sand-200">
                           <div>
-                            <span className="text-2xl font-bold text-terracotta-600">
+                            <span className="text-3xl font-bold text-terracotta-600">
                               {camp.price} BD
                             </span>
-                            <span className="text-sm text-gray-600 ml-1">{t('home.perDay')}</span>
+                            <span className="text-base text-gray-600 ml-2 font-medium">{t('home.perDay')}</span>
                           </div>
                           <Button 
-                            size="sm"
-                            className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-medium"
+                            size="lg"
+                            className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold h-11 px-6"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCampClick(camp.id);
