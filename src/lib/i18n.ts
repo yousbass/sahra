@@ -333,7 +333,12 @@ const resources = {
         clear: 'Clear',
         clearAll: 'Clear All',
         checkingAvailability: 'Checking availability...',
-        availabilityHint: 'Select a date to check availability'
+        availabilityHint: 'Select a date to check availability',
+        campsAvailable: '{{count}} camps available',
+        filterApplied: '{{count}} filters applied',
+        reviewCount: '{{count}} reviews',
+        upToGuests: 'Up to {{count}} guests',
+        tentsCount: '{{count}} tents'
       },
       
       // Host Dashboard
@@ -934,7 +939,12 @@ const resources = {
         clear: 'مسح',
         clearAll: 'مسح الكل',
         checkingAvailability: 'جارٍ التحقق من التوفر...',
-        availabilityHint: 'اختر تاريخاً للتحقق من التوفر'
+        availabilityHint: 'اختر تاريخاً للتحقق من التوفر',
+        campsAvailable: '{{count}} مخيم متاح',
+        filterApplied: '{{count}} فلتر مطبق',
+        reviewCount: '{{count}} مراجعة',
+        upToGuests: 'حتى {{count}} ضيف',
+        tentsCount: '{{count}} خيمة'
       },
       
       // Host Dashboard
