@@ -1099,7 +1099,7 @@ export default function CreateListing() {
               onPolicyChange={setCancellationPolicy}
             />
 
-            {/* Additional Details */}
+            {/* Additional Details - UPDATED: Conditional label based on listing type */}
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-2xl">📝</span>
@@ -1108,11 +1108,11 @@ export default function CreateListing() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="specialFeatures" className="text-gray-900 font-semibold">
-                    {t('createListing.specialFeatures')}
+                    {listingType === 'kashta' ? t('kashta.kashtaDescription', { defaultValue: 'Description' }) : t('createListing.specialFeatures')}
                   </Label>
                   <Textarea
                     id="specialFeatures"
-                    placeholder={t('createListing.specialFeatures')}
+                    placeholder={listingType === 'kashta' ? t('kashta.kashtaDescriptionPlaceholder', { defaultValue: 'Describe your kashta...' }) : t('createListing.specialFeatures')}
                     value={specialFeatures}
                     onChange={(e) => setSpecialFeatures(e.target.value)}
                     rows={3}

@@ -83,6 +83,8 @@ const resources = {
       },
       
       // Amenity Categories
+        kashtaDescription: 'Description',
+        kashtaDescriptionPlaceholder: 'Describe your kashta...',
       amenityCategories: {
         essential: 'Essential',
         comfort: 'Comfort',
@@ -886,6 +888,8 @@ const resources = {
       },
       
       // Amenity Categories
+        kashtaDescription: 'الوصف',
+        kashtaDescriptionPlaceholder: 'صف الكشتة الخاصة بك...',
       amenityCategories: {
         essential: 'أساسي',
         comfort: 'راحة',

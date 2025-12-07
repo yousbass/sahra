@@ -37,3 +37,4 @@ firebase-debug.log
 # Misc
 *.pem
 .vercel
+.env

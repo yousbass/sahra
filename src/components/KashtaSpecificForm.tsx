@@ -129,7 +129,7 @@ export function KashtaSpecificForm({
         </Select>
       </div>
 
-      {/* View Type */}
+      {/* View Type - UPDATED: Removed "sea" option, kept only "beach" and "mixed" */}
       <div>
         <Label>{t('kashta.form.viewType')} *</Label>
         <RadioGroup
@@ -137,12 +137,6 @@ export function KashtaSpecificForm({
           onValueChange={(value) => onViewTypeChange(value as ViewType)}
           className="mt-2 space-y-2"
         >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="sea" id="sea" />
-            <Label htmlFor="sea" className="font-normal cursor-pointer">
-              {t('kashta.view.sea')}
-            </Label>
-          </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="beach" id="beach" />
             <Label htmlFor="beach" className="font-normal cursor-pointer">

@@ -5,7 +5,7 @@ import { Timestamp } from 'firebase/firestore';
 
 export type ListingType = 'camp' | 'kashta';
 export type ShadeType = 'tent' | 'umbrella' | 'pergola' | 'natural';
-export type ViewType = 'sea' | 'beach' | 'mixed';
+export type ViewType = 'beach' | 'mixed'; // UPDATED: Removed 'sea' - Beach View covers both sea and beach
 export type CancellationPolicy = 'flexible' | 'moderate' | 'strict';
 
 export interface ImageData {
@@ -52,7 +52,7 @@ export interface BaseListing {
   images: ImageData[];
   cancellationPolicy: CancellationPolicy;
   rules: string;
-  specialFeatures: string;
+  specialFeatures: string; // Note: This is now used as "Description" in UI
   createdAt: string | Timestamp;
   updatedAt?: string | Timestamp;
   
@@ -142,7 +142,7 @@ export interface CreateListingFormState {
   images: ImageData[];
   cancellationPolicy: CancellationPolicy;
   rules: string;
-  specialFeatures: string;
+  specialFeatures: string; // UI shows this as "Description" for kashta
   
   // Camp-specific fields
   campArea?: string;
