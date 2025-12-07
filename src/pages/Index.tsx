@@ -8,16 +8,19 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Search, MapPin, Users, Tent, Loader2, SlidersHorizontal, Calendar as CalendarIcon } from 'lucide-react';
+import { Search, MapPin, Users, Tent, Loader2, SlidersHorizontal, Calendar as CalendarIcon, Waves } from 'lucide-react';
 import { getCampsWithFilters, getCampAmenities, FilterState } from '@/lib/firestore';
 import { toast } from 'sonner';
 import FilterSidebar from '@/components/FilterSidebar';
 import RatingStars from '@/components/RatingStars';
 import { RefundPolicyBadge } from '@/components/RefundPolicyBadge';
+import { ListingTypeSelector } from '@/components/ListingTypeSelector';
+import { KashtaListingCard } from '@/components/KashtaListingCard';
 import { BAHRAIN_CAMPING_LOCATIONS } from '@/lib/locations';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import type { ListingType } from '@/types/listing';
 
 const DEFAULT_FILTERS: FilterState = {
   priceRange: [0, 1000],
@@ -26,7 +29,8 @@ const DEFAULT_FILTERS: FilterState = {
   amenities: [],
   tentTypes: [],
   minRating: 0,
-  sortBy: 'newest'
+  sortBy: 'newest',
+  listingType: 'all'
 };
 
 export default function Index() {
@@ -36,6 +40,7 @@ export default function Index() {
   const [camps, setCamps] = useState<LegacyCamp[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [selectedListingType, setSelectedListingType] = useState<'all' | 'camp' | 'kashta'>('all');
   const [locations, setLocations] = useState<string[]>([]);
   const [amenities, setAmenities] = useState<string[]>([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -47,6 +52,11 @@ export default function Index() {
   useEffect(() => {
     loadCamps();
   }, [filters]);
+
+  // Update filters when listing type changes
+  useEffect(() => {
+    setFilters({ ...filters, listingType: selectedListingType });
+  }, [selectedListingType]);
 
   const loadInitialData = async () => {
     console.log('=== [ERR_INDEX_001] loadInitialData() START ===');
@@ -201,7 +211,12 @@ export default function Index() {
     (filters.tentTypes.length > 0 ? 1 : 0) +
     (filters.minRating > 0 ? 1 : 0) +
     (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000 ? 1 : 0) +
-    (filters.bookingDate ? 1 : 0);
+    (filters.bookingDate ? 1 : 0) +
+    (filters.listingType && filters.listingType !== 'all' ? 1 : 0);
+
+  // Get type-specific counts
+  const campCount = filteredCamps.filter(c => (c.listingType || 'camp') === 'camp').length;
+  const kashtaCount = filteredCamps.filter(c => c.listingType === 'kashta').length;
 
   if (loading) {
     return (
@@ -242,6 +257,17 @@ export default function Index() {
             <p className="text-base sm:text-xl text-sand-100 mb-6 sm:mb-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700 px-2">
               {t('home.heroSubtitle')}
             </p>
+            
+            {/* Listing Type Selector */}
+            <div className="max-w-3xl mx-auto mb-6 animate-in fade-in slide-in-from-bottom-8 delay-250 duration-700">
+              <ListingTypeSelector
+                value={selectedListingType}
+                onChange={setSelectedListingType}
+                variant="tabs"
+                campCount={campCount}
+                kashtaCount={kashtaCount}
+              />
+            </div>
             
             {/* Search Bar */}
             <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-300 duration-700">
@@ -365,7 +391,12 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {t('home.campsAvailable', { count: filteredCamps.length })}
+                  {selectedListingType === 'all' 
+                    ? t('home.campsAvailable', { count: filteredCamps.length })
+                    : selectedListingType === 'camp'
+                    ? `${campCount} ${t('listingType.camp.title')}${campCount !== 1 ? 's' : ''}`
+                    : `${kashtaCount} ${t('listingType.kashta.title')}${kashtaCount !== 1 ? 's' : ''}`
+                  }
                 </h2>
                 {filters.bookingDate && (
                   <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
@@ -398,7 +429,11 @@ export default function Index() {
             {/* Camps Grid */}
             {filteredCamps.length === 0 ? (
               <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-sand-200">
-                <Tent className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                {selectedListingType === 'kashta' ? (
+                  <Waves className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                ) : (
+                  <Tent className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                )}
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('home.noCampsTitle')}</h3>
                 <p className="text-gray-600 mb-6">
                   {filters.bookingDate 
@@ -409,6 +444,7 @@ export default function Index() {
                   onClick={() => {
                     setFilters(DEFAULT_FILTERS);
                     setSearchQuery('');
+                    setSelectedListingType('all');
                   }}
                   variant="outline"
                   className="border-2 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
@@ -418,81 +454,125 @@ export default function Index() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredCamps.map((camp) => (
-                  <Card
-                    key={camp.id}
-                    className="group cursor-pointer overflow-hidden bg-white/95 backdrop-blur-sm border-2 border-sand-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
-                    onClick={() => handleCampClick(camp.id)}
-                  >
-                    {/* Camp Image */}
-                    <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={camp.photo}
-                        alt={camp.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800';
+                {filteredCamps.map((camp) => {
+                  const listingType = (camp.listingType || 'camp') as ListingType;
+                  
+                  // Render Kashta card for kashta listings
+                  if (listingType === 'kashta') {
+                    return (
+                      <KashtaListingCard
+                        key={camp.id}
+                        listing={{
+                          id: camp.id,
+                          title: camp.title,
+                          description: camp.description || '',
+                          location: camp.location,
+                          pricePerNight: camp.price,
+                          images: camp.photo ? [{ url: camp.photo, isMain: true }] : [],
+                          status: 'active',
+                          hostId: camp.hostId || '',
+                          hostName: camp.hostName || '',
+                          createdAt: camp.createdAt || new Date().toISOString(),
+                          listingType: 'kashta',
+                          seatingCapacity: camp.seatingCapacity || 10,
+                          beachfrontAccess: camp.beachfrontAccess || false,
+                          shadeType: camp.shadeType,
+                          viewType: camp.viewType,
+                          waterActivities: camp.waterActivities || [],
+                          amenities: camp.amenities || [],
+                          rating: camp.averageRating,
+                          reviewCount: camp.reviewCount,
+                          cancellationPolicy: camp.refundPolicy,
+                          views: camp.views
                         }}
+                        onClick={() => handleCampClick(camp.id)}
                       />
-                      <div className="absolute top-4 right-4 flex gap-2">
-                        <RefundPolicyBadge policy={camp.refundPolicy} />
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                        <div className="flex items-center text-white text-sm">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {camp.location}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Camp Details */}
-                    <div className="p-5">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-terracotta-600 transition-colors">
-                        {camp.title}
-                      </h3>
-
-                      {/* Rating */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <RatingStars rating={camp.averageRating || 0} />
-                        <span className="text-sm text-gray-600">
-                          ({t('home.reviewCount', { count: camp.reviewCount || 0 })})
-                        </span>
-                      </div>
-
-                      {/* Camp Info */}
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                        <div className="flex items-center">
-                          <Users className="w-4 h-4 mr-1" />
-                          {t('home.upToGuests', { count: camp.maxGuests })}
-                        </div>
-                        <div className="flex items-center">
-                          <Tent className="w-4 h-4 mr-1" />
-                          {t('home.tentsCount', { count: getTotalTents(camp.tentConfiguration) })}
-                        </div>
-                      </div>
-
-                      {/* Price - UPDATED: Changed from "per night" to "per day" */}
-                      <div className="flex items-center justify-between pt-4 border-t border-sand-200">
-                        <div>
-                          <span className="text-2xl font-bold text-terracotta-600">
-                            {camp.price} BD
-                          </span>
-                          <span className="text-sm text-gray-600 ml-1">{t('home.perDay')}</span>
-                        </div>
-                        <Button 
-                          size="sm"
-                          className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-medium"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCampClick(camp.id);
+                    );
+                  }
+                  
+                  // Render regular camp card
+                  return (
+                    <Card
+                      key={camp.id}
+                      className="group cursor-pointer overflow-hidden bg-white/95 backdrop-blur-sm border-2 border-sand-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                      onClick={() => handleCampClick(camp.id)}
+                    >
+                      {/* Camp Image */}
+                      <div className="relative h-56 overflow-hidden">
+                        <img
+                          src={camp.photo}
+                          alt={camp.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800';
                           }}
-                        >
-                          {t('home.viewDetails')}
-                        </Button>
+                        />
+                        <div className="absolute top-4 right-4 flex gap-2">
+                          <RefundPolicyBadge policy={camp.refundPolicy} />
+                        </div>
+                        <div className="absolute top-4 left-4">
+                          <Badge className="bg-terracotta-600 hover:bg-terracotta-700">
+                            <Tent className="w-3 h-3 mr-1" />
+                            {t('listingType.camp.badge')}
+                          </Badge>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                          <div className="flex items-center text-white text-sm">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            {camp.location}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+
+                      {/* Camp Details */}
+                      <div className="p-5">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-terracotta-600 transition-colors">
+                          {camp.title}
+                        </h3>
+
+                        {/* Rating */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <RatingStars rating={camp.averageRating || 0} />
+                          <span className="text-sm text-gray-600">
+                            ({t('home.reviewCount', { count: camp.reviewCount || 0 })})
+                          </span>
+                        </div>
+
+                        {/* Camp Info */}
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                          <div className="flex items-center">
+                            <Users className="w-4 h-4 mr-1" />
+                            {t('home.upToGuests', { count: camp.maxGuests })}
+                          </div>
+                          <div className="flex items-center">
+                            <Tent className="w-4 h-4 mr-1" />
+                            {t('home.tentsCount', { count: getTotalTents(camp.tentConfiguration) })}
+                          </div>
+                        </div>
+
+                        {/* Price - UPDATED: Changed from "per night" to "per day" */}
+                        <div className="flex items-center justify-between pt-4 border-t border-sand-200">
+                          <div>
+                            <span className="text-2xl font-bold text-terracotta-600">
+                              {camp.price} BD
+                            </span>
+                            <span className="text-sm text-gray-600 ml-1">{t('home.perDay')}</span>
+                          </div>
+                          <Button 
+                            size="sm"
+                            className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-medium"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCampClick(camp.id);
+                            }}
+                          >
+                            {t('home.viewDetails')}
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>

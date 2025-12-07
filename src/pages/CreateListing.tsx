@@ -16,7 +16,10 @@ import { cn } from '@/lib/utils';
 import { BAHRAIN_CAMPING_LOCATIONS, getLocationLabel } from '@/lib/locations';
 import { CancellationPolicySelector } from '@/components/CancellationPolicySelector';
 import { ImageUploadManager } from '@/components/ImageUploadManager';
+import { ListingTypeSelector } from '@/components/ListingTypeSelector';
+import { KashtaSpecificForm } from '@/components/KashtaSpecificForm';
 import type { CancellationPolicy } from '@/lib/refundCalculator';
+import type { ListingType, ShadeType, ViewType } from '@/types/listing';
 import { useTranslation } from 'react-i18next';
 
 // Bahrain-specific camp amenities organized by category
@@ -59,6 +62,9 @@ export default function CreateListing() {
   const { user, userData, loading } = useAuth();
   const { t } = useTranslation();
   
+  // Listing Type - NEW
+  const [listingType, setListingType] = useState<ListingType>('camp');
+  
   // Basic Information
   const [title, setTitle] = useState('');
   const [locationOpen, setLocationOpen] = useState(false);
@@ -80,8 +86,15 @@ export default function CreateListing() {
   const [maxGuests, setMaxGuests] = useState('');
   const [campArea, setCampArea] = useState('');
   
-  // Tent Configuration - Individual tents
+  // Tent Configuration - Individual tents (for camps only)
   const [tents, setTents] = useState<TentConfig[]>([]);
+  
+  // Kashta-specific fields - NEW
+  const [seatingCapacity, setSeatingCapacity] = useState('');
+  const [beachfrontAccess, setBeachfrontAccess] = useState(false);
+  const [shadeType, setShadeType] = useState<ShadeType | ''>('');
+  const [viewType, setViewType] = useState<ViewType | ''>('');
+  const [waterActivities, setWaterActivities] = useState<string[]>([]);
   
   // Amenities
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
@@ -321,8 +334,9 @@ export default function CreateListing() {
     setSubmitting(true);
 
     try {
-      console.log('=== Starting camp creation ===');
+      console.log('=== Starting listing creation ===');
       console.log('User ID:', user.uid);
+      console.log('Listing Type:', listingType);
       
       if (!selectedLocation) {
         toast.error('Please select a location from the dropdown');
@@ -342,10 +356,19 @@ export default function CreateListing() {
         return;
       }
 
-      if (tents.length === 0) {
-        toast.error('Please add at least one tent');
-        setSubmitting(false);
-        return;
+      // Type-specific validation
+      if (listingType === 'camp') {
+        if (tents.length === 0) {
+          toast.error('Please add at least one tent');
+          setSubmitting(false);
+          return;
+        }
+      } else if (listingType === 'kashta') {
+        if (!seatingCapacity || parseInt(seatingCapacity) < 1) {
+          toast.error('Please specify seating capacity for kashta');
+          setSubmitting(false);
+          return;
+        }
       }
 
       if (uploadedImages.length === 0) {
@@ -369,7 +392,7 @@ export default function CreateListing() {
       const mainImage = uploadedImages.find(img => img.isMain) || uploadedImages[0];
       const additionalImages = uploadedImages.filter(img => !img.isMain).map(img => img.url);
 
-      const campData = {
+      const campData: any = {
         slug,
         title,
         location: getLocationLabel(selectedLocation),
@@ -383,12 +406,6 @@ export default function CreateListing() {
         description,
         maxGuests: parseInt(maxGuests),
         campArea: campArea ? parseFloat(campArea) : undefined,
-        tents: tents,
-        tentConfiguration: {
-          large: counts.large,
-          small: counts.small,
-          entertainment: counts.entertainment,
-        },
         amenities: selectedAmenities,
         specialFeatures,
         rules,
@@ -396,15 +413,38 @@ export default function CreateListing() {
         checkInTime,
         checkOutTime,
         hostName: userData?.displayName || user.email || 'Host',
+        listingType, // NEW: Add listing type
       };
 
-      console.log('Camp data prepared:', campData);
+      // Add type-specific fields
+      if (listingType === 'camp') {
+        campData.tents = tents;
+        campData.tentConfiguration = {
+          large: counts.large,
+          small: counts.small,
+          entertainment: counts.entertainment,
+        };
+      } else if (listingType === 'kashta') {
+        campData.seatingCapacity = parseInt(seatingCapacity);
+        campData.beachfrontAccess = beachfrontAccess;
+        campData.shadeType = shadeType || undefined;
+        campData.viewType = viewType || undefined;
+        campData.waterActivities = waterActivities;
+        // Set empty tent configuration for kashta
+        campData.tentConfiguration = {
+          large: 0,
+          small: 0,
+          entertainment: 0,
+        };
+      }
+
+      console.log('Listing data prepared:', campData);
       console.log('Calling createCamp with hostId:', user.uid);
 
       const campId = await createCamp(campData, user.uid);
       
-      console.log('Camp created successfully with ID:', campId);
-      toast.success('Camp listing created successfully!');
+      console.log('Listing created successfully with ID:', campId);
+      toast.success(`${listingType === 'kashta' ? 'Kashta' : 'Camp'} listing created successfully!`);
       navigate('/host/listings');
     } catch (error) {
       const err = error as Error;
@@ -454,6 +494,22 @@ export default function CreateListing() {
 
         <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 md:p-8 shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Listing Type Selector - NEW SECTION */}
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="text-2xl">🏕️</span>
+                {t('listingType.sectionTitle')}
+              </h3>
+              <p className="text-sm text-gray-600 font-medium mb-4">
+                {t('listingType.sectionDescription')}
+              </p>
+              <ListingTypeSelector
+                value={listingType}
+                onChange={setListingType}
+                variant="cards"
+              />
+            </div>
+
             {/* Basic Information */}
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -463,12 +519,12 @@ export default function CreateListing() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="title" className="text-gray-900 font-semibold">
-                    {t('createListing.campName')} <span className="text-red-600">*</span>
+                    {listingType === 'kashta' ? t('listingType.kashta.nameLabel') : t('createListing.campName')} <span className="text-red-600">*</span>
                   </Label>
                   <Input
                     id="title"
                     type="text"
-                    placeholder={t('createListing.campName')}
+                    placeholder={listingType === 'kashta' ? t('listingType.kashta.nameLabel') : t('createListing.campName')}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
@@ -685,7 +741,7 @@ export default function CreateListing() {
                   </div>
                 </div>
 
-                {/* Image Upload Section - NEW */}
+                {/* Image Upload Section */}
                 <div className="space-y-3">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
                     <span className="text-2xl">📸</span>
@@ -760,162 +816,177 @@ export default function CreateListing() {
               </div>
             </div>
 
-            {/* Tent Configuration */}
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Tent className="w-6 h-6 text-terracotta-600" />
-                {t('createListing.capacityTents')}
-              </h3>
-              <p className="text-sm text-gray-600 font-medium mb-4">
-                {t('createListing.tents.helper', { defaultValue: 'Add tents and configure each one individually with amenities' })}
-              </p>
+            {/* Conditional: Tent Configuration (for camps) OR Kashta-Specific Form */}
+            {listingType === 'camp' ? (
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Tent className="w-6 h-6 text-terracotta-600" />
+                  {t('createListing.capacityTents')}
+                </h3>
+                <p className="text-sm text-gray-600 font-medium mb-4">
+                  {t('createListing.tents.helper', { defaultValue: 'Add tents and configure each one individually with amenities' })}
+                </p>
 
-              <div className="flex flex-wrap gap-3 mb-6">
-                <Button
-                  type="button"
-                  onClick={() => addTent('large')}
-                  variant="outline"
-                  className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('createListing.tents.addLarge')}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => addTent('small')}
-                  variant="outline"
-                  className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('createListing.tents.addSmall')}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => addTent('entertainment')}
-                  variant="outline"
-                  className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('createListing.tents.addEntertainment')}
-                </Button>
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <Button
+                    type="button"
+                    onClick={() => addTent('large')}
+                    variant="outline"
+                    className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('createListing.tents.addLarge')}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => addTent('small')}
+                    variant="outline"
+                    className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('createListing.tents.addSmall')}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => addTent('entertainment')}
+                    variant="outline"
+                    className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('createListing.tents.addEntertainment')}
+                  </Button>
+                </div>
+
+                {tents.length > 0 ? (
+                  <div className="space-y-4">
+                    {tents.map((tent, index) => (
+                      <Card key={tent.id} className="bg-sand-50 border-2 border-sand-300 p-4">
+                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Tent className="w-5 h-5 text-terracotta-600" />
+                          <h4 className="font-semibold text-gray-900">
+                            {t(
+                              tent.type === 'large'
+                                ? 'createListing.tents.largeLabel'
+                                : tent.type === 'small'
+                                ? 'createListing.tents.smallLabel'
+                                : 'createListing.tents.entertainmentLabel'
+                            )} #{index + 1}
+                          </h4>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => removeTent(tent.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-xs font-semibold text-gray-700 mb-2">Basic Features:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {(['furnished', 'carpeted', 'tv', 'sofas', 'teaSets'] as const).map((feature) => (
+                                <Button
+                                  key={feature}
+                                  type="button"
+                                  onClick={() => updateTentFeature(tent.id, feature)}
+                                  variant={tent[feature] ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={
+                                    tent[feature]
+                                      ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
+                                      : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
+                                  }
+                                >
+                                  {tent[feature] && <Check className="w-3 h-3 mr-1" />}
+                                  {feature === 'furnished' && t('createListing.tents.featureLabels.furnished')}
+                                  {feature === 'carpeted' && t('createListing.tents.featureLabels.carpeted')}
+                                  {feature === 'tv' && t('createListing.tents.featureLabels.tv')}
+                                  {feature === 'sofas' && t('createListing.tents.featureLabels.sofas')}
+                                  {feature === 'teaSets' && t('createListing.tents.featureLabels.teaSets')}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <p className="text-xs font-semibold text-gray-700 mb-2">Entertainment & Sports:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {(['pingPongTable', 'foosballTable', 'airHockeyTable', 'volleyballField', 'footballField'] as const).map((feature) => (
+                                <Button
+                                  key={feature}
+                                  type="button"
+                                  onClick={() => updateTentFeature(tent.id, feature)}
+                                  variant={tent[feature] ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={
+                                    tent[feature]
+                                      ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
+                                      : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
+                                  }
+                                >
+                                  {tent[feature] && <Check className="w-3 h-3 mr-1" />}
+                                  {feature === 'pingPongTable' && t('createListing.tents.featureLabels.pingPongTable')}
+                                  {feature === 'foosballTable' && t('createListing.tents.featureLabels.foosballTable')}
+                                  {feature === 'airHockeyTable' && t('createListing.tents.featureLabels.airHockeyTable')}
+                                  {feature === 'volleyballField' && t('createListing.tents.featureLabels.volleyballField')}
+                                  {feature === 'footballField' && t('createListing.tents.featureLabels.footballField')}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label className="text-xs font-semibold text-gray-700 mb-2 block">{t('createListing.tents.descriptionLabel', { defaultValue: 'Description (optional)' })}</Label>
+                            <Textarea
+                              value={tent.description || ''}
+                              onChange={(e) => updateTentDescription(tent.id, e.target.value)}
+                              placeholder={t('createListing.tents.descriptionPlaceholder')}
+                              rows={2}
+                              className="text-sm border-sand-300 focus:border-terracotta-500"
+                            />
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center p-8 bg-sand-50 border-2 border-sand-300 rounded-lg">
+                    <Tent className="w-12 h-12 text-sand-400 mx-auto mb-3" />
+                    <p className="text-gray-700 font-medium">{t('createListing.tents.none', { defaultValue: 'No tents added yet. Click the buttons above to add tents.' })}</p>
+                  </div>
+                )}
+
+                {tents.length > 0 && (
+                  <div className="mt-4 p-4 bg-terracotta-50 border-2 border-terracotta-200 rounded-lg">
+                    <p className="font-semibold text-gray-900 mb-2">{t('createListing.tents.sectionTitle')}</p>
+                    <p className="text-gray-800">
+                      <span className="font-bold">{counts.total}</span> {t('createListing.tents.sectionTitle')}
+                      {counts.large > 0 && <span> • {counts.large} {t('createListing.tents.largeLabel')}</span>}
+                      {counts.small > 0 && <span> • {counts.small} {t('createListing.tents.smallLabel')}</span>}
+                      {counts.entertainment > 0 && <span> • {counts.entertainment} {t('createListing.tents.entertainmentLabel')}</span>}
+                    </p>
+                  </div>
+                )}
               </div>
-
-              {tents.length > 0 ? (
-                <div className="space-y-4">
-                  {tents.map((tent, index) => (
-                    <Card key={tent.id} className="bg-sand-50 border-2 border-sand-300 p-4">
-                      <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <Tent className="w-5 h-5 text-terracotta-600" />
-                        <h4 className="font-semibold text-gray-900">
-                          {t(
-                            tent.type === 'large'
-                              ? 'createListing.tents.largeLabel'
-                              : tent.type === 'small'
-                              ? 'createListing.tents.smallLabel'
-                              : 'createListing.tents.entertainmentLabel'
-                          )} #{index + 1}
-                        </h4>
-                      </div>
-                      <Button
-                        type="button"
-                        onClick={() => removeTent(tent.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-xs font-semibold text-gray-700 mb-2">Basic Features:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {(['furnished', 'carpeted', 'tv', 'sofas', 'teaSets'] as const).map((feature) => (
-                              <Button
-                                key={feature}
-                                type="button"
-                                onClick={() => updateTentFeature(tent.id, feature)}
-                                variant={tent[feature] ? 'default' : 'outline'}
-                                size="sm"
-                                className={
-                                  tent[feature]
-                                    ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
-                                    : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
-                                }
-                              >
-                                {tent[feature] && <Check className="w-3 h-3 mr-1" />}
-                                {feature === 'furnished' && t('createListing.tents.featureLabels.furnished')}
-                                {feature === 'carpeted' && t('createListing.tents.featureLabels.carpeted')}
-                                {feature === 'tv' && t('createListing.tents.featureLabels.tv')}
-                                {feature === 'sofas' && t('createListing.tents.featureLabels.sofas')}
-                                {feature === 'teaSets' && t('createListing.tents.featureLabels.teaSets')}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-semibold text-gray-700 mb-2">Entertainment & Sports:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {(['pingPongTable', 'foosballTable', 'airHockeyTable', 'volleyballField', 'footballField'] as const).map((feature) => (
-                              <Button
-                                key={feature}
-                                type="button"
-                                onClick={() => updateTentFeature(tent.id, feature)}
-                                variant={tent[feature] ? 'default' : 'outline'}
-                                size="sm"
-                                className={
-                                  tent[feature]
-                                    ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
-                                    : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
-                                }
-                              >
-                                {tent[feature] && <Check className="w-3 h-3 mr-1" />}
-                                {feature === 'pingPongTable' && t('createListing.tents.featureLabels.pingPongTable')}
-                                {feature === 'foosballTable' && t('createListing.tents.featureLabels.foosballTable')}
-                                {feature === 'airHockeyTable' && t('createListing.tents.featureLabels.airHockeyTable')}
-                                {feature === 'volleyballField' && t('createListing.tents.featureLabels.volleyballField')}
-                                {feature === 'footballField' && t('createListing.tents.featureLabels.footballField')}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <Label className="text-xs font-semibold text-gray-700 mb-2 block">{t('createListing.tents.descriptionLabel', { defaultValue: 'Description (optional)' })}</Label>
-                          <Textarea
-                            value={tent.description || ''}
-                            onChange={(e) => updateTentDescription(tent.id, e.target.value)}
-                            placeholder={t('createListing.tents.descriptionPlaceholder')}
-                            rows={2}
-                            className="text-sm border-sand-300 focus:border-terracotta-500"
-                          />
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center p-8 bg-sand-50 border-2 border-sand-300 rounded-lg">
-                  <Tent className="w-12 h-12 text-sand-400 mx-auto mb-3" />
-                  <p className="text-gray-700 font-medium">{t('createListing.tents.none', { defaultValue: 'No tents added yet. Click the buttons above to add tents.' })}</p>
-                </div>
-              )}
-
-              {tents.length > 0 && (
-                <div className="mt-4 p-4 bg-terracotta-50 border-2 border-terracotta-200 rounded-lg">
-                  <p className="font-semibold text-gray-900 mb-2">{t('createListing.tents.sectionTitle')}</p>
-                  <p className="text-gray-800">
-                    <span className="font-bold">{counts.total}</span> {t('createListing.tents.sectionTitle')}
-                    {counts.large > 0 && <span> • {counts.large} {t('createListing.tents.largeLabel')}</span>}
-                    {counts.small > 0 && <span> • {counts.small} {t('createListing.tents.smallLabel')}</span>}
-                    {counts.entertainment > 0 && <span> • {counts.entertainment} {t('createListing.tents.entertainmentLabel')}</span>}
-                  </p>
-                </div>
-              )}
-            </div>
+            ) : (
+              <KashtaSpecificForm
+                seatingCapacity={seatingCapacity}
+                onSeatingCapacityChange={setSeatingCapacity}
+                beachfrontAccess={beachfrontAccess}
+                onBeachfrontAccessChange={setBeachfrontAccess}
+                shadeType={shadeType}
+                onShadeTypeChange={setShadeType}
+                viewType={viewType}
+                onViewTypeChange={setViewType}
+                waterActivities={waterActivities}
+                onWaterActivitiesChange={setWaterActivities}
+              />
+            )}
 
             {/* Facilities & Amenities */}
             <div>
