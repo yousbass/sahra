@@ -1,10 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, User, LogOut, Languages } from 'lucide-react';
+import { Shield, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { getUserProfile, UserProfile } from '@/lib/firestore';
 import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -22,13 +23,20 @@ export default function Header() {
   }, [user]);
 
   useEffect(() => {
-    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-  }, [i18n.language]);
+    // Set initial direction and language from localStorage or default
+    const savedLanguage = localStorage.getItem('language') || i18n.language || 'en';
+    if (savedLanguage !== i18n.language) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = savedLanguage;
+  }, []);
 
-  const toggleLang = () => {
-    const next = i18n.language === 'ar' ? 'en' : 'ar';
-    i18n.changeLanguage(next);
-  };
+  useEffect(() => {
+    // Update direction when language changes
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
 
   // Don't show header on auth pages or admin pages
   const hideHeader = location.pathname.includes('/signin') || 
@@ -61,14 +69,9 @@ export default function Header() {
 
           {/* Navigation */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={toggleLang}
-              className="border-2 border-amber-200 hover:bg-amber-50"
-            >
-              <Languages className="w-4 h-4 mr-2" />
-              {i18n.language === 'ar' ? 'AR' : 'EN'}
-            </Button>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {user ? (
               <>
                 {/* Admin Link - Only show if user is admin */}

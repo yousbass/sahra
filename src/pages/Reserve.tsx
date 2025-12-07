@@ -19,6 +19,7 @@ import { checkAvailability } from '@/lib/availability';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
 import { createPaymentSession } from '@/lib/payments';
 import { useTranslation } from 'react-i18next';
+import { useLoading } from '@/contexts/LoadingContext';
 
 export default function Reserve() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function Reserve() {
   const [searchParams] = useSearchParams();
   const { user, userData, loading } = useAuth();
   const campId = searchParams.get('camp');
+  const { showLoading, hideLoading } = useLoading();
 
   const [camp, setCamp] = useState<LegacyCamp | null>(null);
   const [loadingCamp, setLoadingCamp] = useState(true);
@@ -86,6 +88,7 @@ export default function Reserve() {
     try {
       console.log('=== LOADING CAMP FOR RESERVATION ===');
       console.log('Camp ID:', id);
+      showLoading(t('loading.fetching'));
       setLoadingCamp(true);
       
       const foundCamp = await getCampById(id);
@@ -116,6 +119,7 @@ export default function Reserve() {
       toast.error(t('reserve.toastLoadCampFailed', { error: errorMessage }));
     } finally {
       setLoadingCamp(false);
+      hideLoading();
     }
   };
 
@@ -335,6 +339,8 @@ export default function Reserve() {
     try {
       if (submitting) return;
       setSubmitting(true);
+      showLoading(t('loading.creating'));
+      
       // Create booking for single day with custom check-in/check-out times
       const nextDay = addDays(selectedDate, 1);
       const nextDayStr = format(nextDay, 'yyyy-MM-dd');
@@ -503,6 +509,7 @@ export default function Reserve() {
       toast.error(t('reserve.toastCreateFailed', { error: errorMessage }));
     } finally {
       setSubmitting(false);
+      hideLoading();
     }
   };
 
@@ -524,14 +531,8 @@ export default function Reserve() {
   };
 
   if (loading || loadingCamp) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">{t('reserve.loading')}</p>
-        </div>
-      </div>
-    );
+    // Loading is handled by CustomLoading component via useLoading hook
+    return null;
   }
 
   if (!camp) {
@@ -810,7 +811,6 @@ export default function Reserve() {
                   </div>
                   
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Reservation Created Successfully!</h3>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('reserve.paymentSuccessTitle')}</h3>
                     <p className="text-gray-700 font-medium">
                       {paymentMethod === 'cash_on_arrival'
