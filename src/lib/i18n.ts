@@ -101,7 +101,57 @@ const resources = {
         reviewDialog: 'Share your experience',
         reviewSuccess: 'Thank you for your review!',
         signInReview: 'Please sign in to write a review',
-        loadCampFailed: 'Failed to load camp details'
+        loadCampFailed: 'Failed to load camp details',
+        accommodates: 'Accommodates',
+        tentsLabel: 'Tents',
+        tentDetails: 'Tent Details',
+        tentTypes: {
+          small: 'Small Tent',
+          large: 'Large Tent',
+          entertainment: 'Entertainment Tent',
+          generic: 'Generic Tent'
+        },
+        tentFeatures: {
+          count: '{{count}} tents',
+          none: 'No features specified',
+          noDetails: 'No details available',
+          furnished: 'Furnished',
+          carpeted: 'Carpeted',
+          sofas: 'Sofas',
+          teaSets: 'Tea Sets',
+          tv: 'TV',
+          airHockey: 'Air Hockey Table',
+          foosball: 'Foosball Table',
+          pingPong: 'Ping Pong Table',
+          football: 'Football Field',
+          volleyball: 'Volleyball Field'
+        },
+        policy: {
+          flexible: {
+            name: 'Flexible',
+            description: 'Full refund if cancelled 24+ hours before check-in',
+            detail1: '24+ hours before check-in',
+            detail1Note: 'Full refund (minus service fee)',
+            detail2: 'Less than 24 hours',
+            detail2Note: 'No refund'
+          },
+          moderate: {
+            name: 'Moderate',
+            description: '50% refund if cancelled 48+ hours before check-in',
+            detail1: '48+ hours before check-in',
+            detail1Note: '50% refund',
+            detail2: 'Less than 48 hours',
+            detail2Note: 'No refund'
+          },
+          strict: {
+            name: 'Strict',
+            description: '50% refund if cancelled 7+ days before check-in',
+            detail1: '7+ days before check-in',
+            detail1Note: '50% refund',
+            detail2: 'Less than 7 days',
+            detail2Note: 'No refund'
+          }
+        }
       },
       
       // Cancellation Policy Selector
@@ -174,7 +224,8 @@ const resources = {
             pingPongTable: 'Ping Pong Table',
             footballField: 'Football Field',
             volleyballField: 'Volleyball Field'
-          }
+          },
+          helper: 'Add tents to your camp'
         },
         
         times: {
@@ -203,6 +254,10 @@ const resources = {
         locationFailed: 'Failed to get location',
         geoUnsupported: 'Geolocation is not supported by your browser',
         googleMapsUrl: 'Google Maps URL',
+        locationHelper: 'Set the location of your camp',
+        locationRequired: 'Location is required',
+        noLocation: 'No location set',
+        or: 'or',
         
         map: {
           chooseMethod: 'Choose a method to set location',
@@ -210,7 +265,9 @@ const resources = {
           pasteHelper: 'Paste a Google Maps share link here',
           setCoordinates: 'Set Coordinates',
           locationSet: 'Location set successfully',
-          fullDay: 'Full day camping experience'
+          fullDay: 'Full day camping experience',
+          coordinates: 'Coordinates',
+          parseError: 'Failed to parse coordinates'
         },
         
         photosTitle: 'Photos',
@@ -218,6 +275,7 @@ const resources = {
         
         amenitiesSection: 'Amenities',
         amenitiesHelper: 'Select all amenities available at your camp',
+        selectedAmenities: 'Selected Amenities',
         
         amenityCategories: {
           essential: 'Essential',
@@ -237,12 +295,14 @@ const resources = {
         },
         
         createListing: 'Create Listing',
-        submitting: 'Creating listing...'
+        submitting: 'Creating listing...',
+        updateFail: 'Failed to update listing'
       },
       
       // Edit Listing page
       editListing: {
         title: 'Edit Listing',
+        subtitle: 'Update your camp listing',
         loading: 'Loading listing...',
         signInRequired: 'Please sign in to edit listings',
         hostRequired: 'You need to be a host to edit listings',
@@ -253,6 +313,7 @@ const resources = {
         saveChanges: 'Save Changes',
         saving: 'Saving changes...',
         success: 'Listing updated successfully!',
+        cancelConfirm: 'Discard changes?',
         
         map: {
           geoUnsupported: 'Geolocation is not supported',
@@ -354,6 +415,7 @@ const resources = {
         manageTitle: 'My Listings',
         manageDesc: 'Edit and manage your camps',
         bookingsTitle: 'Bookings',
+        bookingsCount: '{{count}} bookings',
         bookingsCardTitle: 'Recent Bookings',
         bookingsCardDesc: 'View and manage reservations',
         analyticsTitle: 'Analytics',
@@ -395,6 +457,7 @@ const resources = {
         toastNeedReason: 'Please select a cancellation reason',
         toastSuccess: 'Booking cancelled successfully',
         toastSuccessDescNoPenalty: 'Guest will receive full refund',
+        toastSuccessDescPenalty: 'Penalty will be deducted from your next payout',
         toastFail: 'Cancellation failed',
         toastFailDesc: 'Please try again or contact support'
       },
@@ -402,13 +465,20 @@ const resources = {
       // Host Listings
       hostListings: {
         title: 'My Listings',
+        count: '{{count}} listings',
         signInRequired: 'Please sign in to view listings',
         hostRequired: 'You need to be a host to view listings',
         loading: 'Loading your listings...',
+        loadFail: 'Failed to load listings',
         emptyDesc: 'You haven\'t created any listings yet',
         createFirst: 'Create your first listing',
         backToDashboard: 'Back to Dashboard',
         deleteSuccess: 'Listing deleted successfully',
+        deleteFail: 'Failed to delete listing',
+        deleteConfirm: 'Are you sure you want to delete this listing?',
+        more: 'More',
+        guestsLabel: 'guests',
+        tentsLabel: 'tents',
         status: {
           active: 'Active',
           pending: 'Pending Approval'
@@ -416,6 +486,7 @@ const resources = {
         buttons: {
           view: 'View',
           edit: 'Edit',
+          newListing: 'New Listing',
           manageAvailability: 'Manage Availability'
         }
       },
@@ -485,16 +556,30 @@ const resources = {
         name: 'Full Name',
         phone: 'Phone Number',
         bio: 'Bio',
+        noBio: 'No bio provided',
+        notProvided: 'Not provided',
         saveChanges: 'Save Changes',
+        saving: 'Saving...',
         cancel: 'Cancel',
         becomeHost: 'Become a Host',
         hostActive: 'Host Account Active',
+        changeEmail: 'Change Email',
+        verified: 'Verified',
+        active: 'Active',
+        memberSince: 'Member since',
+        statsTitle: 'Stats',
+        totalBookings: 'Total Bookings',
+        listings: 'Listings',
+        accountStatus: 'Account Status',
         password: {
           title: 'Change Password',
+          description: 'Update your password',
           current: 'Current Password',
           new: 'New Password',
           confirm: 'Confirm New Password',
-          change: 'Change Password'
+          change: 'Change Password',
+          changing: 'Changing...',
+          lastChanged: 'Last changed'
         },
         toasts: {
           updated: 'Profile updated successfully',
@@ -590,6 +675,11 @@ const resources = {
         toastSelectDateSuccess: 'Date selected! Continue to complete your booking.',
         toastSignInAvailability: 'Sign in is required to check availability.',
         toastCheckAvailabilityFailed: 'Failed to check availability'
+      },
+      
+      // Common
+      common: {
+        cancel: 'Cancel'
       },
       
       // Status labels
@@ -707,7 +797,57 @@ const resources = {
         reviewDialog: 'شارك تجربتك',
         reviewSuccess: 'شكراً لك على مراجعتك!',
         signInReview: 'يرجى تسجيل الدخول لكتابة مراجعة',
-        loadCampFailed: 'فشل تحميل تفاصيل المخيم'
+        loadCampFailed: 'فشل تحميل تفاصيل المخيم',
+        accommodates: 'يستوعب',
+        tentsLabel: 'خيام',
+        tentDetails: 'تفاصيل الخيمة',
+        tentTypes: {
+          small: 'خيمة صغيرة',
+          large: 'خيمة كبيرة',
+          entertainment: 'خيمة ترفيهية',
+          generic: 'خيمة عامة'
+        },
+        tentFeatures: {
+          count: '{{count}} خيمة',
+          none: 'لا توجد مميزات محددة',
+          noDetails: 'لا توجد تفاصيل متاحة',
+          furnished: 'مفروشة',
+          carpeted: 'مفروشة بالسجاد',
+          sofas: 'أرائك',
+          teaSets: 'أطقم شاي',
+          tv: 'تلفزيون',
+          airHockey: 'طاولة هوكي هوائي',
+          foosball: 'طاولة كرة القدم',
+          pingPong: 'طاولة تنس الطاولة',
+          football: 'ملعب كرة قدم',
+          volleyball: 'ملعب كرة طائرة'
+        },
+        policy: {
+          flexible: {
+            name: 'مرن',
+            description: 'استرداد كامل إذا تم الإلغاء قبل 24+ ساعة من تسجيل الوصول',
+            detail1: '24+ ساعة قبل تسجيل الوصول',
+            detail1Note: 'استرداد كامل (بعد خصم رسوم الخدمة)',
+            detail2: 'أقل من 24 ساعة',
+            detail2Note: 'لا يوجد استرداد'
+          },
+          moderate: {
+            name: 'معتدل',
+            description: 'استرداد 50٪ إذا تم الإلغاء قبل 48+ ساعة من تسجيل الوصول',
+            detail1: '48+ ساعة قبل تسجيل الوصول',
+            detail1Note: 'استرداد 50٪',
+            detail2: 'أقل من 48 ساعة',
+            detail2Note: 'لا يوجد استرداد'
+          },
+          strict: {
+            name: 'صارم',
+            description: 'استرداد 50٪ إذا تم الإلغاء قبل 7+ أيام من تسجيل الوصول',
+            detail1: '7+ أيام قبل تسجيل الوصول',
+            detail1Note: 'استرداد 50٪',
+            detail2: 'أقل من 7 أيام',
+            detail2Note: 'لا يوجد استرداد'
+          }
+        }
       },
       
       // Cancellation Policy Selector
@@ -780,7 +920,8 @@ const resources = {
             pingPongTable: 'طاولة تنس الطاولة',
             footballField: 'ملعب كرة قدم',
             volleyballField: 'ملعب كرة طائرة'
-          }
+          },
+          helper: 'أضف خيام إلى مخيمك'
         },
         
         times: {
@@ -809,6 +950,10 @@ const resources = {
         locationFailed: 'فشل الحصول على الموقع',
         geoUnsupported: 'تحديد الموقع الجغرافي غير مدعوم من متصفحك',
         googleMapsUrl: 'رابط خرائط جوجل',
+        locationHelper: 'حدد موقع مخيمك',
+        locationRequired: 'الموقع مطلوب',
+        noLocation: 'لم يتم تحديد الموقع',
+        or: 'أو',
         
         map: {
           chooseMethod: 'اختر طريقة لتحديد الموقع',
@@ -816,7 +961,9 @@ const resources = {
           pasteHelper: 'الصق رابط مشاركة خرائط جوجل هنا',
           setCoordinates: 'تعيين الإحداثيات',
           locationSet: 'تم تعيين الموقع بنجاح',
-          fullDay: 'تجربة تخييم ليوم كامل'
+          fullDay: 'تجربة تخييم ليوم كامل',
+          coordinates: 'الإحداثيات',
+          parseError: 'فشل تحليل الإحداثيات'
         },
         
         photosTitle: 'الصور',
@@ -824,6 +971,7 @@ const resources = {
         
         amenitiesSection: 'المرافق',
         amenitiesHelper: 'حدد جميع المرافق المتاحة في مخيمك',
+        selectedAmenities: 'المرافق المحددة',
         
         amenityCategories: {
           essential: 'أساسي',
@@ -843,12 +991,14 @@ const resources = {
         },
         
         createListing: 'إنشاء إعلان',
-        submitting: 'جارٍ إنشاء الإعلان...'
+        submitting: 'جارٍ إنشاء الإعلان...',
+        updateFail: 'فشل تحديث الإعلان'
       },
       
       // Edit Listing page
       editListing: {
         title: 'تعديل الإعلان',
+        subtitle: 'تحديث إعلان المخيم',
         loading: 'جارٍ تحميل الإعلان...',
         signInRequired: 'يرجى تسجيل الدخول لتعديل الإعلانات',
         hostRequired: 'تحتاج إلى أن تكون مضيفاً لتعديل الإعلانات',
@@ -859,6 +1009,7 @@ const resources = {
         saveChanges: 'حفظ التغييرات',
         saving: 'جارٍ حفظ التغييرات...',
         success: 'تم تحديث الإعلان بنجاح!',
+        cancelConfirm: 'تجاهل التغييرات؟',
         
         map: {
           geoUnsupported: 'تحديد الموقع الجغرافي غير مدعوم',
@@ -960,6 +1111,7 @@ const resources = {
         manageTitle: 'إعلاناتي',
         manageDesc: 'تعديل وإدارة مخيماتك',
         bookingsTitle: 'الحجوزات',
+        bookingsCount: '{{count}} حجز',
         bookingsCardTitle: 'الحجوزات الأخيرة',
         bookingsCardDesc: 'عرض وإدارة الحجوزات',
         analyticsTitle: 'التحليلات',
@@ -1001,6 +1153,7 @@ const resources = {
         toastNeedReason: 'يرجى اختيار سبب الإلغاء',
         toastSuccess: 'تم إلغاء الحجز بنجاح',
         toastSuccessDescNoPenalty: 'سيحصل الضيف على استرداد كامل',
+        toastSuccessDescPenalty: 'سيتم خصم الغرامة من دفعتك التالية',
         toastFail: 'فشل الإلغاء',
         toastFailDesc: 'يرجى المحاولة مرة أخرى أو الاتصال بالدعم'
       },
@@ -1008,13 +1161,20 @@ const resources = {
       // Host Listings
       hostListings: {
         title: 'إعلاناتي',
+        count: '{{count}} إعلان',
         signInRequired: 'يرجى تسجيل الدخول لعرض الإعلانات',
         hostRequired: 'تحتاج إلى أن تكون مضيفاً لعرض الإعلانات',
         loading: 'جارٍ تحميل إعلاناتك...',
+        loadFail: 'فشل تحميل الإعلانات',
         emptyDesc: 'لم تقم بإنشاء أي إعلانات بعد',
         createFirst: 'أنشئ إعلانك الأول',
         backToDashboard: 'العودة للوحة التحكم',
         deleteSuccess: 'تم حذف الإعلان بنجاح',
+        deleteFail: 'فشل حذف الإعلان',
+        deleteConfirm: 'هل أنت متأكد من حذف هذا الإعلان؟',
+        more: 'المزيد',
+        guestsLabel: 'ضيوف',
+        tentsLabel: 'خيام',
         status: {
           active: 'نشط',
           pending: 'في انتظار الموافقة'
@@ -1022,6 +1182,7 @@ const resources = {
         buttons: {
           view: 'عرض',
           edit: 'تعديل',
+          newListing: 'إعلان جديد',
           manageAvailability: 'إدارة التوفر'
         }
       },
@@ -1091,16 +1252,30 @@ const resources = {
         name: 'الاسم الكامل',
         phone: 'رقم الهاتف',
         bio: 'نبذة',
+        noBio: 'لا توجد نبذة',
+        notProvided: 'غير متوفر',
         saveChanges: 'حفظ التغييرات',
+        saving: 'جارٍ الحفظ...',
         cancel: 'إلغاء',
         becomeHost: 'كن مضيفاً',
         hostActive: 'حساب المضيف نشط',
+        changeEmail: 'تغيير البريد الإلكتروني',
+        verified: 'موثق',
+        active: 'نشط',
+        memberSince: 'عضو منذ',
+        statsTitle: 'الإحصائيات',
+        totalBookings: 'إجمالي الحجوزات',
+        listings: 'الإعلانات',
+        accountStatus: 'حالة الحساب',
         password: {
           title: 'تغيير كلمة المرور',
+          description: 'تحديث كلمة المرور',
           current: 'كلمة المرور الحالية',
           new: 'كلمة المرور الجديدة',
           confirm: 'تأكيد كلمة المرور الجديدة',
-          change: 'تغيير كلمة المرور'
+          change: 'تغيير كلمة المرور',
+          changing: 'جارٍ التغيير...',
+          lastChanged: 'آخر تغيير'
         },
         toasts: {
           updated: 'تم تحديث الملف الشخصي بنجاح',
@@ -1196,6 +1371,11 @@ const resources = {
         toastSelectDateSuccess: 'تم اختيار التاريخ! أكمل حجزك.',
         toastSignInAvailability: 'يجب تسجيل الدخول للتحقق من التوفر.',
         toastCheckAvailabilityFailed: 'تعذر التحقق من التوفر'
+      },
+      
+      // Common
+      common: {
+        cancel: 'إلغاء'
       },
       
       // Status labels
