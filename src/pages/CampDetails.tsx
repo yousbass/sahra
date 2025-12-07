@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MapPin, Wifi, Utensils, Wind, Tent, ArrowLeft, Users, Home, Check, Loader2, Star as StarIcon, ShieldCheck, XCircle, Clock } from 'lucide-react';
+import { MapPin, Wifi, Utensils, Wind, Tent, ArrowLeft, Users, Home, Check, Loader2, Star as StarIcon, ShieldCheck, XCircle, Clock, Waves, Umbrella, Eye } from 'lucide-react';
 import { getCampById, canUserReview, createReview } from '@/lib/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -83,6 +83,8 @@ export default function CampDetails() {
         
         console.log("DEBUG: legacyCamp checkInTime:", defaultCheckInTime);
         console.log("DEBUG: legacyCamp checkOutTime:", defaultCheckOutTime);
+        console.log("DEBUG: listingType:", legacyCamp.listingType);
+        
         setCamp({
           ...legacyCamp,
           checkInTime: defaultCheckInTime,
@@ -169,6 +171,8 @@ export default function CampDetails() {
     if (lower.includes('meal') || lower.includes('food') || lower.includes('dining')) return <Utensils className="w-5 h-5" />;
     if (lower.includes('air') || lower.includes('ac') || lower.includes('conditioning')) return <Wind className="w-5 h-5" />;
     if (lower.includes('tent') || lower.includes('accommodation')) return <Tent className="w-5 h-5" />;
+    if (lower.includes('umbrella') || lower.includes('shade')) return <Umbrella className="w-5 h-5" />;
+    if (lower.includes('water') || lower.includes('beach') || lower.includes('sea')) return <Waves className="w-5 h-5" />;
     return <StarIcon className="w-5 h-5" />;
   };
 
@@ -248,9 +252,15 @@ export default function CampDetails() {
     );
   }
 
-  const totalTents = (camp.tentConfiguration?.large || 0) + 
-                     (camp.tentConfiguration?.small || 0) + 
-                     (camp.tentConfiguration?.entertainment || 0);
+  // Determine listing type
+  const isKashta = camp.listingType === 'kashta';
+  
+  // Calculate total tents (only for camps)
+  const totalTents = !isKashta ? (
+    (camp.tentConfiguration?.large || 0) + 
+    (camp.tentConfiguration?.small || 0) + 
+    (camp.tentConfiguration?.entertainment || 0)
+  ) : 0;
 
   const hasReviews = camp.reviewCount && camp.reviewCount > 0;
   const tentDetails = (camp as unknown as { tents?: TentDetail[] }).tents || [];
@@ -267,6 +277,13 @@ export default function CampDetails() {
                               camp.refundPolicy === 'non-refundable' ? 'strict' : 
                               'moderate') as CancellationPolicy;
   const policyDetails = getPolicyDetails(cancellationPolicy);
+
+  // Get kashta-specific fields
+  const seatingCapacity = camp.seatingCapacity || 0;
+  const beachfrontAccess = camp.beachfrontAccess || false;
+  const shadeType = camp.shadeType;
+  const viewType = camp.viewType;
+  const waterActivities = camp.waterActivities || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200">
@@ -293,6 +310,21 @@ export default function CampDetails() {
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
           <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-3 mb-3">
+              <Badge className={`${isKashta ? 'bg-blue-600 hover:bg-blue-700' : 'bg-terracotta-600 hover:bg-terracotta-700'} text-white font-semibold px-3 py-1`}>
+                {isKashta ? (
+                  <>
+                    <Waves className="w-4 h-4 mr-1" />
+                    {t('listingType.kashta.badge')}
+                  </>
+                ) : (
+                  <>
+                    <Tent className="w-4 h-4 mr-1" />
+                    {t('listingType.camp.badge')}
+                  </>
+                )}
+              </Badge>
+            </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
               {camp.title}
             </h1>
@@ -321,57 +353,116 @@ export default function CampDetails() {
                 {t('reserve.bookingUnavailableDesc', { status: camp.status || 'pending' })}
               </Card>
             )}
-            {/* Camp Overview */}
-            {(camp.maxGuests || totalTents > 0) && (
-              <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.overview')}</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {camp.maxGuests && (
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
-                      <Users className="w-6 h-6 text-terracotta-600" />
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">{camp.maxGuests}</p>
-                        <p className="text-sm text-gray-700 font-medium">{t('campDetails.maxGuests')}</p>
-                      </div>
+            
+            {/* Overview */}
+            <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.overview')}</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {/* Capacity */}
+                {(isKashta ? seatingCapacity : camp.maxGuests) && (
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
+                    <Users className="w-6 h-6 text-terracotta-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {isKashta ? seatingCapacity : camp.maxGuests}
+                      </p>
+                      <p className="text-sm text-gray-700 font-medium">
+                        {isKashta ? t('listingType.kashta.seatingCapacity') : t('campDetails.maxGuests')}
+                      </p>
                     </div>
-                  )}
-                  {totalTents > 0 && (
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
-                      <Tent className="w-6 h-6 text-terracotta-600" />
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">{totalTents}</p>
-                        <p className="text-sm text-gray-700 font-medium">{t('campDetails.totalTents')}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
                 
-                {/* Camp Hours */}
-                <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="w-5 h-5 text-terracotta-600" />
-                    <h3 className="text-lg font-bold text-gray-900">{t('campDetails.campHours')}</h3>
+                {/* Tents (Camp only) */}
+                {!isKashta && totalTents > 0 && (
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
+                    <Tent className="w-6 h-6 text-terracotta-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{totalTents}</p>
+                      <p className="text-sm text-gray-700 font-medium">{t('campDetails.totalTents')}</p>
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-gray-900 font-semibold">
-                      {t('campDetails.checkIn')} <span className="text-terracotta-600">{checkInTime}</span>
-                    </p>
-                    <p className="text-gray-900 font-semibold">
-                      {t('campDetails.checkOut')} <span className="text-terracotta-600">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
-                    </p>
+                )}
+                
+                {/* Beachfront Access (Kashta only) */}
+                {isKashta && (
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-blue-50 rounded-lg border-2 border-sand-300">
+                    <Waves className="w-6 h-6 text-blue-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{beachfrontAccess ? '✓' : '✗'}</p>
+                      <p className="text-sm text-gray-700 font-medium">{t('listingType.kashta.beachfrontAccess')}</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {t('campDetails.fullDayHint')}
+                )}
+                
+                {/* View Type (Kashta only) */}
+                {isKashta && viewType && (
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-blue-50 rounded-lg border-2 border-sand-300">
+                    <Eye className="w-6 h-6 text-blue-600" />
+                    <div>
+                      <p className="text-lg font-bold text-gray-900 capitalize">{viewType}</p>
+                      <p className="text-sm text-gray-700 font-medium">{t('listingType.kashta.viewType')}</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Shade Type (Kashta only) */}
+                {isKashta && shadeType && (
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-blue-50 rounded-lg border-2 border-sand-300">
+                    <Umbrella className="w-6 h-6 text-blue-600" />
+                    <div>
+                      <p className="text-lg font-bold text-gray-900 capitalize">{shadeType}</p>
+                      <p className="text-sm text-gray-700 font-medium">{t('listingType.kashta.shadeType')}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Hours */}
+              <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-5 h-5 text-terracotta-600" />
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {isKashta ? t('listingType.kashta.hours') : t('campDetails.campHours')}
+                  </h3>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-gray-900 font-semibold">
+                    {t('campDetails.checkIn')} <span className="text-terracotta-600">{checkInTime}</span>
+                  </p>
+                  <p className="text-gray-900 font-semibold">
+                    {t('campDetails.checkOut')} <span className="text-terracotta-600">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
                   </p>
                 </div>
-              </Card>
-            )}
+                <p className="text-sm text-gray-600 mt-2">
+                  {t('campDetails.fullDayHint')}
+                </p>
+              </div>
+            </Card>
 
             {/* Description */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.about')}</h2>
               <p className="text-gray-700 leading-relaxed font-medium">{camp.description}</p>
             </Card>
+
+            {/* Water Activities (Kashta only) */}
+            {isKashta && waterActivities.length > 0 && (
+              <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('listingType.kashta.waterActivities')}</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {waterActivities.map((activity, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-blue-50 to-sand-50 rounded-lg border-2 border-blue-200"
+                    >
+                      <Waves className="w-5 h-5 text-blue-600" />
+                      <span className="text-sm font-semibold text-gray-900">{activity}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
 
             {/* Cancellation Policy */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
@@ -448,8 +539,8 @@ export default function CampDetails() {
               )}
             </Card>
 
-            {/* Tent Details */}
-            {tentDetails.length > 0 && (
+            {/* Tent Details (Camp only) */}
+            {!isKashta && tentDetails.length > 0 && (
               <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-2xl font-bold text-gray-900">{t('campDetails.tentDetails', { defaultValue: 'Tent Details' })}</h2>
@@ -567,11 +658,14 @@ export default function CampDetails() {
                 <p className="text-sm text-gray-600 font-medium">{t('campDetails.pricePerDay')}</p>
               </div>
 
-              {camp.maxGuests && (
+              {(isKashta ? seatingCapacity : camp.maxGuests) && (
                 <div className="mb-4 p-3 bg-sand-50 rounded-lg border border-sand-300">
                   <p className="text-sm text-gray-900 font-semibold">
                     <Users className="w-4 h-4 inline mr-1" />
-                    {t('campDetails.accommodates', { count: camp.maxGuests })}
+                    {isKashta 
+                      ? t('listingType.kashta.accommodates', { count: seatingCapacity })
+                      : t('campDetails.accommodates', { count: camp.maxGuests })
+                    }
                   </p>
                 </div>
               )}
