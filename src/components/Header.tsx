@@ -1,12 +1,17 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, User, LogOut } from 'lucide-react';
+import { Shield, User, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { getUserProfile, UserProfile } from '@/lib/firestore';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
-import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -53,83 +58,102 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-amber-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={cn(
-            'flex items-center gap-3 flex-wrap h-auto md:h-16 md:flex-nowrap',
-            i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row',
-            'justify-center md:justify-between'
-          )}
-        >
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">S</span>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg sm:text-xl">S</span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-terracotta-600 to-amber-600 bg-clip-text text-transparent">
+            <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-terracotta-600 to-amber-600 bg-clip-text text-transparent">
               {t('header.brand')}
             </span>
           </button>
 
           {/* Navigation */}
-          <div
-            className={cn(
-              'flex items-center gap-2 flex-wrap w-full md:w-auto',
-              i18n.language === 'ar' ? 'justify-start md:justify-end' : 'justify-end'
-            )}
-          >
+          <div className="flex items-center gap-1.5 sm:gap-3">
             {/* Language Switcher */}
             <LanguageSwitcher />
             
             {user ? (
               <>
-                {/* Admin Link - Only show if user is admin */}
-                {userProfile?.isAdmin && (
+                {/* Desktop Navigation */}
+                <div className="hidden md:flex items-center gap-2">
+                  {userProfile?.isAdmin && (
+                    <Button
+                      onClick={() => navigate('/admin')}
+                      variant="outline"
+                      size="sm"
+                      className="border-2 border-terracotta-500 text-terracotta-700 hover:bg-terracotta-50 font-semibold"
+                    >
+                      <Shield className="w-4 h-4 ltr:mr-1.5 rtl:ml-1.5" />
+                      <span className="hidden lg:inline">{t('header.admin')}</span>
+                    </Button>
+                  )}
+
                   <Button
-                    onClick={() => navigate('/admin')}
+                    onClick={() => navigate('/profile')}
                     variant="outline"
-                    className="border-2 border-terracotta-500 text-terracotta-700 hover:bg-terracotta-50 font-semibold"
+                    size="sm"
+                    className="border-2 border-amber-300 hover:bg-amber-50"
                   >
-                    <Shield className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
-                    {t('header.admin')}
+                    <User className="w-4 h-4 ltr:mr-1.5 rtl:ml-1.5" />
+                    <span className="hidden lg:inline">{t('header.profile')}</span>
                   </Button>
-                )}
 
-                {/* Profile Button */}
-                <Button
-                  onClick={() => navigate('/profile')}
-                  variant="outline"
-                  className="border-2 border-amber-300 hover:bg-amber-50"
-                >
-                  <User className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
-                  {t('header.profile')}
-                </Button>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    size="sm"
+                    className="border-2 border-gray-300 hover:bg-gray-50"
+                  >
+                    <LogOut className="w-4 h-4 ltr:mr-1.5 rtl:ml-1.5" />
+                    <span className="hidden lg:inline">{t('header.signOut')}</span>
+                  </Button>
+                </div>
 
-                {/* Sign Out Button */}
-                <Button
-                  onClick={handleSignOut}
-                  variant="outline"
-                  className="border-2 border-gray-300 hover:bg-gray-50"
-                >
-                  <LogOut className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
-                  {t('header.signOut')}
-                </Button>
+                {/* Mobile Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="md:hidden">
+                    <Button variant="outline" size="sm" className="border-2 border-amber-300">
+                      <Menu className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    {userProfile?.isAdmin && (
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Shield className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                        {t('header.admin')}
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      <User className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                      {t('header.profile')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                      {t('header.signOut')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <>
                 <Button
                   onClick={() => navigate('/signin')}
                   variant="outline"
-                  className="border-2 border-amber-300 hover:bg-amber-50"
+                  size="sm"
+                  className="border-2 border-amber-300 hover:bg-amber-50 text-xs sm:text-sm px-2 sm:px-4"
                 >
                   {t('header.signIn')}
                 </Button>
                 <Button
                   onClick={() => navigate('/signup')}
-                  className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
+                  size="sm"
+                  className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-xs sm:text-sm px-2 sm:px-4"
                 >
                   {t('header.signUp')}
                 </Button>
