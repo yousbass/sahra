@@ -16,6 +16,7 @@ const resources = {
         fetching: 'Fetching data...',
         processing: 'Processing...'
       },
+      
       // NotFound page
       notFound: {
         title: '404',
@@ -24,6 +25,40 @@ const resources = {
         returnHome: 'Return Home',
         goBack: 'Go Back'
       },
+      
+      // Auth - Sign In page
+      auth: {
+        welcomeBack: 'Welcome Back',
+        signInSubtitle: 'Sign in to access your account',
+        email: 'Email Address',
+        password: 'Password',
+        forgot: 'Forgot Password?',
+        signIn: 'Sign In',
+        signingIn: 'Signing in...',
+        sending: 'Sending...',
+        orContinue: 'Or continue with',
+        google: 'Continue with Google',
+        noAccount: "Don't have an account?",
+        signUp: 'Sign Up',
+        enterEmailFirst: 'Please enter your email first'
+      },
+      
+      // Auth - Sign Up page
+      authSignUp: {
+        join: 'Join Sahra',
+        subtitle: 'Create your account to start booking',
+        fullName: 'Full Name',
+        email: 'Email Address',
+        password: 'Password',
+        passwordHint: 'At least 6 characters',
+        createAccount: 'Create Account',
+        creating: 'Creating account...',
+        orContinue: 'Or continue with',
+        google: 'Continue with Google',
+        haveAccount: 'Already have an account?',
+        signIn: 'Sign In'
+      },
+      
       // Bookings User page
       bookingsUser: {
         title: 'My Bookings',
@@ -39,20 +74,442 @@ const resources = {
         statusTitle: 'Booking Status',
         statusDesc: 'Current reservation status'
       },
+      
+      // Camp Details page
+      campDetails: {
+        loading: 'Loading camp details...',
+        notFound: 'Camp not found',
+        back: 'Back to Search',
+        backToSearch: 'Back to Search',
+        pendingApproval: 'This listing is pending approval',
+        overview: 'Overview',
+        about: 'About this camp',
+        amenities: 'Amenities',
+        reviews: 'Reviews',
+        campHours: 'Camp Hours',
+        checkIn: 'Check-in',
+        checkOut: 'Check-out',
+        nextDay: 'next day',
+        fullDayHint: 'Full day experience from morning to next day',
+        maxGuests: 'Max Guests',
+        totalTents: 'Total Tents',
+        pricePerDay: 'per day',
+        reserveNow: 'Reserve Now',
+        cancellationPolicy: 'Cancellation Policy',
+        refundNote: 'Free cancellation within policy terms',
+        writeReview: 'Write a Review',
+        reviewDialog: 'Share your experience',
+        reviewSuccess: 'Thank you for your review!',
+        signInReview: 'Please sign in to write a review',
+        loadCampFailed: 'Failed to load camp details'
+      },
+      
+      // Cancellation Policy Selector
+      cancelSelector: {
+        title: 'Cancellation Policy',
+        subtitle: 'Choose how flexible you want to be with cancellations',
+        mostPopular: 'Most Popular',
+        flexible: {
+          name: 'Flexible',
+          line1: 'Full refund if cancelled 24 hours before check-in',
+          line2: '50% refund if cancelled within 24 hours'
+        },
+        moderate: {
+          name: 'Moderate',
+          line1: 'Full refund if cancelled 5 days before check-in',
+          line2: '50% refund if cancelled 2-5 days before'
+        },
+        strict: {
+          name: 'Strict',
+          line1: 'Full refund if cancelled 7 days before check-in',
+          line2: 'No refund if cancelled within 7 days'
+        }
+      },
+      
+      // Create Listing page
+      createListing: {
+        title: 'Create New Listing',
+        subtitle: 'Share your camping space with travelers',
+        signInRequired: 'Please sign in to create a listing',
+        hostRequired: 'You need to be a host to create listings',
+        basicInfo: 'Basic Information',
+        campName: 'Camp Name',
+        campLocation: 'Camp Location',
+        campArea: 'Camp Area',
+        campAreaPlaceholder: 'e.g., Al-Qarra, Northern Region',
+        description: 'Description',
+        descriptionPlaceholder: 'Describe your camping space, what makes it special, nearby attractions...',
+        
+        capacity: {
+          title: 'Capacity & Tents',
+          maxGuestsHelper: 'Maximum number of guests your camp can accommodate',
+          areaHelper: 'Total area available for camping activities'
+        },
+        
+        capacityTents: 'Capacity & Tents',
+        maxGuests: 'Maximum Guests',
+        maxGuestsPlaceholder: 'e.g., 20',
+        
+        tents: {
+          sectionTitle: 'Tent Configuration',
+          largeLabel: 'Large Tents',
+          smallLabel: 'Small Tents',
+          entertainmentLabel: 'Entertainment Tents',
+          genericLabel: 'Generic Tents',
+          none: 'None',
+          addLarge: 'Add Large Tent',
+          addSmall: 'Add Small Tent',
+          addEntertainment: 'Add Entertainment Tent',
+          descriptionLabel: 'Description',
+          descriptionPlaceholder: 'Describe this tent...',
+          featuresTitle: 'Features',
+          featureLabels: {
+            furnished: 'Furnished',
+            carpeted: 'Carpeted',
+            sofas: 'Sofas',
+            teaSets: 'Tea Sets',
+            tv: 'TV',
+            airHockeyTable: 'Air Hockey Table',
+            foosballTable: 'Foosball Table',
+            pingPongTable: 'Ping Pong Table',
+            footballField: 'Football Field',
+            volleyballField: 'Volleyball Field'
+          }
+        },
+        
+        times: {
+          helper: 'Set your check-in and check-out times',
+          checkInHelper: 'When guests can arrive',
+          checkOutHelper: 'When guests should leave (next day)'
+        },
+        
+        checkIn: 'Check-in Time',
+        checkOut: 'Check-out Time',
+        nextDay: 'next day',
+        
+        pricing: {
+          perDay: 'Price per Day',
+          helper: 'Set your daily rate in BHD'
+        },
+        
+        price: 'Price per Day (BHD)',
+        pricePlaceholder: 'e.g., 50',
+        
+        selectLocation: 'Select Location',
+        searchLocations: 'Search locations...',
+        useMyLocation: 'Use My Current Location',
+        gettingLocation: 'Getting your location...',
+        locationCaptured: 'Location captured!',
+        locationFailed: 'Failed to get location',
+        geoUnsupported: 'Geolocation is not supported by your browser',
+        googleMapsUrl: 'Google Maps URL',
+        
+        map: {
+          chooseMethod: 'Choose a method to set location',
+          pasteLink: 'Paste Google Maps Link',
+          pasteHelper: 'Paste a Google Maps share link here',
+          setCoordinates: 'Set Coordinates',
+          locationSet: 'Location set successfully',
+          fullDay: 'Full day camping experience'
+        },
+        
+        photosTitle: 'Photos',
+        photosHelper: 'Add photos of your camp (at least 3 photos)',
+        
+        amenitiesSection: 'Amenities',
+        amenitiesHelper: 'Select all amenities available at your camp',
+        
+        amenityCategories: {
+          essential: 'Essential',
+          comfort: 'Comfort',
+          cooking: 'Cooking',
+          entertainment: 'Entertainment',
+          activities: 'Activities',
+          other: 'Other'
+        },
+        
+        featuresRules: 'Features & Rules',
+        specialFeatures: 'Special Features',
+        rules: 'Camp Rules',
+        
+        sections: {
+          details: 'Details'
+        },
+        
+        createListing: 'Create Listing',
+        submitting: 'Creating listing...'
+      },
+      
+      // Edit Listing page
+      editListing: {
+        title: 'Edit Listing',
+        loading: 'Loading listing...',
+        signInRequired: 'Please sign in to edit listings',
+        hostRequired: 'You need to be a host to edit listings',
+        invalidId: 'Invalid listing ID',
+        notFound: 'Listing not found',
+        noPermission: 'You do not have permission to edit this listing',
+        back: 'Back to My Listings',
+        saveChanges: 'Save Changes',
+        saving: 'Saving changes...',
+        success: 'Listing updated successfully!',
+        
+        map: {
+          geoUnsupported: 'Geolocation is not supported',
+          unableLocation: 'Unable to get location',
+          parseError: 'Failed to parse coordinates'
+        },
+        
+        validations: {
+          locationRequired: 'Please set a location for your camp',
+          coordinatesRequired: 'Location coordinates are required',
+          maxGuests: 'Maximum guests must be at least 1',
+          tents: 'Please add at least one tent',
+          images: 'Please add at least 3 photos',
+          uploading: 'Please wait for images to finish uploading'
+        }
+      },
+      
+      // Filters
+      filters: {
+        location: 'Location',
+        bookingDate: 'Booking Date',
+        selectDate: 'Select a date',
+        clearDate: 'Clear date',
+        findAvailable: 'Find available camps',
+        priceRange: 'Price Range',
+        up: 'Up to',
+        minGuests: 'Min. Guests',
+        tentTypes: 'Tent Types',
+        largeTents: 'Large Tents',
+        smallTents: 'Small Tents',
+        entertainmentTents: 'Entertainment Tents',
+        amenities: 'Amenities',
+        minRating: 'Minimum Rating',
+        allRatings: 'All Ratings',
+        apply: 'Apply Filters',
+        reset: 'Reset'
+      },
+      
+      // Header
       header: {
         brand: 'Sahra',
         admin: 'Admin',
         profile: 'Profile',
         signOut: 'Sign Out',
         signIn: 'Sign In',
-        signUp: 'Sign Up',
+        signUp: 'Sign Up'
       },
+      
+      // Navigation
       nav: {
         search: 'Search',
         bookings: 'Bookings',
         host: 'Host',
-        profile: 'Profile',
+        profile: 'Profile'
       },
+      
+      // Home page
+      home: {
+        heroTitleTop: 'Discover Your Perfect',
+        heroTitleBottom: 'Desert Camping Experience',
+        heroSubtitle: 'Book unique camping spots across Bahrain',
+        searchPlaceholder: 'Search by location...',
+        datePlaceholder: 'Select date',
+        searchButton: 'Search',
+        filters: 'Filters',
+        sortBy: 'Sort by',
+        sortNewest: 'Newest',
+        sortPriceAsc: 'Price: Low to High',
+        sortPriceDesc: 'Price: High to Low',
+        sortRating: 'Highest Rated',
+        loadingCamps: 'Loading camps...',
+        noCampsTitle: 'No camps found',
+        noCampsGeneral: 'Try adjusting your filters or search criteria',
+        noCampsDate: 'No camps available for the selected date',
+        perDay: 'per day',
+        viewDetails: 'View Details',
+        datePickedLabel: 'Date selected',
+        clear: 'Clear',
+        clearAll: 'Clear All',
+        checkingAvailability: 'Checking availability...',
+        availabilityHint: 'Select a date to check availability'
+      },
+      
+      // Host Dashboard
+      host: {
+        heroTitle: 'Host Dashboard',
+        heroDesc: 'Manage your listings and bookings',
+        heroCreate: 'Create New Listing',
+        heroManage: 'Manage Listings',
+        dashboardTitle: 'Welcome back!',
+        dashboardSubtitle: 'Manage your camping business',
+        createTitle: 'Create New Listing',
+        createDesc: 'Share your camping space',
+        manageTitle: 'My Listings',
+        manageDesc: 'Edit and manage your camps',
+        bookingsTitle: 'Bookings',
+        bookingsCardTitle: 'Recent Bookings',
+        bookingsCardDesc: 'View and manage reservations',
+        analyticsTitle: 'Analytics',
+        analyticsDesc: 'Track your performance',
+        back: 'Back to Dashboard',
+        noBookings: 'No bookings yet',
+        noBookingsHint: 'Your bookings will appear here',
+        refresh: 'Refresh'
+      },
+      
+      // Host Cancellation
+      hostCancellation: {
+        title: 'Cancel Booking',
+        description: 'Cancel this booking and process refund',
+        bookingDetails: 'Booking Details',
+        camp: 'Camp',
+        guest: 'Guest',
+        guests: 'Guests',
+        checkIn: 'Check-in',
+        checkOut: 'Check-out',
+        bookingAmount: 'Booking Amount',
+        importantNotice: 'Important Notice',
+        importantDesc: 'Cancelling this booking may result in penalties',
+        hostPenalty: 'Host Cancellation Penalty',
+        penaltyRate: 'Penalty Rate',
+        penaltyAmount: 'Penalty Amount',
+        noPenalty: 'No penalty (guest cancelled)',
+        penaltyNote: 'This amount will be deducted from your next payout',
+        guestRefund: 'Guest Refund',
+        refundAmount: 'Refund Amount',
+        guestRefundDesc: 'Amount to be refunded to guest',
+        reasonLabel: 'Cancellation Reason',
+        reasonPlaceholder: 'Select a reason',
+        reasonHint: 'Please provide a reason for cancellation',
+        otherReasonPlaceholder: 'Please explain...',
+        keepBooking: 'Keep Booking',
+        confirmCancellation: 'Confirm Cancellation',
+        cancelling: 'Cancelling...',
+        toastNeedReason: 'Please select a cancellation reason',
+        toastSuccess: 'Booking cancelled successfully',
+        toastSuccessDescNoPenalty: 'Guest will receive full refund',
+        toastFail: 'Cancellation failed',
+        toastFailDesc: 'Please try again or contact support'
+      },
+      
+      // Host Listings
+      hostListings: {
+        title: 'My Listings',
+        signInRequired: 'Please sign in to view listings',
+        hostRequired: 'You need to be a host to view listings',
+        loading: 'Loading your listings...',
+        emptyDesc: 'You haven\'t created any listings yet',
+        createFirst: 'Create your first listing',
+        backToDashboard: 'Back to Dashboard',
+        deleteSuccess: 'Listing deleted successfully',
+        status: {
+          active: 'Active',
+          pending: 'Pending Approval'
+        },
+        buttons: {
+          view: 'View',
+          edit: 'Edit',
+          manageAvailability: 'Manage Availability'
+        }
+      },
+      
+      // Payment Success/Status
+      payment: {
+        successTitle: 'Payment Successful!',
+        successDesc: 'Your booking has been confirmed',
+        pendingTitle: 'Payment Pending',
+        pendingDesc: 'Your payment is being processed',
+        bookingId: 'Booking ID',
+        checkIn: 'Check-in',
+        checkOut: 'Check-out',
+        guests: 'Guests',
+        totalPaid: 'Total Paid',
+        contact: 'Contact host for details',
+        viewBookings: 'View My Bookings',
+        backHome: 'Back to Home',
+        auth: {
+          Y: 'Authorized',
+          N: 'Not Authorized',
+          C: 'Cancelled',
+          E: 'Error',
+          R: 'Rejected',
+          U: 'Unknown',
+          AI: 'Authorization In Progress',
+          UNKNOWN: 'Unknown Status'
+        },
+        messages: {
+          Y: 'Payment authorized successfully',
+          N: 'Payment was not authorized',
+          C: 'Payment was cancelled',
+          E: 'An error occurred during payment',
+          R: 'Payment was rejected',
+          U: 'Payment status unknown',
+          AI: 'Payment authorization in progress',
+          UNKNOWN: 'Unknown payment status',
+          completed: 'Payment completed successfully',
+          failed: 'Payment failed'
+        }
+      },
+      
+      // Payment Failed
+      paymentFailed: {
+        desc: 'Your payment could not be processed',
+        tryAgain: 'Try Again',
+        backHome: 'Back to Home',
+        commonIssues: 'Common Issues',
+        issues: {
+          insufficient: 'Insufficient funds',
+          declined: 'Card declined',
+          expired: 'Card expired',
+          incorrect: 'Incorrect card details',
+          auth: 'Authentication failed'
+        },
+        needHelp: 'Need help? Contact support'
+      },
+      
+      // Profile page
+      profile: {
+        title: 'Profile',
+        welcome: 'Welcome',
+        signInPrompt: 'Please sign in to view your profile',
+        signIn: 'Sign In',
+        signOut: 'Sign Out',
+        editProfile: 'Edit Profile',
+        name: 'Full Name',
+        phone: 'Phone Number',
+        bio: 'Bio',
+        saveChanges: 'Save Changes',
+        cancel: 'Cancel',
+        becomeHost: 'Become a Host',
+        hostActive: 'Host Account Active',
+        password: {
+          title: 'Change Password',
+          current: 'Current Password',
+          new: 'New Password',
+          confirm: 'Confirm New Password',
+          change: 'Change Password'
+        },
+        toasts: {
+          updated: 'Profile updated successfully',
+          updateFailed: 'Failed to update profile',
+          pwdChanged: 'Password changed successfully',
+          changeFailed: 'Failed to change password',
+          mustSignIn: 'You must be signed in',
+          enterCurrent: 'Please enter your current password',
+          enterNew: 'Please enter a new password',
+          minLength: 'Password must be at least 6 characters',
+          mismatch: 'Passwords do not match',
+          samePassword: 'New password must be different from current password',
+          weakPassword: 'Password is too weak',
+          wrongPassword: 'Current password is incorrect',
+          recentLogin: 'Please sign out and sign in again to change password',
+          network: 'Network error. Please try again'
+        }
+      },
+      
+      // Reserve page
       reserve: {
         completeTitle: 'Complete Your Reservation',
         reserveCreated: 'Reservation Created',
@@ -129,12 +586,22 @@ const resources = {
         toastSignInAvailability: 'Sign in is required to check availability.',
         toastCheckAvailabilityFailed: 'Failed to check availability'
       },
+      
+      // Status labels
+      status: {
+        pending: 'Pending',
+        confirmed: 'Confirmed',
+        cancelled: 'Cancelled',
+        na: 'N/A'
+      },
+      
+      // Messages
       messages: {
         loadingAvailability: 'Loading availability...',
         availabilityError: 'We could not load availability.',
         signInAgain: 'Sign in again'
       }
-    },
+    }
   },
   ar: {
     translation: {
@@ -150,6 +617,7 @@ const resources = {
         fetching: 'جارٍ جلب البيانات...',
         processing: 'جارٍ المعالجة...'
       },
+      
       // NotFound page
       notFound: {
         title: '404',
@@ -158,6 +626,40 @@ const resources = {
         returnHome: 'العودة للصفحة الرئيسية',
         goBack: 'رجوع'
       },
+      
+      // Auth - Sign In page
+      auth: {
+        welcomeBack: 'مرحباً بعودتك',
+        signInSubtitle: 'سجل دخولك للوصول إلى حسابك',
+        email: 'البريد الإلكتروني',
+        password: 'كلمة المرور',
+        forgot: 'نسيت كلمة المرور؟',
+        signIn: 'تسجيل الدخول',
+        signingIn: 'جارٍ تسجيل الدخول...',
+        sending: 'جارٍ الإرسال...',
+        orContinue: 'أو تابع باستخدام',
+        google: 'المتابعة مع جوجل',
+        noAccount: 'ليس لديك حساب؟',
+        signUp: 'إنشاء حساب',
+        enterEmailFirst: 'يرجى إدخال بريدك الإلكتروني أولاً'
+      },
+      
+      // Auth - Sign Up page
+      authSignUp: {
+        join: 'انضم إلى صحرا',
+        subtitle: 'أنشئ حسابك لبدء الحجز',
+        fullName: 'الاسم الكامل',
+        email: 'البريد الإلكتروني',
+        password: 'كلمة المرور',
+        passwordHint: 'على الأقل 6 أحرف',
+        createAccount: 'إنشاء حساب',
+        creating: 'جارٍ إنشاء الحساب...',
+        orContinue: 'أو تابع باستخدام',
+        google: 'المتابعة مع جوجل',
+        haveAccount: 'لديك حساب بالفعل؟',
+        signIn: 'تسجيل الدخول'
+      },
+      
       // Bookings User page
       bookingsUser: {
         title: 'حجوزاتي',
@@ -173,20 +675,442 @@ const resources = {
         statusTitle: 'حالة الحجز',
         statusDesc: 'حالة الحجز الحالية'
       },
+      
+      // Camp Details page
+      campDetails: {
+        loading: 'جارٍ تحميل تفاصيل المخيم...',
+        notFound: 'المخيم غير موجود',
+        back: 'العودة للبحث',
+        backToSearch: 'العودة للبحث',
+        pendingApproval: 'هذا الإعلان في انتظار الموافقة',
+        overview: 'نظرة عامة',
+        about: 'عن هذا المخيم',
+        amenities: 'المرافق',
+        reviews: 'المراجعات',
+        campHours: 'ساعات المخيم',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        nextDay: 'اليوم التالي',
+        fullDayHint: 'تجربة يوم كامل من الصباح إلى اليوم التالي',
+        maxGuests: 'الحد الأقصى للضيوف',
+        totalTents: 'إجمالي الخيام',
+        pricePerDay: 'في اليوم',
+        reserveNow: 'احجز الآن',
+        cancellationPolicy: 'سياسة الإلغاء',
+        refundNote: 'إلغاء مجاني ضمن شروط السياسة',
+        writeReview: 'اكتب مراجعة',
+        reviewDialog: 'شارك تجربتك',
+        reviewSuccess: 'شكراً لك على مراجعتك!',
+        signInReview: 'يرجى تسجيل الدخول لكتابة مراجعة',
+        loadCampFailed: 'فشل تحميل تفاصيل المخيم'
+      },
+      
+      // Cancellation Policy Selector
+      cancelSelector: {
+        title: 'سياسة الإلغاء',
+        subtitle: 'اختر مدى المرونة التي تريدها مع الإلغاءات',
+        mostPopular: 'الأكثر شيوعاً',
+        flexible: {
+          name: 'مرن',
+          line1: 'استرداد كامل إذا تم الإلغاء قبل 24 ساعة من تسجيل الوصول',
+          line2: 'استرداد 50٪ إذا تم الإلغاء خلال 24 ساعة'
+        },
+        moderate: {
+          name: 'معتدل',
+          line1: 'استرداد كامل إذا تم الإلغاء قبل 5 أيام من تسجيل الوصول',
+          line2: 'استرداد 50٪ إذا تم الإلغاء قبل 2-5 أيام'
+        },
+        strict: {
+          name: 'صارم',
+          line1: 'استرداد كامل إذا تم الإلغاء قبل 7 أيام من تسجيل الوصول',
+          line2: 'لا يوجد استرداد إذا تم الإلغاء خلال 7 أيام'
+        }
+      },
+      
+      // Create Listing page
+      createListing: {
+        title: 'إنشاء إعلان جديد',
+        subtitle: 'شارك مساحة التخييم الخاصة بك مع المسافرين',
+        signInRequired: 'يرجى تسجيل الدخول لإنشاء إعلان',
+        hostRequired: 'تحتاج إلى أن تكون مضيفاً لإنشاء إعلانات',
+        basicInfo: 'المعلومات الأساسية',
+        campName: 'اسم المخيم',
+        campLocation: 'موقع المخيم',
+        campArea: 'منطقة المخيم',
+        campAreaPlaceholder: 'مثل: القرة، المنطقة الشمالية',
+        description: 'الوصف',
+        descriptionPlaceholder: 'صف مساحة التخييم الخاصة بك، ما يجعلها مميزة، المعالم القريبة...',
+        
+        capacity: {
+          title: 'السعة والخيام',
+          maxGuestsHelper: 'الحد الأقصى لعدد الضيوف الذي يمكن لمخيمك استيعابه',
+          areaHelper: 'المساحة الإجمالية المتاحة لأنشطة التخييم'
+        },
+        
+        capacityTents: 'السعة والخيام',
+        maxGuests: 'الحد الأقصى للضيوف',
+        maxGuestsPlaceholder: 'مثل: 20',
+        
+        tents: {
+          sectionTitle: 'تكوين الخيام',
+          largeLabel: 'خيام كبيرة',
+          smallLabel: 'خيام صغيرة',
+          entertainmentLabel: 'خيام ترفيهية',
+          genericLabel: 'خيام عامة',
+          none: 'لا يوجد',
+          addLarge: 'إضافة خيمة كبيرة',
+          addSmall: 'إضافة خيمة صغيرة',
+          addEntertainment: 'إضافة خيمة ترفيهية',
+          descriptionLabel: 'الوصف',
+          descriptionPlaceholder: 'صف هذه الخيمة...',
+          featuresTitle: 'المميزات',
+          featureLabels: {
+            furnished: 'مفروشة',
+            carpeted: 'مفروشة بالسجاد',
+            sofas: 'أرائك',
+            teaSets: 'أطقم شاي',
+            tv: 'تلفزيون',
+            airHockeyTable: 'طاولة هوكي هوائي',
+            foosballTable: 'طاولة كرة القدم',
+            pingPongTable: 'طاولة تنس الطاولة',
+            footballField: 'ملعب كرة قدم',
+            volleyballField: 'ملعب كرة طائرة'
+          }
+        },
+        
+        times: {
+          helper: 'حدد أوقات تسجيل الوصول والمغادرة',
+          checkInHelper: 'متى يمكن للضيوف الوصول',
+          checkOutHelper: 'متى يجب على الضيوف المغادرة (اليوم التالي)'
+        },
+        
+        checkIn: 'وقت تسجيل الوصول',
+        checkOut: 'وقت تسجيل المغادرة',
+        nextDay: 'اليوم التالي',
+        
+        pricing: {
+          perDay: 'السعر في اليوم',
+          helper: 'حدد سعرك اليومي بالدينار البحريني'
+        },
+        
+        price: 'السعر في اليوم (د.ب)',
+        pricePlaceholder: 'مثل: 50',
+        
+        selectLocation: 'اختر الموقع',
+        searchLocations: 'البحث عن المواقع...',
+        useMyLocation: 'استخدم موقعي الحالي',
+        gettingLocation: 'جارٍ الحصول على موقعك...',
+        locationCaptured: 'تم التقاط الموقع!',
+        locationFailed: 'فشل الحصول على الموقع',
+        geoUnsupported: 'تحديد الموقع الجغرافي غير مدعوم من متصفحك',
+        googleMapsUrl: 'رابط خرائط جوجل',
+        
+        map: {
+          chooseMethod: 'اختر طريقة لتحديد الموقع',
+          pasteLink: 'لصق رابط خرائط جوجل',
+          pasteHelper: 'الصق رابط مشاركة خرائط جوجل هنا',
+          setCoordinates: 'تعيين الإحداثيات',
+          locationSet: 'تم تعيين الموقع بنجاح',
+          fullDay: 'تجربة تخييم ليوم كامل'
+        },
+        
+        photosTitle: 'الصور',
+        photosHelper: 'أضف صوراً لمخيمك (3 صور على الأقل)',
+        
+        amenitiesSection: 'المرافق',
+        amenitiesHelper: 'حدد جميع المرافق المتاحة في مخيمك',
+        
+        amenityCategories: {
+          essential: 'أساسي',
+          comfort: 'راحة',
+          cooking: 'طبخ',
+          entertainment: 'ترفيه',
+          activities: 'أنشطة',
+          other: 'أخرى'
+        },
+        
+        featuresRules: 'المميزات والقواعد',
+        specialFeatures: 'مميزات خاصة',
+        rules: 'قواعد المخيم',
+        
+        sections: {
+          details: 'التفاصيل'
+        },
+        
+        createListing: 'إنشاء إعلان',
+        submitting: 'جارٍ إنشاء الإعلان...'
+      },
+      
+      // Edit Listing page
+      editListing: {
+        title: 'تعديل الإعلان',
+        loading: 'جارٍ تحميل الإعلان...',
+        signInRequired: 'يرجى تسجيل الدخول لتعديل الإعلانات',
+        hostRequired: 'تحتاج إلى أن تكون مضيفاً لتعديل الإعلانات',
+        invalidId: 'معرف إعلان غير صالح',
+        notFound: 'الإعلان غير موجود',
+        noPermission: 'ليس لديك إذن لتعديل هذا الإعلان',
+        back: 'العودة إلى إعلاناتي',
+        saveChanges: 'حفظ التغييرات',
+        saving: 'جارٍ حفظ التغييرات...',
+        success: 'تم تحديث الإعلان بنجاح!',
+        
+        map: {
+          geoUnsupported: 'تحديد الموقع الجغرافي غير مدعوم',
+          unableLocation: 'تعذر الحصول على الموقع',
+          parseError: 'فشل تحليل الإحداثيات'
+        },
+        
+        validations: {
+          locationRequired: 'يرجى تحديد موقع لمخيمك',
+          coordinatesRequired: 'إحداثيات الموقع مطلوبة',
+          maxGuests: 'يجب أن يكون الحد الأقصى للضيوف 1 على الأقل',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          images: 'يرجى إضافة 3 صور على الأقل',
+          uploading: 'يرجى الانتظار حتى تنتهي الصور من التحميل'
+        }
+      },
+      
+      // Filters
+      filters: {
+        location: 'الموقع',
+        bookingDate: 'تاريخ الحجز',
+        selectDate: 'اختر تاريخاً',
+        clearDate: 'مسح التاريخ',
+        findAvailable: 'البحث عن المخيمات المتاحة',
+        priceRange: 'نطاق السعر',
+        up: 'حتى',
+        minGuests: 'الحد الأدنى للضيوف',
+        tentTypes: 'أنواع الخيام',
+        largeTents: 'خيام كبيرة',
+        smallTents: 'خيام صغيرة',
+        entertainmentTents: 'خيام ترفيهية',
+        amenities: 'المرافق',
+        minRating: 'الحد الأدنى للتقييم',
+        allRatings: 'جميع التقييمات',
+        apply: 'تطبيق الفلاتر',
+        reset: 'إعادة تعيين'
+      },
+      
+      // Header
       header: {
         brand: 'صحرا',
         admin: 'لوحة المشرف',
         profile: 'حسابي',
         signOut: 'تسجيل خروج',
         signIn: 'تسجيل الدخول',
-        signUp: 'إنشاء حساب',
+        signUp: 'إنشاء حساب'
       },
+      
+      // Navigation
       nav: {
         search: 'بحث',
         bookings: 'الحجوزات',
         host: 'المضيف',
-        profile: 'الملف الشخصي',
+        profile: 'الملف الشخصي'
       },
+      
+      // Home page
+      home: {
+        heroTitleTop: 'اكتشف تجربة',
+        heroTitleBottom: 'التخييم الصحراوي المثالية',
+        heroSubtitle: 'احجز أماكن تخييم فريدة في جميع أنحاء البحرين',
+        searchPlaceholder: 'البحث حسب الموقع...',
+        datePlaceholder: 'اختر التاريخ',
+        searchButton: 'بحث',
+        filters: 'الفلاتر',
+        sortBy: 'ترتيب حسب',
+        sortNewest: 'الأحدث',
+        sortPriceAsc: 'السعر: من الأقل إلى الأعلى',
+        sortPriceDesc: 'السعر: من الأعلى إلى الأقل',
+        sortRating: 'الأعلى تقييماً',
+        loadingCamps: 'جارٍ تحميل المخيمات...',
+        noCampsTitle: 'لم يتم العثور على مخيمات',
+        noCampsGeneral: 'حاول تعديل الفلاتر أو معايير البحث',
+        noCampsDate: 'لا توجد مخيمات متاحة للتاريخ المحدد',
+        perDay: 'في اليوم',
+        viewDetails: 'عرض التفاصيل',
+        datePickedLabel: 'تم اختيار التاريخ',
+        clear: 'مسح',
+        clearAll: 'مسح الكل',
+        checkingAvailability: 'جارٍ التحقق من التوفر...',
+        availabilityHint: 'اختر تاريخاً للتحقق من التوفر'
+      },
+      
+      // Host Dashboard
+      host: {
+        heroTitle: 'لوحة المضيف',
+        heroDesc: 'إدارة إعلاناتك وحجوزاتك',
+        heroCreate: 'إنشاء إعلان جديد',
+        heroManage: 'إدارة الإعلانات',
+        dashboardTitle: 'مرحباً بعودتك!',
+        dashboardSubtitle: 'إدارة أعمال التخييم الخاصة بك',
+        createTitle: 'إنشاء إعلان جديد',
+        createDesc: 'شارك مساحة التخييم الخاصة بك',
+        manageTitle: 'إعلاناتي',
+        manageDesc: 'تعديل وإدارة مخيماتك',
+        bookingsTitle: 'الحجوزات',
+        bookingsCardTitle: 'الحجوزات الأخيرة',
+        bookingsCardDesc: 'عرض وإدارة الحجوزات',
+        analyticsTitle: 'التحليلات',
+        analyticsDesc: 'تتبع أدائك',
+        back: 'العودة للوحة التحكم',
+        noBookings: 'لا توجد حجوزات بعد',
+        noBookingsHint: 'ستظهر حجوزاتك هنا',
+        refresh: 'تحديث'
+      },
+      
+      // Host Cancellation
+      hostCancellation: {
+        title: 'إلغاء الحجز',
+        description: 'إلغاء هذا الحجز ومعالجة الاسترداد',
+        bookingDetails: 'تفاصيل الحجز',
+        camp: 'المخيم',
+        guest: 'الضيف',
+        guests: 'الضيوف',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        bookingAmount: 'مبلغ الحجز',
+        importantNotice: 'إشعار مهم',
+        importantDesc: 'قد يؤدي إلغاء هذا الحجز إلى عقوبات',
+        hostPenalty: 'غرامة إلغاء المضيف',
+        penaltyRate: 'معدل الغرامة',
+        penaltyAmount: 'مبلغ الغرامة',
+        noPenalty: 'لا توجد غرامة (ألغى الضيف)',
+        penaltyNote: 'سيتم خصم هذا المبلغ من دفعتك التالية',
+        guestRefund: 'استرداد الضيف',
+        refundAmount: 'مبلغ الاسترداد',
+        guestRefundDesc: 'المبلغ الذي سيتم استرداده للضيف',
+        reasonLabel: 'سبب الإلغاء',
+        reasonPlaceholder: 'اختر سبباً',
+        reasonHint: 'يرجى تقديم سبب للإلغاء',
+        otherReasonPlaceholder: 'يرجى التوضيح...',
+        keepBooking: 'الاحتفاظ بالحجز',
+        confirmCancellation: 'تأكيد الإلغاء',
+        cancelling: 'جارٍ الإلغاء...',
+        toastNeedReason: 'يرجى اختيار سبب الإلغاء',
+        toastSuccess: 'تم إلغاء الحجز بنجاح',
+        toastSuccessDescNoPenalty: 'سيحصل الضيف على استرداد كامل',
+        toastFail: 'فشل الإلغاء',
+        toastFailDesc: 'يرجى المحاولة مرة أخرى أو الاتصال بالدعم'
+      },
+      
+      // Host Listings
+      hostListings: {
+        title: 'إعلاناتي',
+        signInRequired: 'يرجى تسجيل الدخول لعرض الإعلانات',
+        hostRequired: 'تحتاج إلى أن تكون مضيفاً لعرض الإعلانات',
+        loading: 'جارٍ تحميل إعلاناتك...',
+        emptyDesc: 'لم تقم بإنشاء أي إعلانات بعد',
+        createFirst: 'أنشئ إعلانك الأول',
+        backToDashboard: 'العودة للوحة التحكم',
+        deleteSuccess: 'تم حذف الإعلان بنجاح',
+        status: {
+          active: 'نشط',
+          pending: 'في انتظار الموافقة'
+        },
+        buttons: {
+          view: 'عرض',
+          edit: 'تعديل',
+          manageAvailability: 'إدارة التوفر'
+        }
+      },
+      
+      // Payment Success/Status
+      payment: {
+        successTitle: 'تم الدفع بنجاح!',
+        successDesc: 'تم تأكيد حجزك',
+        pendingTitle: 'الدفع قيد الانتظار',
+        pendingDesc: 'جارٍ معالجة دفعتك',
+        bookingId: 'رقم الحجز',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        guests: 'الضيوف',
+        totalPaid: 'إجمالي المدفوع',
+        contact: 'اتصل بالمضيف للحصول على التفاصيل',
+        viewBookings: 'عرض حجوزاتي',
+        backHome: 'العودة للصفحة الرئيسية',
+        auth: {
+          Y: 'مصرح به',
+          N: 'غير مصرح به',
+          C: 'ملغى',
+          E: 'خطأ',
+          R: 'مرفوض',
+          U: 'غير معروف',
+          AI: 'التصريح قيد التنفيذ',
+          UNKNOWN: 'حالة غير معروفة'
+        },
+        messages: {
+          Y: 'تم التصريح بالدفع بنجاح',
+          N: 'لم يتم التصريح بالدفع',
+          C: 'تم إلغاء الدفع',
+          E: 'حدث خطأ أثناء الدفع',
+          R: 'تم رفض الدفع',
+          U: 'حالة الدفع غير معروفة',
+          AI: 'التصريح بالدفع قيد التنفيذ',
+          UNKNOWN: 'حالة دفع غير معروفة',
+          completed: 'تم الدفع بنجاح',
+          failed: 'فشل الدفع'
+        }
+      },
+      
+      // Payment Failed
+      paymentFailed: {
+        desc: 'تعذر معالجة دفعتك',
+        tryAgain: 'حاول مرة أخرى',
+        backHome: 'العودة للصفحة الرئيسية',
+        commonIssues: 'المشاكل الشائعة',
+        issues: {
+          insufficient: 'رصيد غير كافٍ',
+          declined: 'تم رفض البطاقة',
+          expired: 'انتهت صلاحية البطاقة',
+          incorrect: 'تفاصيل البطاقة غير صحيحة',
+          auth: 'فشل التحقق'
+        },
+        needHelp: 'تحتاج مساعدة؟ اتصل بالدعم'
+      },
+      
+      // Profile page
+      profile: {
+        title: 'الملف الشخصي',
+        welcome: 'مرحباً',
+        signInPrompt: 'يرجى تسجيل الدخول لعرض ملفك الشخصي',
+        signIn: 'تسجيل الدخول',
+        signOut: 'تسجيل خروج',
+        editProfile: 'تعديل الملف الشخصي',
+        name: 'الاسم الكامل',
+        phone: 'رقم الهاتف',
+        bio: 'نبذة',
+        saveChanges: 'حفظ التغييرات',
+        cancel: 'إلغاء',
+        becomeHost: 'كن مضيفاً',
+        hostActive: 'حساب المضيف نشط',
+        password: {
+          title: 'تغيير كلمة المرور',
+          current: 'كلمة المرور الحالية',
+          new: 'كلمة المرور الجديدة',
+          confirm: 'تأكيد كلمة المرور الجديدة',
+          change: 'تغيير كلمة المرور'
+        },
+        toasts: {
+          updated: 'تم تحديث الملف الشخصي بنجاح',
+          updateFailed: 'فشل تحديث الملف الشخصي',
+          pwdChanged: 'تم تغيير كلمة المرور بنجاح',
+          changeFailed: 'فشل تغيير كلمة المرور',
+          mustSignIn: 'يجب تسجيل الدخول',
+          enterCurrent: 'يرجى إدخال كلمة المرور الحالية',
+          enterNew: 'يرجى إدخال كلمة مرور جديدة',
+          minLength: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
+          mismatch: 'كلمات المرور غير متطابقة',
+          samePassword: 'يجب أن تكون كلمة المرور الجديدة مختلفة عن الحالية',
+          weakPassword: 'كلمة المرور ضعيفة جداً',
+          wrongPassword: 'كلمة المرور الحالية غير صحيحة',
+          recentLogin: 'يرجى تسجيل الخروج وتسجيل الدخول مرة أخرى لتغيير كلمة المرور',
+          network: 'خطأ في الشبكة. يرجى المحاولة مرة أخرى'
+        }
+      },
+      
+      // Reserve page
       reserve: {
         completeTitle: 'أكمل حجزك',
         reserveCreated: 'تم إنشاء الحجز',
@@ -263,6 +1187,16 @@ const resources = {
         toastSignInAvailability: 'يجب تسجيل الدخول للتحقق من التوفر.',
         toastCheckAvailabilityFailed: 'تعذر التحقق من التوفر'
       },
+      
+      // Status labels
+      status: {
+        pending: 'قيد الانتظار',
+        confirmed: 'مؤكد',
+        cancelled: 'ملغى',
+        na: 'غير متاح'
+      },
+      
+      // Messages
       messages: {
         loadingAvailability: 'جارٍ تحميل التوفر...',
         availabilityError: 'تعذر تحميل التوفر.',
