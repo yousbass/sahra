@@ -24,7 +24,21 @@ const resources = {
         returnHome: 'Return Home',
         goBack: 'Go Back'
       },
-      // ... rest of English translations remain the same
+      // Bookings User page
+      bookingsUser: {
+        title: 'My Bookings',
+        count: '{{count}} bookings',
+        current: 'Current',
+        past: 'Past',
+        emptyTitle: 'No bookings yet',
+        emptyDesc: 'Start exploring and book your perfect camping spot!',
+        viewDetails: 'View Details',
+        payNow: 'Pay Now',
+        cancel: 'Cancel Booking',
+        writeReview: 'Write Review',
+        statusTitle: 'Booking Status',
+        statusDesc: 'Current reservation status'
+      },
       header: {
         brand: 'Sahra',
         admin: 'Admin',
@@ -143,6 +157,21 @@ const resources = {
         description: 'الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها.',
         returnHome: 'العودة للصفحة الرئيسية',
         goBack: 'رجوع'
+      },
+      // Bookings User page
+      bookingsUser: {
+        title: 'حجوزاتي',
+        count: '{{count}} حجز',
+        current: 'الحالية',
+        past: 'السابقة',
+        emptyTitle: 'لا توجد حجوزات بعد',
+        emptyDesc: 'ابدأ الاستكشاف واحجز مكان التخييم المثالي!',
+        viewDetails: 'عرض التفاصيل',
+        payNow: 'ادفع الآن',
+        cancel: 'إلغاء الحجز',
+        writeReview: 'اكتب مراجعة',
+        statusTitle: 'حالة الحجز',
+        statusDesc: 'حالة الحجز الحالية'
       },
       header: {
         brand: 'صحرا',
