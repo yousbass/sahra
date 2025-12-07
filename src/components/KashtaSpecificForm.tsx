@@ -58,7 +58,7 @@ export function KashtaSpecificForm({
     if (waterActivities.includes(activity)) {
       onWaterActivitiesChange(waterActivities.filter(a => a !== activity));
     } else {
-      onWaterActivities([...waterActivities, activity]);
+      onWaterActivitiesChange([...waterActivities, activity]);
     }
   };
 
