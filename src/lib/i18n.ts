@@ -28,6 +28,8 @@ const resources = {
       
       // Listing Type
       listingType: {
+        sectionTitle: 'Choose Listing Type',
+        sectionDescription: 'Select the type of listing you want to view',
         camp: {
           title: 'Camp',
           description: 'Desert camping experience with tents',
@@ -38,7 +40,8 @@ const resources = {
           title: 'Kashta',
           description: 'Beachfront sitting area by the sea',
           badge: 'Kashta',
-          features: 'Beach access, water activities, sea views'
+          features: 'Beach access, water activities, sea views',
+          nameLabel: 'Kashta Name'
         },
         all: 'All Listings',
         selectType: 'Select Listing Type'
@@ -352,6 +355,38 @@ const resources = {
           entertainment: 'Entertainment',
           activities: 'Activities',
           other: 'Other'
+        },
+        
+        amenityItems: {
+          'Restrooms': 'Restrooms',
+          'Kitchen': 'Kitchen',
+          'Electricity': 'Electricity',
+          'Lighting': 'Lighting',
+          'Water Supply': 'Water Supply',
+          'Fire Pit': 'Fire Pit',
+          'BBQ Grill': 'BBQ Grill',
+          'Cooking Equipment': 'Cooking Equipment',
+          'Dining Area': 'Dining Area',
+          'Sound System': 'Sound System',
+          'TV Available': 'TV Available',
+          'Volleyball Court': 'Volleyball Court',
+          'Soccer Court': 'Soccer Court',
+          'Bouncy Castle': 'Bouncy Castle',
+          'Furnished Tents': 'Furnished Tents',
+          'Carpeted Tents': 'Carpeted Tents',
+          'Sofas & Seating': 'Sofas & Seating',
+          'Tea Sets': 'Tea Sets',
+          'Air Conditioning': 'Air Conditioning',
+          'Dune Buggies': 'Dune Buggies',
+          'Desert Tours': 'Desert Tours',
+          'Camel Rides': 'Camel Rides',
+          'Stargazing Area': 'Stargazing Area',
+          'Biking': 'Biking',
+          'Parking': 'Parking',
+          'Pet Friendly': 'Pet Friendly',
+          'Family Friendly': 'Family Friendly',
+          'Security/Guards': 'Security/Guards',
+          'Food Truck Access': 'Food Truck Access'
         },
         
         featuresRules: 'Features & Rules',
@@ -796,6 +831,8 @@ const resources = {
       
       // Listing Type
       listingType: {
+        sectionTitle: 'اختر نوع القائمة',
+        sectionDescription: 'اختر نوع القائمة التي تريد عرضها',
         camp: {
           title: 'مخيم',
           description: 'تجربة تخييم صحراوية مع خيام',
@@ -806,7 +843,8 @@ const resources = {
           title: 'كشتة',
           description: 'منطقة جلوس على شاطئ البحر',
           badge: 'كشتة',
-          features: 'وصول للشاطئ، أنشطة مائية، إطلالات بحرية'
+          features: 'وصول للشاطئ، أنشطة مائية، إطلالات بحرية',
+          nameLabel: 'اسم الكشتة'
         },
         all: 'جميع القوائم',
         selectType: 'اختر نوع القائمة'
