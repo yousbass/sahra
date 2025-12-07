@@ -60,14 +60,14 @@ export function ListingTypeSelector({
         onClick={() => onChange('camp')}
         disabled={disabled}
         className={cn(
-          'p-6 border-2 rounded-lg transition-all text-left',
+          'p-6 border-2 rounded-lg transition-all text-left rtl:text-right',
           'hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
           value === 'camp'
             ? 'border-primary bg-primary/5'
             : 'border-gray-200 hover:border-gray-300'
         )}
       >
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-4 rtl:flex-row-reverse">
           <div className={cn(
             'p-3 rounded-lg',
             value === 'camp' ? 'bg-primary/10' : 'bg-gray-100'
@@ -96,14 +96,14 @@ export function ListingTypeSelector({
         onClick={() => onChange('kashta')}
         disabled={disabled}
         className={cn(
-          'p-6 border-2 rounded-lg transition-all text-left',
+          'p-6 border-2 rounded-lg transition-all text-left rtl:text-right',
           'hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed',
           value === 'kashta'
             ? 'border-primary bg-primary/5'
             : 'border-gray-200 hover:border-gray-300'
         )}
       >
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-4 rtl:flex-row-reverse">
           <div className={cn(
             'p-3 rounded-lg',
             value === 'kashta' ? 'bg-primary/10' : 'bg-gray-100'

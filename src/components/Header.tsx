@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { getUserProfile, UserProfile } from '@/lib/firestore';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { cn } from '@/lib/utils';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -53,7 +54,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-amber-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div
+          className={cn(
+            'flex items-center justify-between h-16 gap-3 flex-wrap',
+            i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'
+          )}
+        >
           {/* Logo */}
           <button
             onClick={() => navigate('/')}
