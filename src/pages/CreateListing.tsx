@@ -444,7 +444,7 @@ export default function CreateListing() {
           className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
+          {t('hostListings.backToDashboard')}
         </Button>
 
         <div className="mb-8">
@@ -499,7 +499,7 @@ export default function CreateListing() {
                       <Command>
                         <CommandInput placeholder={t('createListing.searchLocations')} className="h-9" />
                         <CommandList>
-                          <CommandEmpty>No location found.</CommandEmpty>
+                          <CommandEmpty>{t('createListing.noLocation', { defaultValue: 'No location found.' })}</CommandEmpty>
                           <CommandGroup>
                             {BAHRAIN_CAMPING_LOCATIONS.map((location) => (
                               <CommandItem
