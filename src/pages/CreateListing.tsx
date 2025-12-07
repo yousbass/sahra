@@ -57,6 +57,44 @@ interface ImageData {
   progress?: number;
 }
 
+interface CampDataBase {
+  slug: string;
+  title: string;
+  location: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  price: number;
+  photo: string;
+  photos: string[];
+  description: string;
+  maxGuests: number;
+  campArea?: number;
+  amenities: string[];
+  specialFeatures: string;
+  rules: string;
+  cancellationPolicy: CancellationPolicy;
+  checkInTime: string;
+  checkOutTime: string;
+  hostName: string;
+  listingType: ListingType;
+}
+
+interface CampData extends CampDataBase {
+  tents?: TentConfig[];
+  tentConfiguration?: {
+    large: number;
+    small: number;
+    entertainment: number;
+  };
+  seatingCapacity?: number;
+  beachfrontAccess?: boolean;
+  shadeType?: ShadeType;
+  viewType?: ViewType;
+  waterActivities?: string[];
+}
+
 export default function CreateListing() {
   const navigate = useNavigate();
   const { user, userData, loading } = useAuth();
@@ -392,7 +430,7 @@ export default function CreateListing() {
       const mainImage = uploadedImages.find(img => img.isMain) || uploadedImages[0];
       const additionalImages = uploadedImages.filter(img => !img.isMain).map(img => img.url);
 
-      const campData: any = {
+      const campData: CampData = {
         slug,
         title,
         location: getLocationLabel(selectedLocation),
@@ -983,6 +1021,8 @@ export default function CreateListing() {
                 onShadeTypeChange={setShadeType}
                 viewType={viewType}
                 onViewTypeChange={setViewType}
+                kashtaAmenities={selectedAmenities}
+                onKashtaAmenitiesChange={setSelectedAmenities}
                 waterActivities={waterActivities}
                 onWaterActivitiesChange={setWaterActivities}
               />
