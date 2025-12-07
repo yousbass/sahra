@@ -246,7 +246,15 @@ const resources = {
           title: 'Camp name is required',
           location: 'Camp location is required',
           price: 'Price is required',
-          description: 'Description is required'
+          description: 'Description is required',
+          selectLocation: 'Please select a location from the dropdown',
+          coordinatesExtracted: 'Coordinates extracted from URL!',
+          mustSignIn: 'You must be signed in to create a listing',
+          maxGuests: 'Please specify maximum number of guests',
+          tents: 'Please add at least one tent',
+          images: 'Please upload at least one image',
+          uploading: 'Please wait for all images to finish uploading',
+          createFailed: 'Failed to create listing: {{error}}'
         },
         locationHelper: "Select your camp's official location in Bahrain (based on 2023-2024 season zones)",
         locationRequired: 'Please set your location using "Use My Current Location" or paste a Google Maps URL',
@@ -275,7 +283,9 @@ const resources = {
             airHockeyTable: 'Air Hockey',
             volleyballField: 'Volleyball',
             footballField: 'Football'
-          }
+          },
+          basicFeatures: 'Basic Features:',
+          entertainmentSports: 'Entertainment & Sports:'
         },
         map: {
           setCoordinates: 'Set Camp GPS Coordinates',
@@ -286,7 +296,8 @@ const resources = {
           coordinates: 'Coordinates: {{lat}}, {{lng}}',
           fullDay: 'Full Day Reservation',
           fullDayDesc: 'This is a full-day reservation from check-in to check-out the next day.',
-          parseError: 'Could not extract coordinates from URL. Please check the format.'
+          parseError: 'Could not extract coordinates from URL. Please check the format.',
+          campLocation: 'Camp Location Map'
         },
         pricing: {
           perDay: 'Price per Day (BD)',
@@ -1146,8 +1157,6 @@ const resources = {
           weather: 'ظروف جوية',
           other: 'أخرى'
         }
-      }
-        },
       },
       createListing: {
         title: 'إنشاء إعلان مخيم جديد',
@@ -1162,22 +1171,23 @@ const resources = {
         locationPricing: 'الموقع والتسعير',
         capacityTents: 'سعة المخيم والخيام',
         amenitiesSection: 'الخدمات والمرافق',
-       featuresRules: 'مميزات خاصة وقواعد',
-       cancellationTimes: 'الإلغاء والأوقات',
-       imageGallery: 'معرض الصور',
-       campName: 'اسم المخيم',
+        featuresRules: 'مميزات خاصة وقواعد',
+        cancellationTimes: 'الإلغاء والأوقات',
+        imageGallery: 'معرض الصور',
+        campName: 'اسم المخيم',
         campLocation: 'موقع المخيم',
         selectLocation: 'اختر موقع المخيم...',
         searchLocations: 'ابحث عن المواقع...',
         noLocation: 'لا يوجد موقع مطابق.',
         useMyLocation: 'استخدم موقعي',
         googleMapsUrl: 'رابط خرائط جوجل',
-       optional: 'اختياري',
-       gettingLocation: 'جارٍ جلب الموقع...',
-       clear: 'مسح',
-       latitude: 'خط العرض',
-       longitude: 'خط الطول',
-       price: 'السعر (د.ب في اليوم)',
+        optional: 'اختياري',
+        gettingLocation: 'جارٍ جلب الموقع...',
+        clear: 'مسح',
+        or: 'أو',
+        latitude: 'خط العرض',
+        longitude: 'خط الطول',
+        price: 'السعر (د.ب في اليوم)',
         description: 'الوصف',
         photosTitle: 'صور المخيم',
         photosHelper: 'حمّل صوراً عالية الجودة لمخيمك. يتم ضغط الصور وتحسينها تلقائياً.',
@@ -1188,7 +1198,7 @@ const resources = {
         maxGuestsPlaceholder: 'مثال: 20',
         campArea: 'مساحة المخيم (م²)',
         campAreaPlaceholder: 'مثال: 500',
-       amenities: 'الخدمات والمرافق',
+        amenities: 'الخدمات والمرافق',
         amenitiesHelper: 'اختر كل الخدمات والمرافق المتاحة في مخيمك',
         amenityCategories: {
           essential: '🏕️ خدمات أساسية',
@@ -1230,11 +1240,11 @@ const resources = {
           'Security/Guards': 'حراسة',
           'Food Truck Access': 'مناسب لعربات الطعام'
         },
-       specialFeatures: 'مميزات خاصة',
-       rules: 'قواعد المخيم',
-       cancellationPolicy: 'سياسة الإلغاء',
-       images: 'الصور',
-       addImage: 'إضافة صورة',
+        specialFeatures: 'مميزات خاصة',
+        rules: 'قواعد المخيم',
+        cancellationPolicy: 'سياسة الإلغاء',
+        images: 'الصور',
+        addImage: 'إضافة صورة',
         saveDraft: 'حفظ كمسودة',
         createListing: 'إنشاء الإعلان',
         updateListing: 'تحديث الإعلان',
@@ -1245,10 +1255,19 @@ const resources = {
           title: 'اسم المخيم مطلوب',
           location: 'موقع المخيم مطلوب',
           price: 'السعر مطلوب',
-          description: 'الوصف مطلوب'
+          description: 'الوصف مطلوب',
+          selectLocation: 'يرجى اختيار موقع من القائمة',
+          coordinatesExtracted: 'تم استخراج الإحداثيات من الرابط!',
+          mustSignIn: 'يجب تسجيل الدخول لإنشاء إعلان',
+          maxGuests: 'يرجى تحديد الحد الأقصى للضيوف',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          images: 'يرجى تحميل صورة واحدة على الأقل',
+          uploading: 'يرجى الانتظار حتى انتهاء تحميل جميع الصور',
+          createFailed: 'فشل إنشاء الإعلان: {{error}}'
         },
         locationHelper: 'اختر الموقع الرسمي لمخيمك في البحرين',
         locationRequired: 'يرجى تحديد موقعك عبر زر موقعي الحالي أو لصق رابط خرائط جوجل',
+        descriptionPlaceholder: 'صف مخيمك ومميزاته الفريدة وأجواءه وما يجعله مميزاً...',
         tents: {
           sectionTitle: 'الخيام',
           addLarge: 'إضافة خيمة كبيرة',
@@ -1274,7 +1293,9 @@ const resources = {
             airHockeyTable: 'هوكي طاولة',
             volleyballField: 'كرة طائرة',
             footballField: 'كرة قدم'
-          }
+          },
+          basicFeatures: 'المميزات الأساسية:',
+          entertainmentSports: 'الترفيه والرياضة:'
         },
         map: {
           setCoordinates: 'تحديد إحداثيات المخيم',
@@ -1285,7 +1306,8 @@ const resources = {
           coordinates: 'الإحداثيات: {{lat}}, {{lng}}',
           fullDay: 'حجز ليوم كامل',
           fullDayDesc: 'هذا حجز ليوم كامل من تسجيل الوصول حتى تسجيل المغادرة في اليوم التالي.',
-          parseError: 'تعذر استخراج الإحداثيات من الرابط. يرجى التحقق من الصيغة.'
+          parseError: 'تعذر استخراج الإحداثيات من الرابط. يرجى التحقق من الصيغة.',
+          campLocation: 'خريطة موقع المخيم'
         },
         pricing: {
           perDay: 'السعر لليوم (د.ب)',
@@ -1325,9 +1347,73 @@ const resources = {
           line1: 'استرجاع 50% عند الإلغاء قبل 7 أيام أو أكثر من تسجيل الوصول',
           line2: 'يحصل الضيف على نصف المبلغ فقط إذا ألغى قبل 7 أيام على الأقل'
         }
+      },
+      hostListings: {
+        backToDashboard: 'العودة للوحة التحكم',
+        title: 'قوائمي',
+        count: '{{count}} قائمة',
+        count_plural: '{{count}} قائمة',
+        manageAvailability: 'إدارة التوفر',
+        newListing: 'قائمة جديدة',
+        emptyTitle: 'لا توجد قوائم بعد',
+        emptyDesc: 'أنشئ أول قائمة مخيم لبدء الاستضافة',
+        createFirst: 'إنشاء أول قائمة',
+        loading: 'جارٍ تحميل قوائمك...',
+        signInRequired: 'يرجى تسجيل الدخول لعرض قوائمك',
+        hostRequired: 'يجب أن تصبح مضيفاً أولاً',
+        deleteConfirm: 'هل أنت متأكد من حذف "{{title}}"؟',
+        deleteSuccess: 'تم حذف القائمة بنجاح',
+        deleteFail: 'فشل حذف القائمة: {{error}}',
+        loadFail: 'فشل تحميل قوائمك: {{error}}',
+        tentsLabel: '{{count}} خيمة',
+        guestsLabel: 'حتى {{count}} ضيف',
+        status: {
+          active: 'نشط',
+          pending: 'معلق',
+          inactive: 'غير نشط'
+        },
+        buttons: {
+          edit: 'تعديل',
+          delete: 'حذف',
+          view: 'عرض',
+          manageAvailability: 'إدارة التوفر',
+          newListing: 'قائمة جديدة'
+        },
+        more: 'المزيد'
+      },
+      editListing: {
+        title: 'تعديل القائمة',
+        back: 'رجوع',
+        subtitle: 'تحديث معلومات مخيمك',
+        loading: 'جارٍ تحميل بيانات المخيم...',
+        notFound: 'المخيم غير موجود',
+        noPermission: 'ليس لديك صلاحية لتعديل هذه القائمة',
+        invalidId: 'معرّف المخيم غير صحيح',
+        signInRequired: 'يرجى تسجيل الدخول لتعديل القوائم',
+        hostRequired: 'يجب أن تكون مضيفاً لتعديل القوائم',
+        saveChanges: 'حفظ التعديلات',
+        saving: 'جارٍ الحفظ...',
+        success: 'تم تحديث القائمة بنجاح!',
+        updateFail: 'فشل تحديث القائمة: {{error}}',
+        deleteImageFail: 'فشل حذف الصورة: {{error}}',
+        cancelConfirm: 'هل أنت متأكد من الإلغاء؟ سيتم فقدان أي تعديلات غير محفوظة.',
+        map: {
+          unableLocation: 'تعذر الحصول على موقعك. يرجى استخدام رابط خرائط جوجل بدلاً من ذلك.',
+          geoUnsupported: 'المتصفح لا يدعم تحديد الموقع',
+          parseError: 'تعذر استخراج الإحداثيات من الرابط. يرجى التحقق من الصيغة.'
+        },
+        validations: {
+          locationRequired: 'يرجى اختيار موقع من القائمة',
+          coordinatesRequired: 'يرجى تحديد موقعك عبر زر "استخدم موقعي" أو لصق رابط خرائط جوجل',
+          maxGuests: 'يرجى تحديد الحد الأقصى للضيوف',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          images: 'يرجى تحميل صورة واحدة على الأقل',
+          uploading: 'يرجى الانتظار حتى انتهاء تحميل جميع الصور'
+        }
+      }
     }
   }
-;
+};
 
 i18n.use(initReactI18next).init({
   resources,

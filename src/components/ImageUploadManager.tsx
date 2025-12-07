@@ -75,7 +75,7 @@ export function ImageUploadManager({
     onChange([...images, ...newImages]);
 
     // Upload files one by one, keeping a working copy to avoid stale state
-    let workingImages = [...images, ...newImages];
+    const workingImages = [...images, ...newImages];
 
     // Upload files one by one
     for (let i = 0; i < newImages.length; i++) {
