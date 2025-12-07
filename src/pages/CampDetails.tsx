@@ -17,6 +17,22 @@ import type { CancellationPolicy } from '@/lib/refundCalculator';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
 import { useTranslation } from 'react-i18next';
 
+interface TentDetail {
+  id?: string;
+  type?: string;
+  furnished?: boolean;
+  carpeted?: boolean;
+  tv?: boolean;
+  sofas?: boolean;
+  teaSets?: boolean;
+  pingPongTable?: boolean;
+  foosballTable?: boolean;
+  airHockeyTable?: boolean;
+  volleyballField?: boolean;
+  footballField?: boolean;
+  description?: string;
+}
+
 export default function CampDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -237,7 +253,7 @@ export default function CampDetails() {
                      (camp.tentConfiguration?.entertainment || 0);
 
   const hasReviews = camp.reviewCount && camp.reviewCount > 0;
-  const tentDetails = (camp as unknown as { tents?: Array<Record<string, unknown>> }).tents || [];
+  const tentDetails = (camp as unknown as { tents?: TentDetail[] }).tents || [];
 
   // Only allow booking for active listings (pending/inactive should be view-only)
   const isActive = !camp.status || camp.status === 'active';
@@ -442,7 +458,7 @@ export default function CampDetails() {
                   </Badge>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {tentDetails.map((tent: any, idx: number) => {
+                  {tentDetails.map((tent: TentDetail, idx: number) => {
                     const features: string[] = [];
                     if (tent.furnished) features.push(t('campDetails.tentFeatures.furnished', { defaultValue: 'Furnished' }));
                     if (tent.carpeted) features.push(t('campDetails.tentFeatures.carpeted', { defaultValue: 'Carpeted' }));
