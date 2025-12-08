@@ -381,7 +381,7 @@ export default function Index() {
               <SelectContent>
                 {[1, 2, 3, 4, 5, 6, 8, 10, 15, 20].map(num => (
                   <SelectItem key={num} value={num.toString()}>
-                    {num} {num === 1 ? 'Guest' : 'Guests'}
+                    {num} {num === 1 ? t('home.guestLabel') : t('home.guestsLabel')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -444,7 +444,7 @@ export default function Index() {
           {/* Active Filters Chips */}
           {activeFilterCount > 0 && (
             <div className="mt-4 flex flex-wrap gap-2 items-center">
-              <span className="text-sm font-semibold text-gray-700">Active Filters:</span>
+              <span className="text-sm font-semibold text-gray-700">{t('home.activeFilters')}</span>
               
               {filters.listingType && filters.listingType !== 'all' && (
                 <Badge 
@@ -452,7 +452,7 @@ export default function Index() {
                   className="h-8 px-3 bg-orange-100 text-orange-900 border border-orange-300 cursor-pointer hover:bg-orange-200"
                   onClick={() => removeFilter('listingType')}
                 >
-                  {filters.listingType === 'camp' ? '🏕️ Camp' : '🏖️ Kashta'}
+                  {filters.listingType === 'camp' ? '🏕️ ' + t('listingType.camp.title') : '🏖️ ' + t('listingType.kashta.title')}
                   <X className="w-3 h-3 ml-1" />
                 </Badge>
               )}
@@ -487,7 +487,7 @@ export default function Index() {
                   className="h-8 px-3 bg-yellow-100 text-yellow-900 border border-yellow-300 cursor-pointer hover:bg-yellow-200"
                   onClick={() => removeFilter('rating')}
                 >
-                  ⭐ {filters.minRating}+ Rating
+                  ⭐ {filters.minRating}+ {t('filters.minRating')}
                   <X className="w-3 h-3 ml-1" />
                 </Badge>
               )}
@@ -520,7 +520,7 @@ export default function Index() {
                 className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 font-semibold"
                 onClick={clearAllFilters}
               >
-                Clear All
+                {t('home.clearAll')}
               </Button>
             </div>
           )}
@@ -550,17 +550,17 @@ export default function Index() {
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">
                     {selectedListingType === 'all' 
-                      ? `Showing ${filteredCamps.length} ${filteredCamps.length === 1 ? 'Listing' : 'Listings'} in Bahrain`
+                      ? `${t('home.showingListings', { count: filteredCamps.length })}${filteredCamps.length !== 1 ? '' : ''} ${t('home.listingsInBahrain')}`
                       : selectedListingType === 'camp'
-                      ? `${campCount} ${campCount === 1 ? 'Camp' : 'Camps'} Available`
-                      : `${kashtaCount} ${kashtaCount === 1 ? 'Kashta' : 'Kashtas'} Available`
+                      ? `${campCount} ${campCount === 1 ? t('home.campsAvailableCount', { count: campCount }) : t('home.campsAvailableCountPlural', { count: campCount })}`
+                      : `${kashtaCount} ${kashtaCount === 1 ? t('home.kashtasAvailableCount', { count: kashtaCount }) : t('home.kashtasAvailableCountPlural', { count: kashtaCount })}`
                     }
                   </h2>
                   {filters.bookingDate && (
                     <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
                       <CalendarIcon className="w-4 h-4" />
                       <span>
-                        Available on {format(filters.bookingDate, 'EEEE, MMMM dd, yyyy')}
+                        {t('home.availableOn')} {format(filters.bookingDate, 'EEEE, MMMM dd, yyyy')}
                       </span>
                     </div>
                   )}
@@ -708,7 +708,7 @@ export default function Index() {
                         <div className="flex items-center gap-2 mb-4">
                           <RatingStars rating={camp.averageRating || 0} size="lg" />
                           <span className="text-base font-semibold text-gray-700">
-                            ({camp.reviewCount || 0} {camp.reviewCount === 1 ? 'review' : 'reviews'})
+                            ({camp.reviewCount || 0} {camp.reviewCount === 1 ? t('home.reviewLabel') : t('home.reviewsLabel')})
                           </span>
                         </div>
 
@@ -716,11 +716,11 @@ export default function Index() {
                         <div className="flex items-center gap-6 text-base text-gray-700 mb-5 font-medium">
                           <div className="flex items-center">
                             <Users className="w-5 h-5 mr-2 text-[#6B4423]" />
-                            Up to {camp.maxGuests} guests
+                            {t('home.upToGuests', { count: camp.maxGuests })}
                           </div>
                           <div className="flex items-center">
                             <Tent className="w-5 h-5 mr-2 text-[#6B4423]" />
-                            {getTotalTents(camp.tentConfiguration)} tents
+                            {getTotalTents(camp.tentConfiguration)} {getTotalTents(camp.tentConfiguration) === 1 ? t('home.tentLabel') : t('home.tentsLabel')}
                           </div>
                         </div>
 

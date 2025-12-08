@@ -576,7 +576,23 @@ const resources = {
         filterApplied: '{{count}} filters applied',
         reviewCount: '{{count}} reviews',
         upToGuests: 'Up to {{count}} guests',
-        tentsCount: '{{count}} tents'
+        tentsCount: '{{count}} tents',
+        guestLabel: 'Guest',
+        guestsLabel: 'Guests',
+        tentLabel: 'tent',
+        tentsLabel: 'tents',
+        showingListings: 'Showing {{count}} Listing',
+        showingListingsPlural: 'Showing {{count}} Listings',
+        listingsInBahrain: 'in Bahrain',
+        campsAvailableCount: '{{count}} Camp Available',
+        campsAvailableCountPlural: '{{count}} Camps Available',
+        kashtasAvailableCount: '{{count}} Kashta Available',
+        kashtasAvailableCountPlural: '{{count}} Kashtas Available',
+        availableOn: 'Available on',
+        activeFilters: 'Active Filters:',
+        reviewLabel: 'review',
+        reviewsLabel: 'reviews',
+        nonRefundable: 'Non-Refundable'
       },
       
       // Host Dashboard
@@ -972,9 +988,88 @@ const resources = {
         },
         all: 'جميع القوائم',
         selectType: 'اختر نوع القائمة'
-      }
+      },
       
-      // Note: Rest of Arabic translations remain the same as before
+      // Home page (Arabic) - COMPLETE TRANSLATIONS
+      home: {
+        heroTitleTop: 'اكتشف تجربتك المثالية',
+        heroTitleBottom: 'للتخييم الصحراوي',
+        heroSubtitle: 'احجز أماكن تخييم فريدة في جميع أنحاء البحرين',
+        searchPlaceholder: 'البحث حسب الموقع...',
+        datePlaceholder: 'اختر التاريخ',
+        searchButton: 'بحث',
+        filters: 'فلاتر',
+        sortBy: 'ترتيب حسب',
+        sortNewest: 'الأحدث',
+        sortPriceAsc: 'السعر: من الأقل للأعلى',
+        sortPriceDesc: 'السعر: من الأعلى للأقل',
+        sortRating: 'الأعلى تقييماً',
+        loadingCamps: 'جارٍ تحميل المخيمات...',
+        noCampsTitle: 'لم يتم العثور على مخيمات',
+        noCampsGeneral: 'حاول تعديل الفلاتر أو معايير البحث',
+        noCampsDate: 'لا توجد مخيمات متاحة في التاريخ المحدد',
+        perDay: 'في اليوم',
+        viewDetails: 'عرض التفاصيل',
+        datePickedLabel: 'تم اختيار التاريخ',
+        clear: 'مسح',
+        clearAll: 'مسح الكل',
+        checkingAvailability: 'جارٍ التحقق من التوفر...',
+        availabilityHint: 'اختر تاريخاً للتحقق من التوفر',
+        campsAvailable: '{{count}} مخيم متاح',
+        filterApplied: '{{count}} فلتر مطبق',
+        reviewCount: '{{count}} تقييم',
+        upToGuests: 'حتى {{count}} ضيف',
+        tentsCount: '{{count}} خيمة',
+        guestLabel: 'ضيف',
+        guestsLabel: 'ضيوف',
+        tentLabel: 'خيمة',
+        tentsLabel: 'خيام',
+        showingListings: 'عرض {{count}} قائمة',
+        showingListingsPlural: 'عرض {{count}} قوائم',
+        listingsInBahrain: 'في البحرين',
+        campsAvailableCount: '{{count}} مخيم متاح',
+        campsAvailableCountPlural: '{{count}} مخيمات متاحة',
+        kashtasAvailableCount: '{{count}} كشتة متاحة',
+        kashtasAvailableCountPlural: '{{count}} كشتات متاحة',
+        availableOn: 'متاح في',
+        activeFilters: 'الفلاتر النشطة:',
+        reviewLabel: 'تقييم',
+        reviewsLabel: 'تقييمات',
+        nonRefundable: 'غير قابل للاسترداد'
+      },
+      
+      // Filters (Arabic)
+      filters: {
+        location: 'الموقع',
+        bookingDate: 'تاريخ الحجز',
+        selectDate: 'اختر تاريخاً',
+        clearDate: 'مسح التاريخ',
+        findAvailable: 'البحث عن المخيمات المتاحة',
+        priceRange: 'نطاق السعر',
+        up: 'حتى',
+        minGuests: 'الحد الأدنى للضيوف',
+        tentTypes: 'أنواع الخيام',
+        largeTents: 'خيام كبيرة',
+        smallTents: 'خيام صغيرة',
+        entertainmentTents: 'خيام ترفيهية',
+        amenities: 'المرافق',
+        minRating: 'الحد الأدنى للتقييم',
+        allRatings: 'جميع التقييمات',
+        apply: 'تطبيق الفلاتر',
+        reset: 'إعادة تعيين',
+        listingType: 'نوع القائمة',
+        allTypes: 'جميع الأنواع'
+      },
+      
+      // Header (Arabic)
+      header: {
+        brand: 'مخيمات',
+        admin: 'المشرف',
+        profile: 'الملف الشخصي',
+        signOut: 'تسجيل الخروج',
+        signIn: 'تسجيل الدخول',
+        signUp: 'إنشاء حساب'
+      }
     }
   }
 };
