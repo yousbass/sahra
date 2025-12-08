@@ -552,8 +552,8 @@ export default function Index() {
                     {selectedListingType === 'all' 
                       ? `${t('home.showingListings', { count: filteredCamps.length })}${filteredCamps.length !== 1 ? '' : ''} ${t('home.listingsInBahrain')}`
                       : selectedListingType === 'camp'
-                      ? `${campCount} ${campCount === 1 ? t('home.campsAvailableCount', { count: campCount }) : t('home.campsAvailableCountPlural', { count: campCount })}`
-                      : `${kashtaCount} ${kashtaCount === 1 ? t('home.kashtasAvailableCount', { count: kashtaCount }) : t('home.kashtasAvailableCountPlural', { count: kashtaCount })}`
+                      ? campCount === 1 ? t('home.campsAvailableCount', { count: campCount }) : t('home.campsAvailableCountPlural', { count: campCount })
+                      : kashtaCount === 1 ? t('home.kashtasAvailableCount', { count: kashtaCount }) : t('home.kashtasAvailableCountPlural', { count: kashtaCount })
                     }
                   </h2>
                   {filters.bookingDate && (
