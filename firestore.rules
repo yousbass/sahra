@@ -45,7 +45,8 @@ service cloud.firestore {
       // This is crucial for Firebase Auth sign-up to work
       allow create: if isSignedIn() && request.auth.uid == userId;
       
-      // Users can update their own profile, admins can update any profile
+      // Users can update their own profile (including isHost field for host application)
+      // Admins can update any profile
       allow update: if isOwner(userId) || isAdmin();
       
       // Only admins can delete users
@@ -59,12 +60,11 @@ service cloud.firestore {
                      (resource.data.userId == request.auth.uid || isAdmin());
       
       // Authenticated users can create their own applications
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && 
+                       request.resource.data.userId == request.auth.uid;
       
-      // Only admins can update applications (for approval/rejection)
+      // Only admins can update or delete applications
       allow update: if isAdmin();
-      
-      // Only admins can delete applications
       allow delete: if isAdmin();
     }
     

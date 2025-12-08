@@ -10,7 +10,6 @@ import {
   CheckCircle, 
   Loader2, 
   ArrowLeft,
-  Shield,
   AlertCircle
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,8 +17,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import {
   createHostApplication,
-  getHostApplicationByUserId,
-  updatePhoneVerification
+  getHostApplicationByUserId
 } from '@/lib/hostApplication';
 
 export default function BecomeHost() {
@@ -32,7 +30,6 @@ export default function BecomeHost() {
   const [cprNumber, setCprNumber] = useState('');
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [step, setStep] = useState<'form' | 'success'>('form');
-  const [applicationId, setApplicationId] = useState<string | null>(null);
   
   const [submitting, setSubmitting] = useState(false);
 
@@ -61,19 +58,8 @@ export default function BecomeHost() {
     try {
       const existingApp = await getHostApplicationByUserId(user.uid);
       
-      if (existingApp) {
-        if (existingApp.status === 'pending') {
-          toast.info(t('messages.applicationPending') || 'Your application is pending review');
-          setStep('success');
-          setApplicationId(existingApp.id);
-        } else if (existingApp.status === 'approved') {
-          navigate('/host');
-        } else if (existingApp.status === 'rejected') {
-          toast.error(
-            t('messages.applicationRejected') || 
-            `Your application was rejected. Reason: ${existingApp.rejectionReason || 'Not specified'}`
-          );
-        }
+      if (existingApp && existingApp.status === 'approved') {
+        navigate('/host');
       }
     } catch (error) {
       console.error('Error checking existing application:', error);
@@ -148,7 +134,7 @@ export default function BecomeHost() {
     setSubmitting(true);
 
     try {
-      const appId = await createHostApplication(
+      await createHostApplication(
         user.uid,
         user.email || '',
         userData.displayName || user.email || 'User',
@@ -156,15 +142,16 @@ export default function BecomeHost() {
         cprNumber
       );
 
-      // Mark phone as verified in the application
-      await updatePhoneVerification(appId, true);
-
-      setApplicationId(appId);
       setStep('success');
       toast.success(
-        t('messages.applicationSubmitted') || 
-        'Application submitted successfully! We will review it shortly.'
+        t('messages.hostActivated') || 
+        'Congratulations! You are now a host and can start listing your properties.'
       );
+      
+      // Redirect to host dashboard after 2 seconds
+      setTimeout(() => {
+        navigate('/host');
+      }, 2000);
     } catch (error) {
       console.error('Error submitting application:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to submit application';
@@ -192,24 +179,13 @@ export default function BecomeHost() {
             </div>
             
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              {t('becomeHost.successTitle') || 'Application Submitted!'}
+              {t('becomeHost.successTitle') || 'Welcome, Host!'}
             </h1>
             
             <p className="text-gray-700 mb-6">
               {t('becomeHost.successMessage') || 
-                'Thank you for applying to become a host. We will review your application and get back to you within 24-48 hours.'}
+                'Congratulations! You are now a verified host. You can start creating your camp listings right away.'}
             </p>
-
-            {applicationId && (
-              <div className="bg-sand-50 p-4 rounded-lg mb-6">
-                <p className="text-sm text-gray-600 mb-1">
-                  {t('becomeHost.applicationId') || 'Application ID'}
-                </p>
-                <p className="text-lg font-mono font-semibold text-gray-900">
-                  {applicationId}
-                </p>
-              </div>
-            )}
 
             <div className="flex gap-3 justify-center">
               <Button
@@ -220,10 +196,10 @@ export default function BecomeHost() {
                 {t('becomeHost.backHome') || 'Back to Home'}
               </Button>
               <Button
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate('/host')}
                 className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white"
               >
-                {t('becomeHost.viewProfile') || 'View Profile'}
+                {t('becomeHost.createListing') || 'Create Your First Listing'}
               </Button>
             </div>
           </Card>
@@ -352,10 +328,10 @@ export default function BecomeHost() {
               {submitting ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  {t('becomeHost.submitting') || 'Submitting...'}
+                  {t('becomeHost.submitting') || 'Processing...'}
                 </>
               ) : (
-                t('becomeHost.submit') || 'Submit Application'
+                t('becomeHost.becomeHost') || 'Become a Host'
               )}
             </Button>
           </form>
