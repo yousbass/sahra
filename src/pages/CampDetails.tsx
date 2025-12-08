@@ -38,7 +38,8 @@ export default function CampDetails() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [camp, setCamp] = useState<LegacyCamp | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -176,28 +177,10 @@ export default function CampDetails() {
     return <StarIcon className="w-5 h-5" />;
   };
 
-  const getTentFeatureIcon = (feature: string) => {
-    const lower = feature.toLowerCase();
-    if (lower.includes('furnished')) return <Home className="w-4 h-4" />;
-    if (lower.includes('carpeted')) return <Sparkles className="w-4 h-4" />;
-    if (lower.includes('tv')) return <Tv className="w-4 h-4" />;
-    if (lower.includes('sofa')) return <Sofa className="w-4 h-4" />;
-    if (lower.includes('tea')) return <Coffee className="w-4 h-4" />;
-    if (lower.includes('ping')) return <Table2 className="w-4 h-4" />;
-    if (lower.includes('foosball') || lower.includes('air hockey')) return <Gamepad2 className="w-4 h-4" />;
-    if (lower.includes('volleyball')) return <CircleDot className="w-4 h-4" />;
-    if (lower.includes('football')) return <CircleDot className="w-4 h-4" />;
-    return <Check className="w-4 h-4" />;
-  };
-
-  // NEW: Function to translate amenity names
+  // Function to translate amenity names
   const translateAmenity = (amenity: string): string => {
-    // Try to get translation from amenityNames section
     const translationKey = `amenityNames.${amenity}`;
     const translated = t(translationKey);
-    
-    // If translation exists and is different from the key, return it
-    // Otherwise return the original amenity name
     return translated !== translationKey ? translated : amenity;
   };
 
@@ -206,20 +189,20 @@ export default function CampDetails() {
     if (typeof policy === 'object' && policy.type) {
       if (policy.type === 'full_refundable') {
         return {
-          name: 'Full Refundable',
+          name: t('cancelSelector.fullRefundable.name'),
           icon: <ShieldCheck className="w-6 h-6 text-green-600" />,
           color: 'green',
           description: t('cancelSelector.fullRefundable.description'),
           details: [
             { 
-              time: '24+ hours before', 
-              refund: '100%', 
+              time: t('campDetails.policyDetails.time24Plus'),
+              refund: t('campDetails.policyDetails.refund100'),
               color: 'green', 
               description: t('cancelSelector.fullRefundable.rule1')
             },
             { 
-              time: 'Less than 24 hours', 
-              refund: '0%', 
+              time: t('campDetails.policyDetails.timeLess24'),
+              refund: t('campDetails.policyDetails.refund0'),
               color: 'red', 
               description: t('cancelSelector.fullRefundable.rule2')
             }
@@ -229,26 +212,26 @@ export default function CampDetails() {
       } else if (policy.type === 'partial_refundable') {
         const arboon = policy.arboonPercentage || 20;
         return {
-          name: 'Partial Refundable',
+          name: t('cancelSelector.partialRefundable.name'),
           icon: <Coins className="w-6 h-6 text-[#FF8C42]" />,
           color: 'amber',
           description: t('cancelSelector.partialRefundable.description'),
           details: [
             { 
-              time: '48+ hours before', 
-              refund: `${100 - arboon}%`, 
+              time: t('campDetails.policyDetails.time48Plus'),
+              refund: `${100 - arboon}%`,
               color: 'green', 
               description: t('cancelSelector.partialRefundable.rule1')
             },
             { 
-              time: '24-48 hours before', 
-              refund: `${50 - arboon}%`, 
+              time: t('campDetails.policyDetails.time2448'),
+              refund: `${50 - arboon}%`,
               color: 'amber', 
               description: t('cancelSelector.partialRefundable.rule2')
             },
             { 
-              time: 'Less than 24 hours', 
-              refund: '0%', 
+              time: t('campDetails.policyDetails.timeLess24'),
+              refund: '0%',
               color: 'red', 
               description: t('cancelSelector.partialRefundable.rule3')
             }
@@ -263,37 +246,67 @@ export default function CampDetails() {
     switch (legacyPolicy) {
       case 'flexible':
         return {
-          name: 'Flexible',
+          name: t('campDetails.policy.flexible.name'),
           icon: <ShieldCheck className="w-6 h-6 text-green-600" />,
           color: 'green',
-          description: 'Full refund if cancelled 24+ hours before check-in',
+          description: t('campDetails.policy.flexible.description'),
           details: [
-            { time: '24+ hours before', refund: '100%', color: 'green', description: 'Full refund (minus service fee)' },
-            { time: 'Less than 24 hours', refund: '0%', color: 'red', description: 'No refund' }
+            { 
+              time: t('campDetails.policyDetails.time24Plus'),
+              refund: '100%',
+              color: 'green', 
+              description: t('campDetails.policy.flexible.detail1Note')
+            },
+            { 
+              time: t('campDetails.policyDetails.timeLess24'),
+              refund: '0%',
+              color: 'red', 
+              description: t('campDetails.policy.flexible.detail2Note')
+            }
           ],
           arboonPercentage: 0
         };
       case 'strict':
         return {
-          name: 'Strict',
+          name: t('campDetails.policy.strict.name'),
           icon: <XCircle className="w-6 h-6 text-orange-600" />,
           color: 'orange',
-          description: '50% refund if cancelled 7+ days before check-in',
+          description: t('campDetails.policy.strict.description'),
           details: [
-            { time: '7+ days before', refund: '50%', color: 'green', description: '50% refund' },
-            { time: 'Less than 7 days', refund: '0%', color: 'red', description: 'No refund' }
+            { 
+              time: t('campDetails.policyDetails.time7Plus'),
+              refund: '50%',
+              color: 'green', 
+              description: t('campDetails.policy.strict.detail1Note')
+            },
+            { 
+              time: t('campDetails.policyDetails.timeLess7'),
+              refund: '0%',
+              color: 'red', 
+              description: t('campDetails.policy.strict.detail2Note')
+            }
           ],
           arboonPercentage: 0
         };
       default:
         return {
-          name: 'Moderate',
+          name: t('campDetails.policy.moderate.name'),
           icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
           color: 'blue',
-          description: '50% refund if cancelled 48+ hours before check-in',
+          description: t('campDetails.policy.moderate.description'),
           details: [
-            { time: '48+ hours before', refund: '50%', color: 'green', description: '50% refund' },
-            { time: 'Less than 48 hours', refund: '0%', color: 'red', description: 'No refund' }
+            { 
+              time: t('campDetails.policyDetails.time48Plus'),
+              refund: '50%',
+              color: 'green', 
+              description: t('campDetails.policy.moderate.detail1Note')
+            },
+            { 
+              time: t('campDetails.policyDetails.timeLess24'),
+              refund: '0%',
+              color: 'red', 
+              description: t('campDetails.policy.moderate.detail2Note')
+            }
           ],
           arboonPercentage: 0
         };
@@ -363,7 +376,7 @@ export default function CampDetails() {
   const waterActivities = camp.waterActivities || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Hero Image */}
       <div className="relative h-[38vh] sm:h-[50vh] md:h-[60vh]">
         <img
@@ -379,9 +392,9 @@ export default function CampDetails() {
         <Button
           onClick={handleBack}
           variant="secondary"
-          className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-900 shadow-lg font-semibold"
+          className={`absolute top-4 ${isRTL ? 'right-4' : 'left-4'} bg-white/90 backdrop-blur-sm hover:bg-white text-gray-900 shadow-lg font-semibold`}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
           {t('campDetails.back')}
         </Button>
 
@@ -391,12 +404,12 @@ export default function CampDetails() {
               <Badge className={`${isKashta ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#6B4423] hover:bg-[#5A3820]'} text-white font-semibold px-3 py-1`}>
                 {isKashta ? (
                   <>
-                    <Waves className="w-4 h-4 mr-1" />
+                    <Waves className={`w-4 h-4 ${isRTL ? 'ml-1' : 'mr-1'}`} />
                     {t('listingType.kashta.badge')}
                   </>
                 ) : (
                   <>
-                    <Tent className="w-4 h-4 mr-1" />
+                    <Tent className={`w-4 h-4 ${isRTL ? 'ml-1' : 'mr-1'}`} />
                     {t('listingType.camp.badge')}
                   </>
                 )}
@@ -603,7 +616,7 @@ export default function CampDetails() {
                       <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                     )}
                     <div>
-                      <p className="font-semibold text-gray-900">{detail.time}: {detail.refund} refund</p>
+                      <p className="font-semibold text-gray-900">{detail.time}: {detail.refund} {t('common.refund')}</p>
                       <p className="text-sm text-gray-700">{detail.description}</p>
                     </div>
                   </div>
@@ -637,7 +650,7 @@ export default function CampDetails() {
               )}
             </Card>
 
-            {/* Tent Details (Camp only) - FIXED CONTRAST */}
+            {/* Tent Details (Camp only) */}
             {!isKashta && tentDetails.length > 0 && (
               <Card className="bg-white/95 backdrop-blur-sm border-orange-300 shadow-xl overflow-hidden">
                 {/* Header with gradient background */}
@@ -716,7 +729,7 @@ export default function CampDetails() {
                             </div>
                             {features.length > 0 && (
                               <Badge className="bg-gradient-to-r from-[#8B5A3C] to-[#FF8C42] text-white border-0 px-3 py-1.5 font-bold shadow-md">
-                                <Sparkles className="w-3.5 h-3.5 mr-1" />
+                                <Sparkles className={`w-3.5 h-3.5 ${isRTL ? 'ml-1' : 'mr-1'}`} />
                                 Premium
                               </Badge>
                             )}
@@ -801,7 +814,7 @@ export default function CampDetails() {
             </div>
           </div>
 
-          {/* Booking Card - FIXED CONTRAST */}
+          {/* Booking Card */}
           <div className="lg:col-span-1">
             <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 sticky top-4 shadow-xl">
               <div className="mb-6">
@@ -815,7 +828,7 @@ export default function CampDetails() {
               {(isKashta ? seatingCapacity : camp.maxGuests) && (
                 <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-300">
                   <p className="text-sm text-gray-900 font-semibold">
-                    <Users className="w-4 h-4 inline mr-1" />
+                    <Users className={`w-4 h-4 inline ${isRTL ? 'ml-1' : 'mr-1'}`} />
                     {isKashta 
                       ? t('listingType.kashta.accommodates', { count: seatingCapacity })
                       : t('campDetails.accommodates', { count: camp.maxGuests })
@@ -838,7 +851,7 @@ export default function CampDetails() {
                   <span className="text-green-600 font-semibold">✓</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-700 font-medium">{policyDetails.name} Cancellation</span>
+                  <span className="text-gray-700 font-medium">{policyDetails.name} {t('campDetails.policyDetails.cancellation')}</span>
                   <span className={`font-semibold ${
                     policyDetails.color === 'green' ? 'text-green-600' : 
                     policyDetails.color === 'amber' ? 'text-[#FF8C42]' :

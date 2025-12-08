@@ -151,7 +151,7 @@ const resources = {
         other: 'Other'
       },
       
-      // Amenity Names - NEW SECTION
+      // Amenity Names
       amenityNames: {
         'Restrooms': 'Restrooms',
         'Kitchen': 'Kitchen',
@@ -266,7 +266,7 @@ const resources = {
         reviewSuccess: 'Thank you for your review!',
         signInReview: 'Please sign in to write a review',
         loadCampFailed: 'Failed to load camp details',
-        accommodates: 'Accommodates',
+        accommodates: 'Accommodates up to {{count}} guests',
         tentsLabel: 'Tents',
         tentDetails: 'Tent Details',
         tentTypes: {
@@ -315,6 +315,19 @@ const resources = {
             detail2: 'Less than 7 days',
             detail2Note: 'No refund'
           }
+        },
+        policyDetails: {
+          time24Plus: '24+ hours before',
+          timeLess24: 'Less than 24 hours',
+          time48Plus: '48+ hours before',
+          time2448: '24-48 hours before',
+          time7Plus: '7+ days before',
+          timeLess7: 'Less than 7 days',
+          refund100: '100% refund',
+          refund50: '50% refund',
+          refund0: '0% refund',
+          noRefund: 'No refund',
+          cancellation: 'Cancellation'
         }
       },
       
@@ -938,7 +951,8 @@ const resources = {
         standardConfiguration: 'Standard configuration',
         exploreAccommodations: 'Explore our luxury tent accommodations',
         tent: 'Tent',
-        tents: 'Tents'
+        tents: 'Tents',
+        refund: 'refund'
       },
       
       // Status labels
@@ -1126,7 +1140,7 @@ const resources = {
         reviewSuccess: 'شكراً لك على تقييمك!',
         signInReview: 'يرجى تسجيل الدخول لكتابة تقييم',
         loadCampFailed: 'فشل تحميل تفاصيل المخيم',
-        accommodates: 'يستوعب',
+        accommodates: 'يستوعب حتى {{count}} ضيف',
         tentsLabel: 'خيام',
         tentDetails: 'تفاصيل الخيام',
         tentTypes: {
@@ -1175,10 +1189,23 @@ const resources = {
             detail2: 'أقل من 7 أيام',
             detail2Note: 'بدون استرداد'
           }
+        },
+        policyDetails: {
+          time24Plus: '+24 ساعة قبل',
+          timeLess24: 'أقل من 24 ساعة',
+          time48Plus: '+48 ساعة قبل',
+          time2448: '24-48 ساعة قبل',
+          time7Plus: '+7 أيام قبل',
+          timeLess7: 'أقل من 7 أيام',
+          refund100: 'استرداد 100٪',
+          refund50: 'استرداد 50٪',
+          refund0: 'لا استرداد',
+          noRefund: 'بدون استرداد',
+          cancellation: 'الإلغاء'
         }
       },
       
-      // Amenity Names (Arabic) - NEW SECTION
+      // Amenity Names (Arabic)
       amenityNames: {
         'Restrooms': 'دورات مياه',
         'Kitchen': 'مطبخ',
@@ -1287,7 +1314,8 @@ const resources = {
         standardConfiguration: 'تكوين قياسي',
         exploreAccommodations: 'استكشف أماكن الإقامة الفاخرة في خيامنا',
         tent: 'خيمة',
-        tents: 'خيام'
+        tents: 'خيام',
+        refund: 'استرداد'
       },
       
       // Status labels (Arabic)
