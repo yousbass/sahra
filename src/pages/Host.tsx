@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, List, BarChart3, Crown, Loader2, Calendar, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { Plus, List, BarChart3, Crown, Loader2, Calendar, TrendingUp, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +35,14 @@ export default function Host() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      if (!userData?.uid) return;
+      // If still loading auth or no user data, keep loading state
+      if (loading || !userData?.uid) {
+        setLoadingStats(true);
+        return;
+      }
+      
+      console.log('Fetching stats for user:', userData.uid);
+      setLoadingStats(true);
       
       try {
         // Fetch listings
@@ -47,6 +54,8 @@ export default function Host() {
         const totalListings = listingsSnapshot.size;
         const activeListings = listingsSnapshot.docs.filter(doc => doc.data().status === 'active').length;
 
+        console.log('Listings fetched:', { totalListings, activeListings });
+
         // Fetch bookings
         const bookingsQuery = query(
           collection(db, 'bookings'),
@@ -56,6 +65,8 @@ export default function Host() {
         const totalBookings = bookingsSnapshot.size;
         const pendingBookings = bookingsSnapshot.docs.filter(doc => doc.data().status === 'pending').length;
 
+        console.log('Bookings fetched:', { totalBookings, pendingBookings });
+
         setStats({
           totalListings,
           activeListings,
@@ -64,15 +75,21 @@ export default function Host() {
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
+        // Set stats to 0 on error
+        setStats({
+          totalListings: 0,
+          activeListings: 0,
+          totalBookings: 0,
+          pendingBookings: 0,
+        });
       } finally {
+        console.log('Stats loading complete');
         setLoadingStats(false);
       }
     };
 
-    if (userData?.uid) {
-      fetchStats();
-    }
-  }, [userData]);
+    fetchStats();
+  }, [userData, loading]);
 
   if (loading) {
     return (
