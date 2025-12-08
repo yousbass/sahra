@@ -516,8 +516,8 @@ const resources = {
       
       // Host Dashboard
       host: {
-        heroTitle: 'Host Dashboard',
-        heroDesc: 'Manage your listings and bookings',
+        heroTitle: 'Ready to Share Your Space?',
+        heroDesc: 'List your camp or kashta and start welcoming guests today. It only takes a few minutes to get started.',
         heroCreate: 'Create New Listing',
         heroManage: 'Manage Listings',
         dashboardTitle: 'Welcome back!',
@@ -535,7 +535,17 @@ const resources = {
         back: 'Back to Dashboard',
         noBookings: 'No bookings yet',
         noBookingsHint: 'Your bookings will appear here',
-        refresh: 'Refresh'
+        refresh: 'Refresh',
+        quickActions: 'Quick Actions',
+        stats: {
+          totalListings: 'Total Listings',
+          active: 'active',
+          totalBookings: 'Total Bookings',
+          pending: 'pending',
+          revenue: 'Revenue',
+          guests: 'Total Guests',
+          comingSoon: 'Coming Soon'
+        }
       },
       
       // Host Cancellation
@@ -1029,8 +1039,10 @@ const resources = {
             detail1Note: 'استرداد 50٪',
             detail2: 'أقل من 7 أيام',
             detail2Note: 'لا يوجد استرداد'
+          }
+        }
+      },
       
-        },
       // Cancellation Policy Selector - NEW SYSTEM (Arabic)
       cancelSelector: {
         title: 'سياسة الإلغاء',
@@ -1053,11 +1065,6 @@ const resources = {
           rule2: 'الإلغاء قبل 24-48 ساعة: استرداد 50٪ (ناقص العربون ورسوم الخدمة)',
           rule3: 'الإلغاء قبل أقل من 24 ساعة: لا يوجد استرداد',
           example: 'مثال: حجز الضيف بـ 100 د.ب مع {{arboon}}٪ عربون. إذا ألغى قبل 48 ساعة، يسترد: 100 - {{arboon}} (عربون) - 10 (رسوم خدمة) = {{refund}} د.ب.'
-        }
-      },
-          name: 'صارم',
-          line1: 'استرداد كامل إذا تم الإلغاء قبل 7 أيام من تسجيل الوصول',
-          line2: 'لا يوجد استرداد إذا تم الإلغاء خلال 7 أيام'
         }
       },
       
@@ -1327,8 +1334,8 @@ const resources = {
       
       // Host Dashboard
       host: {
-        heroTitle: 'لوحة المضيف',
-        heroDesc: 'إدارة إعلاناتك وحجوزاتك',
+        heroTitle: 'هل أنت مستعد لمشاركة مساحتك؟',
+        heroDesc: 'أدرج مخيمك أو كشتتك وابدأ باستقبال الضيوف اليوم. يستغرق الأمر بضع دقائق فقط للبدء.',
         heroCreate: 'إنشاء إعلان جديد',
         heroManage: 'إدارة الإعلانات',
         dashboardTitle: 'مرحباً بعودتك!',
@@ -1346,7 +1353,17 @@ const resources = {
         back: 'العودة للوحة التحكم',
         noBookings: 'لا توجد حجوزات بعد',
         noBookingsHint: 'ستظهر حجوزاتك هنا',
-        refresh: 'تحديث'
+        refresh: 'تحديث',
+        quickActions: 'إجراءات سريعة',
+        stats: {
+          totalListings: 'إجمالي الإعلانات',
+          active: 'نشط',
+          totalBookings: 'إجمالي الحجوزات',
+          pending: 'قيد الانتظار',
+          revenue: 'الإيرادات',
+          guests: 'إجمالي الضيوف',
+          comingSoon: 'قريباً'
+        }
       },
       
       // Host Cancellation
