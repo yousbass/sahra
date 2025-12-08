@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { userData, loading, signOut, becomeHost, user } = useAuth();
+  const { userData, loading, signOut, user } = useAuth();
   const { t } = useTranslation();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -59,8 +59,9 @@ export default function Profile() {
     navigate('/signin');
   };
 
-  const handleBecomeHost = async () => {
-    await becomeHost();
+  const handleBecomeHost = () => {
+    // Navigate to the new BecomeHost page instead of directly making them a host
+    navigate('/become-host');
   };
 
   const startEditing = () => {
@@ -554,7 +555,7 @@ export default function Profile() {
                   onClick={handleBecomeHost}
                   className="w-full bg-white text-terracotta-600 hover:bg-white/90 font-semibold shadow-lg"
                 >
-                  Upgrade to Host
+                  Apply to Become Host
                 </Button>
               </Card>
             )}

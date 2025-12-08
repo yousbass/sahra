@@ -15,6 +15,7 @@ import MyListings from './pages/MyListings';
 import HostBookings from './pages/host/Bookings';
 import ManageAvailability from './pages/host/ManageAvailability';
 import Profile from './pages/Profile';
+import BecomeHost from './pages/BecomeHost';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -56,6 +57,7 @@ function BottomNav() {
                   location.pathname.includes('/host/listings') ||
                   location.pathname.includes('/host/availability') ||
                   location.pathname.includes('/edit-listing') ||
+                  location.pathname.includes('/become-host') ||
                   location.pathname.includes('/signup') ||
                   location.pathname.includes('/signin') ||
                   location.pathname.includes('/payment/') ||
@@ -109,6 +111,7 @@ const App = () => (
               <Route path="/host/bookings" element={<HostBookings />} />
               <Route path="/edit-listing/:campId" element={<EditListing />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/become-host" element={<BecomeHost />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/payment/success" element={<PaymentSuccess />} />
