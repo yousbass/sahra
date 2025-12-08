@@ -11,7 +11,7 @@ import { db } from '@/lib/firebase';
 
 export default function Host() {
   const navigate = useNavigate();
-  const { userData, loading } = useAuth();
+  const { userData, loading: authLoading } = useAuth();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   
@@ -23,25 +23,43 @@ export default function Host() {
   });
   const [loadingStats, setLoadingStats] = useState(true);
 
+  // Safety timeout: Force loading to stop after 5 seconds no matter what
   useEffect(() => {
-    if (!loading && !userData) {
+    const timer = setTimeout(() => {
+      if (loadingStats) {
+        console.warn('Stats loading timed out - forcing completion');
+        setLoadingStats(false);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [loadingStats]);
+
+  // Auth check redirect
+  useEffect(() => {
+    if (!authLoading && !userData) {
       toast.error('Please sign in to access the host dashboard');
       navigate('/signin');
-    } else if (!loading && userData && !userData.isHost) {
+    } else if (!authLoading && userData && !userData.isHost) {
       toast.error('You need to become a host first');
       navigate('/profile');
     }
-  }, [userData, loading, navigate]);
+  }, [userData, authLoading, navigate]);
 
+  // Data fetching
   useEffect(() => {
     const fetchStats = async () => {
-      // If still loading auth or no user data, keep loading state
-      if (loading || !userData?.uid) {
-        setLoadingStats(true);
+      // 1. If auth is still loading, wait
+      if (authLoading) return;
+
+      // 2. If no user data (and auth finished), stop loading immediately
+      if (!userData?.uid) {
+        console.log('No user data available for stats');
+        setLoadingStats(false);
         return;
       }
       
-      console.log('Fetching stats for user:', userData.uid);
+      console.log('Starting stats fetch for:', userData.uid);
       setLoadingStats(true);
       
       try {
@@ -75,23 +93,17 @@ export default function Host() {
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
-        // Set stats to 0 on error
-        setStats({
-          totalListings: 0,
-          activeListings: 0,
-          totalBookings: 0,
-          pendingBookings: 0,
-        });
+        // Keep default 0 values on error, but ensure loading stops
       } finally {
-        console.log('Stats loading complete');
+        console.log('Stats fetch finished');
         setLoadingStats(false);
       }
     };
 
     fetchStats();
-  }, [userData, loading]);
+  }, [userData, authLoading]);
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin" />

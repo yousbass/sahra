@@ -157,7 +157,7 @@ export default function CreateListing() {
       toast.error(t('createListing.hostRequired'));
       navigate('/profile');
     }
-  }, [user, userData, loading, navigate]);
+  }, [user, userData, loading, navigate, t]);
 
   const getCurrentLocation = () => {
     setGettingLocation(true);
@@ -284,7 +284,7 @@ export default function CreateListing() {
       if (resolved?.lat && resolved?.lng) {
         setLatitude(resolved.lat);
         setLongitude(resolved.lng);
-        toast.success('Coordinates extracted from URL!');
+        toast.success(t('createListing.map.extracted'));
         return;
       }
       if (resolved?.resolvedUrl) {
@@ -296,7 +296,7 @@ export default function CreateListing() {
     if (coords) {
       setLatitude(coords.lat);
       setLongitude(coords.lng);
-      toast.success('Coordinates extracted from URL!');
+      toast.success(t('createListing.map.extracted'));
     } else {
       toast.error(t('createListing.map.parseError', { defaultValue: 'Could not extract coordinates from URL. Please check the format.' }));
     }
@@ -337,15 +337,6 @@ export default function CreateListing() {
     ));
   };
 
-  const getTentTypeName = (type: string) => {
-    switch(type) {
-      case 'large': return 'Large Tent (Main/Gathering)';
-      case 'small': return 'Small Tent (Sleeping)';
-      case 'entertainment': return 'Entertainment Tent';
-      default: return 'Tent';
-    }
-  };
-
   const getTentCounts = () => {
     const large = tents.filter(t => t.type === 'large').length;
     const small = tents.filter(t => t.type === 'small').length;
@@ -365,7 +356,7 @@ export default function CreateListing() {
     e.preventDefault();
     
     if (!user) {
-      toast.error('You must be signed in to create a listing');
+      toast.error(t('createListing.signInRequired'));
       return;
     }
     
@@ -377,19 +368,19 @@ export default function CreateListing() {
       console.log('Listing Type:', listingType);
       
       if (!selectedLocation) {
-        toast.error('Please select a location from the dropdown');
+        toast.error(t('createListing.validation.selectLocation'));
         setSubmitting(false);
         return;
       }
 
       if (!latitude || !longitude) {
-      toast.error(t('createListing.locationRequired', { defaultValue: 'Please set your location using "Use My Current Location" or paste a Google Maps URL' }));
+        toast.error(t('createListing.validation.locationRequired'));
         setSubmitting(false);
         return;
       }
 
       if (!maxGuests || parseInt(maxGuests) < 1) {
-        toast.error('Please specify maximum number of guests');
+        toast.error(t('createListing.validation.maxGuests'));
         setSubmitting(false);
         return;
       }
@@ -397,20 +388,20 @@ export default function CreateListing() {
       // Type-specific validation
       if (listingType === 'camp') {
         if (tents.length === 0) {
-          toast.error('Please add at least one tent');
+          toast.error(t('createListing.validation.tents'));
           setSubmitting(false);
           return;
         }
       } else if (listingType === 'kashta') {
         if (!seatingCapacity || parseInt(seatingCapacity) < 1) {
-          toast.error('Please specify seating capacity for kashta');
+          toast.error(t('createListing.validation.kashtaCapacity'));
           setSubmitting(false);
           return;
         }
       }
 
       if (uploadedImages.length === 0) {
-        toast.error('Please upload at least one image');
+        toast.error(t('createListing.validation.images'));
         setSubmitting(false);
         return;
       }
@@ -418,7 +409,7 @@ export default function CreateListing() {
       // Check if any images are still uploading
       const stillUploading = uploadedImages.some(img => img.uploading);
       if (stillUploading) {
-        toast.error('Please wait for all images to finish uploading');
+        toast.error(t('createListing.validation.uploading'));
         setSubmitting(false);
         return;
       }
@@ -482,7 +473,7 @@ export default function CreateListing() {
       const campId = await createCamp(campData, user.uid);
       
       console.log('Listing created successfully with ID:', campId);
-      toast.success(`${listingType === 'kashta' ? 'Kashta' : 'Camp'} listing created successfully!`);
+      toast.success(listingType === 'kashta' ? t('createListing.validation.kashtaSuccess') : t('createListing.validation.campSuccess'));
       navigate('/host/listings');
     } catch (error) {
       const err = error as Error;
@@ -492,7 +483,7 @@ export default function CreateListing() {
       console.error('Error stack:', err?.stack);
       
       const errorMessage = err?.message || 'Unknown error occurred';
-      toast.error(`Failed to create listing: ${errorMessage}`);
+      toast.error(t('createListing.validation.failed', { error: errorMessage }));
     } finally {
       setSubmitting(false);
     }
@@ -925,7 +916,7 @@ export default function CreateListing() {
                         
                         <div className="space-y-3">
                           <div>
-                            <p className="text-xs font-semibold text-gray-700 mb-2">Basic Features:</p>
+                            <p className="text-xs font-semibold text-gray-700 mb-2">{t('createListing.tents.basicFeatures')}:</p>
                             <div className="flex flex-wrap gap-2">
                               {(['furnished', 'carpeted', 'tv', 'sofas', 'teaSets'] as const).map((feature) => (
                                 <Button
@@ -952,7 +943,7 @@ export default function CreateListing() {
                           </div>
 
                           <div>
-                            <p className="text-xs font-semibold text-gray-700 mb-2">Entertainment & Sports:</p>
+                            <p className="text-xs font-semibold text-gray-700 mb-2">{t('createListing.tents.entertainmentSports')}:</p>
                             <div className="flex flex-wrap gap-2">
                               {(['pingPongTable', 'foosballTable', 'airHockeyTable', 'volleyballField', 'footballField'] as const).map((feature) => (
                                 <Button
@@ -995,7 +986,7 @@ export default function CreateListing() {
                 ) : (
                   <div className="text-center p-8 bg-sand-50 border-2 border-sand-300 rounded-lg">
                     <Tent className="w-12 h-12 text-sand-400 mx-auto mb-3" />
-                    <p className="text-gray-700 font-medium">{t('createListing.tents.none', { defaultValue: 'No tents added yet. Click the buttons above to add tents.' })}</p>
+                    <p className="text-gray-700 font-medium">{t('createListing.tents.empty', { defaultValue: 'No tents added yet. Click the buttons above to add tents.' })}</p>
                   </div>
                 )}
 
@@ -1041,12 +1032,7 @@ export default function CreateListing() {
               {Object.entries(AMENITIES).map(([category, items]) => (
                 <div key={category} className="mb-6">
                   <h4 className="font-semibold text-gray-900 mb-3 capitalize">
-                    {category === 'essential' && t('createListing.amenityCategories.essential', { defaultValue: '🏕️ Essential Facilities' })}
-                    {category === 'cooking' && t('createListing.amenityCategories.cooking', { defaultValue: '🍖 Cooking & Dining' })}
-                    {category === 'entertainment' && t('createListing.amenityCategories.entertainment', { defaultValue: '🎉 Entertainment' })}
-                    {category === 'comfort' && t('createListing.amenityCategories.comfort', { defaultValue: '🛋️ Comfort & Furnishing' })}
-                    {category === 'activities' && t('createListing.amenityCategories.activities', { defaultValue: '🏜️ Activities' })}
-                    {category === 'other' && t('createListing.amenityCategories.other', { defaultValue: '📌 Other' })}
+                    {t(`createListing.amenityCategories.${category}`, { defaultValue: category })}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {items.map((amenity) => {
@@ -1061,7 +1047,7 @@ export default function CreateListing() {
                           className={
                             isSelected
                               ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
-                              : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-50 font-semibold'
+                              : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
                           }
                         >
                           {isSelected && <Check className="w-3 h-3 mr-1" />}
@@ -1085,7 +1071,7 @@ export default function CreateListing() {
                         variant="secondary"
                         className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 font-medium"
                       >
-                        {amenity}
+                        {t(`createListing.amenityItems.${amenity}`, { defaultValue: amenity })}
                       </Badge>
                     ))}
                   </div>
@@ -1099,7 +1085,7 @@ export default function CreateListing() {
               onChange={setCancellationPolicy}
             />
 
-            {/* Additional Details - UPDATED: Conditional label based on listing type */}
+            {/* Additional Details - UPDATED: Conditional label based on listing type */ }
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-2xl">📝</span>

@@ -129,7 +129,7 @@ export function KashtaSpecificForm({
         </Select>
       </div>
 
-      {/* View Type - UPDATED: Removed "sea" option, kept only "beach" and "mixed" */}
+      {/* View Type */}
       <div>
         <Label>{t('kashta.form.viewType')} *</Label>
         <RadioGroup
@@ -175,7 +175,8 @@ export function KashtaSpecificForm({
                       htmlFor={`amenity-${amenity}`}
                       className="text-sm font-normal cursor-pointer"
                     >
-                      {amenity}
+                      {/* Try to translate the amenity item, fallback to English string */}
+                      {t(`createListing.amenityItems.${amenity}`, { defaultValue: amenity })}
                     </Label>
                   </div>
                 ))}

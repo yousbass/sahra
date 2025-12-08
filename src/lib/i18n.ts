@@ -79,12 +79,12 @@ const resources = {
           viewType: 'View Type',
           amenities: 'Kashta Amenities',
           waterActivities: 'Water Activities'
-        }
+        },
+        kashtaDescription: 'Description',
+        kashtaDescriptionPlaceholder: 'Describe your kashta...'
       },
       
       // Amenity Categories
-        kashtaDescription: 'Description',
-        kashtaDescriptionPlaceholder: 'Describe your kashta...',
       amenityCategories: {
         essential: 'Essential',
         comfort: 'Comfort',
@@ -223,8 +223,6 @@ const resources = {
         }
       },
       
-      // Cancellation Policy Selector
-      
       // Cancellation Policy Selector - NEW SYSTEM
       cancelSelector: {
         title: 'Cancellation Policy',
@@ -291,6 +289,8 @@ const resources = {
           descriptionLabel: 'Description',
           descriptionPlaceholder: 'Describe this tent...',
           featuresTitle: 'Features',
+          basicFeatures: 'Basic Features',
+          entertainmentSports: 'Entertainment & Sports',
           featureLabels: {
             furnished: 'Furnished',
             carpeted: 'Carpeted',
@@ -303,7 +303,8 @@ const resources = {
             footballField: 'Football Field',
             volleyballField: 'Volleyball Field'
           },
-          helper: 'Add tents to your camp'
+          helper: 'Add tents to your camp',
+          empty: 'No tents added yet. Click the buttons above to add tents.'
         },
         
         times: {
@@ -344,8 +345,9 @@ const resources = {
           setCoordinates: 'Set Coordinates',
           locationSet: 'Location set successfully',
           fullDay: 'Full day camping experience',
-          coordinates: 'Coordinates',
-          parseError: 'Failed to parse coordinates'
+          coordinates: 'Coordinates: {{lat}}, {{lng}}',
+          parseError: 'Failed to parse coordinates',
+          extracted: 'Coordinates extracted from URL!'
         },
         
         photosTitle: 'Photos',
@@ -353,7 +355,7 @@ const resources = {
         
         amenitiesSection: 'Amenities',
         amenitiesHelper: 'Select all amenities available at your camp',
-        selectedAmenities: 'Selected Amenities',
+        selectedAmenities: 'Selected Amenities ({{count}})',
         
         amenityCategories: {
           essential: 'Essential',
@@ -406,7 +408,21 @@ const resources = {
         
         createListing: 'Create Listing',
         submitting: 'Creating listing...',
-        updateFail: 'Failed to update listing'
+        updateFail: 'Failed to update listing',
+        
+        validation: {
+          selectLocation: 'Please select a location from the dropdown',
+          locationRequired: 'Please set your location using "Use My Current Location" or paste a Google Maps URL',
+          maxGuests: 'Please specify maximum number of guests',
+          tents: 'Please add at least one tent',
+          kashtaCapacity: 'Please specify seating capacity for kashta',
+          images: 'Please upload at least one image',
+          uploading: 'Please wait for all images to finish uploading',
+          success: 'Listing created successfully!',
+          failed: 'Failed to create listing: {{error}}',
+          kashtaSuccess: 'Kashta listing created successfully!',
+          campSuccess: 'Camp listing created successfully!'
+        }
       },
       
       // Edit Listing page
@@ -899,12 +915,12 @@ const resources = {
           viewType: 'نوع الإطلالة',
           amenities: 'مرافق الكشتة',
           waterActivities: 'الأنشطة المائية'
-        }
+        },
+        kashtaDescription: 'الوصف',
+        kashtaDescriptionPlaceholder: 'صف الكشتة الخاصة بك...'
       },
       
       // Amenity Categories
-        kashtaDescription: 'الوصف',
-        kashtaDescriptionPlaceholder: 'صف الكشتة الخاصة بك...',
       amenityCategories: {
         essential: 'أساسي',
         comfort: 'راحة',
@@ -1109,6 +1125,8 @@ const resources = {
           descriptionLabel: 'الوصف',
           descriptionPlaceholder: 'صف هذه الخيمة...',
           featuresTitle: 'المميزات',
+          basicFeatures: 'المميزات الأساسية',
+          entertainmentSports: 'الترفيه والرياضة',
           featureLabels: {
             furnished: 'مفروشة',
             carpeted: 'مفروشة بالسجاد',
@@ -1121,7 +1139,8 @@ const resources = {
             footballField: 'ملعب كرة قدم',
             volleyballField: 'ملعب كرة طائرة'
           },
-          helper: 'أضف خيام إلى مخيمك'
+          helper: 'أضف خيام إلى مخيمك',
+          empty: 'لم تتم إضافة خيام بعد. انقر فوق الأزرار أعلاه لإضافة خيام.'
         },
         
         times: {
@@ -1162,8 +1181,9 @@ const resources = {
           setCoordinates: 'تعيين الإحداثيات',
           locationSet: 'تم تعيين الموقع بنجاح',
           fullDay: 'تجربة تخييم ليوم كامل',
-          coordinates: 'الإحداثيات',
-          parseError: 'فشل تحليل الإحداثيات'
+          coordinates: 'الإحداثيات: {{lat}}، {{lng}}',
+          parseError: 'فشل تحليل الإحداثيات',
+          extracted: 'تم استخراج الإحداثيات من الرابط!'
         },
         
         photosTitle: 'الصور',
@@ -1171,7 +1191,7 @@ const resources = {
         
         amenitiesSection: 'المرافق',
         amenitiesHelper: 'حدد جميع المرافق المتاحة في مخيمك',
-        selectedAmenities: 'المرافق المحددة',
+        selectedAmenities: 'المرافق المحددة ({{count}})',
         
         amenityCategories: {
           essential: 'أساسي',
@@ -1224,7 +1244,21 @@ const resources = {
         
         createListing: 'إنشاء إعلان',
         submitting: 'جارٍ إنشاء الإعلان...',
-        updateFail: 'فشل تحديث الإعلان'
+        updateFail: 'فشل تحديث الإعلان',
+        
+        validation: {
+          selectLocation: 'يرجى اختيار موقع من القائمة المنسدلة',
+          locationRequired: 'يرجى تحديد موقعك باستخدام "استخدام موقعي الحالي" أو لصق رابط خرائط جوجل',
+          maxGuests: 'يرجى تحديد الحد الأقصى لعدد الضيوف',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          kashtaCapacity: 'يرجى تحديد سعة الجلوس للكشتة',
+          images: 'يرجى تحميل صورة واحدة على الأقل',
+          uploading: 'يرجى الانتظار حتى تنتهي جميع الصور من التحميل',
+          success: 'تم إنشاء الإعلان بنجاح!',
+          failed: 'فشل إنشاء الإعلان: {{error}}',
+          kashtaSuccess: 'تم إنشاء إعلان الكشتة بنجاح!',
+          campSuccess: 'تم إنشاء إعلان المخيم بنجاح!'
+        }
       },
       
       // Edit Listing page
