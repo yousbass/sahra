@@ -190,6 +190,17 @@ export default function CampDetails() {
     return <Check className="w-4 h-4" />;
   };
 
+  // NEW: Function to translate amenity names
+  const translateAmenity = (amenity: string): string => {
+    // Try to get translation from amenityNames section
+    const translationKey = `amenityNames.${amenity}`;
+    const translated = t(translationKey);
+    
+    // If translation exists and is different from the key, return it
+    // Otherwise return the original amenity name
+    return translated !== translationKey ? translated : amenity;
+  };
+
   const getPolicyDetails = (policy: CancellationPolicy) => {
     // Handle new policy structure
     if (typeof policy === 'object' && policy.type) {
@@ -604,7 +615,7 @@ export default function CampDetails() {
               </p>
             </Card>
 
-            {/* Amenities */}
+            {/* Amenities - UPDATED WITH TRANSLATION */}
             <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.amenities')}</h2>
               {camp.amenities && camp.amenities.length > 0 ? (
@@ -617,7 +628,7 @@ export default function CampDetails() {
                       <div className="text-[#6B4423]">
                         {getAmenityIcon(amenity)}
                       </div>
-                      <span className="text-sm font-semibold text-gray-900">{amenity}</span>
+                      <span className="text-sm font-semibold text-gray-900">{translateAmenity(amenity)}</span>
                     </div>
                   ))}
                 </div>
@@ -638,11 +649,11 @@ export default function CampDetails() {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-white">{t('campDetails.tentDetails', { defaultValue: 'Tent Details' })}</h2>
-                        <p className="text-white text-sm font-medium mt-1">Explore our luxury tent accommodations</p>
+                        <p className="text-white text-sm font-medium mt-1">{t('common.exploreAccommodations')}</p>
                       </div>
                     </div>
                     <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 text-base px-4 py-2 font-bold">
-                      {tentDetails.length} {tentDetails.length === 1 ? 'Tent' : 'Tents'}
+                      {tentDetails.length} {tentDetails.length === 1 ? t('common.tent') : t('common.tents')}
                     </Badge>
                   </div>
                 </div>
@@ -698,8 +709,8 @@ export default function CampDetails() {
                                 </h3>
                                 <p className="text-sm text-gray-700 font-medium">
                                   {features.length > 0 
-                                    ? `${features.length} premium ${features.length === 1 ? 'feature' : 'features'}` 
-                                    : 'Standard configuration'}
+                                    ? `${features.length} ${features.length === 1 ? t('common.premiumFeature') : t('common.premiumFeatures')}` 
+                                    : t('common.standardConfiguration')}
                                 </p>
                               </div>
                             </div>
@@ -823,7 +834,7 @@ export default function CampDetails() {
 
               <div className="space-y-3 pt-4 border-t border-orange-300">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-700 font-medium">Instant Confirmation</span>
+                  <span className="text-gray-700 font-medium">{t('common.instantConfirmation')}</span>
                   <span className="text-green-600 font-semibold">✓</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -838,7 +849,7 @@ export default function CampDetails() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-700 font-medium">24/7 Support</span>
+                  <span className="text-gray-700 font-medium">{t('common.support247')}</span>
                   <span className="text-green-600 font-semibold">✓</span>
                 </div>
               </div>

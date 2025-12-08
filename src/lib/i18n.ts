@@ -151,6 +151,45 @@ const resources = {
         other: 'Other'
       },
       
+      // Amenity Names - NEW SECTION
+      amenityNames: {
+        'Restrooms': 'Restrooms',
+        'Kitchen': 'Kitchen',
+        'Electricity': 'Electricity',
+        'Lighting': 'Lighting',
+        'Water Supply': 'Water Supply',
+        'Fire Pit': 'Fire Pit',
+        'BBQ Grill': 'BBQ Grill',
+        'Cooking Equipment': 'Cooking Equipment',
+        'Dining Area': 'Dining Area',
+        'Sound System': 'Sound System',
+        'TV Available': 'TV Available',
+        'Volleyball Court': 'Volleyball Court',
+        'Soccer Court': 'Soccer Court',
+        'Bouncy Castle': 'Bouncy Castle',
+        'Furnished Tents': 'Furnished Tents',
+        'Carpeted Tents': 'Carpeted Tents',
+        'Sofas & Seating': 'Sofas & Seating',
+        'Tea Sets': 'Tea Sets',
+        'Air Conditioning': 'Air Conditioning',
+        'Dune Buggies': 'Dune Buggies',
+        'Desert Tours': 'Desert Tours',
+        'Camel Rides': 'Camel Rides',
+        'Stargazing Area': 'Stargazing Area',
+        'Biking': 'Biking',
+        'Parking': 'Parking',
+        'Pet Friendly': 'Pet Friendly',
+        'Family Friendly': 'Family Friendly',
+        'Security/Guards': 'Security/Guards',
+        'Food Truck Access': 'Food Truck Access',
+        'WiFi': 'WiFi',
+        'Traditional Meals': 'Traditional Meals',
+        'Luxury Tents': 'Luxury Tents',
+        'Showers': 'Showers',
+        'First Aid': 'First Aid',
+        'Security': 'Security'
+      },
+      
       // Auth - Sign In page
       auth: {
         welcomeBack: 'Welcome Back',
@@ -1060,7 +1099,7 @@ const resources = {
         nonRefundable: 'غير قابل للاسترداد'
       },
       
-      // Camp Details page (Arabic) - NEW COMPLETE TRANSLATIONS
+      // Camp Details page (Arabic) - COMPLETE TRANSLATIONS
       campDetails: {
         loading: 'جارٍ تحميل تفاصيل المخيم...',
         notFound: 'المخيم غير موجود',
@@ -1137,6 +1176,45 @@ const resources = {
             detail2Note: 'بدون استرداد'
           }
         }
+      },
+      
+      // Amenity Names (Arabic) - NEW SECTION
+      amenityNames: {
+        'Restrooms': 'دورات مياه',
+        'Kitchen': 'مطبخ',
+        'Electricity': 'كهرباء',
+        'Lighting': 'إضاءة',
+        'Water Supply': 'إمدادات المياه',
+        'Fire Pit': 'حفرة نار',
+        'BBQ Grill': 'شواية باربيكيو',
+        'Cooking Equipment': 'معدات الطبخ',
+        'Dining Area': 'منطقة تناول الطعام',
+        'Sound System': 'نظام صوتي',
+        'TV Available': 'تلفزيون متاح',
+        'Volleyball Court': 'ملعب كرة طائرة',
+        'Soccer Court': 'ملعب كرة قدم',
+        'Bouncy Castle': 'قلعة نطاطة',
+        'Furnished Tents': 'خيام مفروشة',
+        'Carpeted Tents': 'خيام مفروشة بالسجاد',
+        'Sofas & Seating': 'أرائك ومقاعد',
+        'Tea Sets': 'أطقم شاي',
+        'Air Conditioning': 'تكييف هواء',
+        'Dune Buggies': 'عربات الكثبان الرملية',
+        'Desert Tours': 'جولات صحراوية',
+        'Camel Rides': 'ركوب الجمال',
+        'Stargazing Area': 'منطقة مراقبة النجوم',
+        'Biking': 'ركوب الدراجات',
+        'Parking': 'موقف سيارات',
+        'Pet Friendly': 'مناسب للحيوانات الأليفة',
+        'Family Friendly': 'مناسب للعائلات',
+        'Security/Guards': 'أمن/حراس',
+        'Food Truck Access': 'وصول شاحنات الطعام',
+        'WiFi': 'واي فاي',
+        'Traditional Meals': 'وجبات تقليدية',
+        'Luxury Tents': 'خيام فاخرة',
+        'Showers': 'حمامات استحمام',
+        'First Aid': 'إسعافات أولية',
+        'Security': 'أمن'
       },
       
       // Cancellation Policy Selector (Arabic)
