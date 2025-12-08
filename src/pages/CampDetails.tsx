@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MapPin, Wifi, Utensils, Wind, Tent, ArrowLeft, Users, Home, Check, Loader2, Star as StarIcon, ShieldCheck, XCircle, Clock, Waves, Umbrella, Eye, Sofa, Tv, Coffee, Table2, Gamepad2, CircleDot, CircleDot, Sparkles } from 'lucide-react';
+import { MapPin, Wifi, Utensils, Wind, Tent, ArrowLeft, Users, Home, Check, Loader2, Star as StarIcon, ShieldCheck, XCircle, Clock, Waves, Umbrella, Eye, Sofa, Tv, Coffee, Table2, Gamepad2, CircleDot, Sparkles } from 'lucide-react';
 import { getCampById, canUserReview, createReview } from '@/lib/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
