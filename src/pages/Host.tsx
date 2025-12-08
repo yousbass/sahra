@@ -11,7 +11,7 @@ import { db } from '@/lib/firebase';
 
 export default function Host() {
   const navigate = useNavigate();
-  const { userData, loading: authLoading } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   
@@ -52,21 +52,22 @@ export default function Host() {
       // 1. If auth is still loading, wait
       if (authLoading) return;
 
-      // 2. If no user data (and auth finished), stop loading immediately
-      if (!userData?.uid) {
+      // 2. If no user (and auth finished), stop loading immediately
+      // Use user.uid instead of userData.uid because UserProfile interface has 'id', not 'uid'
+      if (!user?.uid) {
         console.log('No user data available for stats');
         setLoadingStats(false);
         return;
       }
       
-      console.log('Starting stats fetch for:', userData.uid);
+      console.log('Starting stats fetch for:', user.uid);
       setLoadingStats(true);
       
       try {
         // Fetch listings
         const listingsQuery = query(
           collection(db, 'camps'),
-          where('hostId', '==', userData.uid)
+          where('hostId', '==', user.uid)
         );
         const listingsSnapshot = await getDocs(listingsQuery);
         const totalListings = listingsSnapshot.size;
@@ -77,7 +78,7 @@ export default function Host() {
         // Fetch bookings
         const bookingsQuery = query(
           collection(db, 'bookings'),
-          where('hostId', '==', userData.uid)
+          where('hostId', '==', user.uid)
         );
         const bookingsSnapshot = await getDocs(bookingsQuery);
         const totalBookings = bookingsSnapshot.size;
@@ -101,7 +102,7 @@ export default function Host() {
     };
 
     fetchStats();
-  }, [userData, authLoading]);
+  }, [user, userData, authLoading]);
 
   if (authLoading) {
     return (
