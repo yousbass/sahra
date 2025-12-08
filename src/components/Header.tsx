@@ -66,9 +66,9 @@ export default function Header() {
             className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
           >
             <img 
-              src="/assets/mukhymat-logo.svg" 
+              src="/assets/mukhymat-logo.jpg" 
               alt="MUKHYMAT" 
-              className="w-8 h-8 sm:w-10 sm:h-10"
+              className="h-10 sm:h-12 w-auto object-contain"
             />
             <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#8B5A3C] to-[#FF8C42] bg-clip-text text-transparent">
               {t('header.brand')}
