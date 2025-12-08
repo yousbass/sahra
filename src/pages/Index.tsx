@@ -259,7 +259,7 @@ export default function Index() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-[#6B4423] animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium text-lg">
             {filters.bookingDate ? t('home.checkingAvailability') : t('home.loadingCamps')}
           </p>
@@ -270,8 +270,8 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
-      {/* Hero Section - Simplified */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-#8B5A3C via-#6B4423 to-#5A3820 text-white">
+      {/* Hero Section - Fixed with dark background and white text */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#8B5A3C] via-[#6B4423] to-[#5A3820] text-white">
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -287,9 +287,9 @@ export default function Index() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 text-white animate-in fade-in slide-in-from-bottom-8 duration-700">
               {t('home.heroTitleTop')}
-              <span className="block text-orange-100 mt-2">{t('home.heroTitleBottom')}</span>
+              <span className="block text-orange-200 mt-2">{t('home.heroTitleBottom')}</span>
             </h1>
             <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700">
               {t('home.heroSubtitle')}
@@ -324,7 +324,7 @@ export default function Index() {
                 placeholder={t('home.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-14 h-14 border-2 border-orange-300 focus:border-#8B5A3C rounded-xl text-lg text-gray-900 placeholder:text-gray-400"
+                className="pl-14 h-14 border-2 border-orange-300 focus:border-[#8B5A3C] rounded-xl text-lg text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -337,9 +337,9 @@ export default function Index() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-12 px-4 border-2 border-orange-300 hover:border-terracotta-400 hover:bg-orange-50 rounded-xl font-semibold text-gray-900"
+                  className="h-12 px-4 border-2 border-orange-300 hover:border-orange-400 hover:bg-orange-50 rounded-xl font-semibold text-gray-900"
                 >
-                  <CalendarIcon className="mr-2 h-5 w-5 text-#6B4423" />
+                  <CalendarIcon className="mr-2 h-5 w-5 text-[#6B4423]" />
                   {filters.bookingDate ? format(filters.bookingDate, 'MMM d, yyyy') : t('home.datePlaceholder')}
                 </Button>
               </PopoverTrigger>
@@ -360,7 +360,7 @@ export default function Index() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-#6B4423 hover:bg-orange-50"
+                    className="text-[#6B4423] hover:bg-orange-50"
                     onClick={() => handleBookingDateChange(undefined)}
                   >
                     {t('home.clear')}
@@ -375,7 +375,7 @@ export default function Index() {
               onValueChange={(value) => setFilters({ ...filters, minGuests: parseInt(value) })}
             >
               <SelectTrigger className="h-12 w-40 border-2 border-orange-300 rounded-xl font-semibold">
-                <Users className="w-5 h-5 mr-2 text-#6B4423" />
+                <Users className="w-5 h-5 mr-2 text-[#6B4423]" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -396,7 +396,7 @@ export default function Index() {
               <SlidersHorizontal className="w-5 h-5 mr-2" />
               {t('home.filters')}
               {activeFilterCount > 0 && (
-                <Badge className="ml-2 bg-#6B4423 text-white">
+                <Badge className="ml-2 bg-[#6B4423] text-white">
                   {activeFilterCount}
                 </Badge>
               )}
@@ -412,7 +412,7 @@ export default function Index() {
                   <SlidersHorizontal className="w-5 h-5 mr-2" />
                   {t('home.filters')}
                   {activeFilterCount > 0 && (
-                    <Badge className="ml-2 bg-#6B4423 text-white">
+                    <Badge className="ml-2 bg-[#6B4423] text-white">
                       {activeFilterCount}
                     </Badge>
                   )}
@@ -434,7 +434,7 @@ export default function Index() {
             {/* Search Button */}
             <Button 
               onClick={() => loadCamps()}
-              className="h-12 px-6 bg-#6B4423 hover:bg-#5A3820 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="h-12 px-6 bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Search className="w-5 h-5 mr-2" />
               {t('home.searchButton')}
@@ -449,7 +449,7 @@ export default function Index() {
               {filters.listingType && filters.listingType !== 'all' && (
                 <Badge 
                   variant="secondary" 
-                  className="h-8 px-3 bg-terracotta-100 text-terracotta-900 border border-orange-300 cursor-pointer hover:bg-terracotta-200"
+                  className="h-8 px-3 bg-orange-100 text-orange-900 border border-orange-300 cursor-pointer hover:bg-orange-200"
                   onClick={() => removeFilter('listingType')}
                 >
                   {filters.listingType === 'camp' ? '🏕️ Camp' : '🏖️ Kashta'}
@@ -583,7 +583,7 @@ export default function Index() {
                     <Button
                       variant={viewMode === 'grid' ? 'default' : 'outline'}
                       size="icon"
-                      className={viewMode === 'grid' ? 'bg-#6B4423 hover:bg-#5A3820' : 'border-2 border-orange-300'}
+                      className={viewMode === 'grid' ? 'bg-[#6B4423] hover:bg-[#5A3820]' : 'border-2 border-orange-300'}
                       onClick={() => setViewMode('grid')}
                     >
                       <Grid3x3 className="w-5 h-5" />
@@ -591,7 +591,7 @@ export default function Index() {
                     <Button
                       variant={viewMode === 'list' ? 'default' : 'outline'}
                       size="icon"
-                      className={viewMode === 'list' ? 'bg-#6B4423 hover:bg-#5A3820' : 'border-2 border-orange-300'}
+                      className={viewMode === 'list' ? 'bg-[#6B4423] hover:bg-[#5A3820]' : 'border-2 border-orange-300'}
                       onClick={() => setViewMode('list')}
                     >
                       <List className="w-5 h-5" />
@@ -618,7 +618,7 @@ export default function Index() {
                 <Button
                   onClick={clearAllFilters}
                   size="lg"
-                  className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold h-12 px-8"
+                  className="bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold h-12 px-8"
                 >
                   {t('home.clearAll')}
                 </Button>
@@ -668,7 +668,7 @@ export default function Index() {
                   return (
                     <Card
                       key={camp.id}
-                      className="group cursor-pointer overflow-hidden bg-white border-2 border-orange-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                      className="group cursor-pointer overflow-hidden bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                       onClick={() => handleCampClick(camp.id)}
                     >
                       {/* Camp Image */}
@@ -685,7 +685,7 @@ export default function Index() {
                           <RefundPolicyBadge policy={camp.refundPolicy} />
                         </div>
                         <div className="absolute top-4 left-4">
-                          <Badge className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold px-3 py-1">
+                          <Badge className="bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold px-3 py-1">
                             <Tent className="w-4 h-4 mr-1" />
                             {t('listingType.camp.badge')}
                           </Badge>
@@ -700,7 +700,7 @@ export default function Index() {
 
                       {/* Camp Details */}
                       <div className="p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-#6B4423 transition-colors">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#6B4423] transition-colors">
                           {camp.title}
                         </h3>
 
@@ -715,11 +715,11 @@ export default function Index() {
                         {/* Camp Info */}
                         <div className="flex items-center gap-6 text-base text-gray-700 mb-5 font-medium">
                           <div className="flex items-center">
-                            <Users className="w-5 h-5 mr-2 text-#6B4423" />
+                            <Users className="w-5 h-5 mr-2 text-[#6B4423]" />
                             Up to {camp.maxGuests} guests
                           </div>
                           <div className="flex items-center">
-                            <Tent className="w-5 h-5 mr-2 text-#6B4423" />
+                            <Tent className="w-5 h-5 mr-2 text-[#6B4423]" />
                             {getTotalTents(camp.tentConfiguration)} tents
                           </div>
                         </div>
@@ -727,14 +727,14 @@ export default function Index() {
                         {/* Price */}
                         <div className="flex items-center justify-between pt-5 border-t-2 border-orange-200">
                           <div>
-                            <span className="text-3xl font-bold text-#6B4423">
+                            <span className="text-3xl font-bold text-[#6B4423]">
                               {camp.price} BD
                             </span>
                             <span className="text-base text-gray-600 ml-2 font-medium">{t('home.perDay')}</span>
                           </div>
                           <Button 
                             size="lg"
-                            className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold h-11 px-6"
+                            className="bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold h-11 px-6"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCampClick(camp.id);
