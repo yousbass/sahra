@@ -199,7 +199,7 @@ export default function BecomeHost() {
                 onClick={() => navigate('/host')}
                 className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white"
               >
-                {t('becomeHost.createListing') || 'Create Your First Listing'}
+                {t('host.createTitle') || 'Create Your First Listing'}
               </Button>
             </div>
           </Card>
@@ -331,7 +331,7 @@ export default function BecomeHost() {
                   {t('becomeHost.submitting') || 'Processing...'}
                 </>
               ) : (
-                t('becomeHost.becomeHost') || 'Become a Host'
+                t('becomeHost.submit') || 'Submit Application'
               )}
             </Button>
           </form>
