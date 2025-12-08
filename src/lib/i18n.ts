@@ -268,9 +268,9 @@ const resources = {
       campDetails: {
         loading: 'Loading camp details...',
         notFound: 'Camp not found',
-        back: 'Back to Search',
+        back: 'Back',
         backToSearch: 'Back to Search',
-        pendingApproval: 'This listing is pending approval',
+        pendingApproval: 'Pending Approval',
         overview: 'Overview',
         about: 'About this camp',
         amenities: 'Amenities',
@@ -289,7 +289,7 @@ const resources = {
         writeReview: 'Write a Review',
         reviewDialog: 'Share your experience',
         reviewSuccess: 'Thank you for your review!',
-        signInReview: 'Please sign in to write a review',
+        signInReview: 'Sign in to write a review',
         loadCampFailed: 'Failed to load camp details',
         accommodates: 'Accommodates up to {{count}} guests',
         tentsLabel: 'Tents',
@@ -298,7 +298,7 @@ const resources = {
           small: 'Small Tent',
           large: 'Large Tent',
           entertainment: 'Entertainment Tent',
-          generic: 'Generic Tent'
+          generic: 'Tent'
         },
         tentFeatures: {
           count: '{{count}} tents',
@@ -485,6 +485,20 @@ const resources = {
         
         photosTitle: 'Photos',
         photosHelper: 'Add photos of your camp (at least 3 photos)',
+        
+        // NEW: Image upload translations
+        imageUpload: {
+          title: 'Add Your Camp Photos',
+          subtitle: 'At least 3 images',
+          clickToUpload: 'Click to upload or drag and drop',
+          fileTypes: 'PNG, JPG, WebP up to 10MB each (Max 10 images)',
+          imagesUploaded: 'images uploaded',
+          uploadButton: 'Upload Images',
+          mainImage: 'Main Image',
+          setAsMain: 'Set as Main',
+          remove: 'Remove',
+          uploading: 'Uploading...'
+        },
         
         amenitiesSection: 'Amenities',
         amenitiesHelper: 'Select all amenities available at your camp',
@@ -721,6 +735,7 @@ const resources = {
         hostRequired: 'You need to be a host to view listings',
         loading: 'Loading your listings...',
         loadFail: 'Failed to load listings',
+        emptyTitle: 'No Listings Yet',
         emptyDesc: 'You haven\'t created any listings yet',
         createFirst: 'Create your first listing',
         backToDashboard: 'Back to Dashboard',
@@ -1260,9 +1275,9 @@ const resources = {
       campDetails: {
         loading: 'جارٍ تحميل تفاصيل المخيم...',
         notFound: 'المخيم غير موجود',
-        back: 'العودة للبحث',
+        back: 'رجوع',
         backToSearch: 'العودة للبحث',
-        pendingApproval: 'هذه القائمة في انتظار الموافقة',
+        pendingApproval: 'في انتظار الموافقة',
         overview: 'نظرة عامة',
         about: 'عن هذا المخيم',
         amenities: 'المرافق',
@@ -1281,7 +1296,7 @@ const resources = {
         writeReview: 'اكتب تقييماً',
         reviewDialog: 'شارك تجربتك',
         reviewSuccess: 'شكراً لك على تقييمك!',
-        signInReview: 'يرجى تسجيل الدخول لكتابة تقييم',
+        signInReview: 'سجل الدخول لكتابة تقييم',
         loadCampFailed: 'فشل تحميل تفاصيل المخيم',
         accommodates: 'يستوعب حتى {{count}} ضيف',
         tentsLabel: 'خيام',
@@ -1467,6 +1482,21 @@ const resources = {
         },
         photosTitle: 'الصور',
         photosHelper: 'أضف صوراً لمخيمك (3 صور على الأقل)',
+        
+        // NEW: Image upload translations (Arabic)
+        imageUpload: {
+          title: 'أضف صور مخيمك',
+          subtitle: '3 صور على الأقل',
+          clickToUpload: 'انقر للتحميل أو اسحب وأفلت',
+          fileTypes: 'PNG، JPG، WebP حتى 10 ميجابايت لكل صورة (بحد أقصى 10 صور)',
+          imagesUploaded: 'الصور المحملة',
+          uploadButton: 'رفع الصور',
+          mainImage: 'الصورة الرئيسية',
+          setAsMain: 'تعيين كرئيسية',
+          remove: 'إزالة',
+          uploading: 'جارٍ الرفع...'
+        },
+        
         amenitiesSection: 'المرافق',
         amenitiesHelper: 'اختر جميع المرافق المتاحة في مخيمك',
         selectedAmenities: 'المرافق المحددة ({{count}})',
@@ -1694,6 +1724,7 @@ const resources = {
         hostRequired: 'يجب أن تكون مضيفاً لعرض القوائم',
         loading: 'جارٍ تحميل قوائمك...',
         loadFail: 'فشل تحميل القوائم',
+        emptyTitle: 'لا توجد قوائم بعد',
         emptyDesc: 'لم تقم بإنشاء أي قوائم بعد',
         createFirst: 'أنشئ قائمتك الأولى',
         backToDashboard: 'العودة إلى لوحة التحكم',

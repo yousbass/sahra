@@ -492,7 +492,7 @@ export default function CreateListing() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
+        <Loader2 className="w-8 h-8 text-amber-800 animate-spin" />
       </div>
     );
   }
@@ -557,13 +557,13 @@ export default function CreateListing() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="location" className="text-gray-900 font-semibold flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-#6B4423" />
+                    <MapPin className="w-4 h-4 text-amber-800" />
                     {t('createListing.campLocation')} <span className="text-red-600">*</span>
                   </Label>
                   <Popover open={locationOpen} onOpenChange={setLocationOpen}>
@@ -572,7 +572,7 @@ export default function CreateListing() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={locationOpen}
-                        className="w-full justify-between border-orange-300 hover:border-#8B5A3C text-gray-900 h-11"
+                        className="w-full justify-between border-orange-300 hover:border-amber-800 text-gray-900 h-11"
                       >
                         {selectedLocation
                           ? getLocationLabel(selectedLocation)
@@ -618,7 +618,7 @@ export default function CreateListing() {
                 {/* Location Coordinates */}
                   <div className="space-y-3 p-4 bg-orange-50 border-2 border-orange-300 rounded-lg">
                     <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                      <Navigation className="w-4 h-4 text-#6B4423" />
+                      <Navigation className="w-4 h-4 text-amber-800" />
                       {t('createListing.map.setCoordinates')} <span className="text-red-600">*</span>
                     </Label>
                     <p className="text-sm text-gray-600 font-medium mb-3">
@@ -629,7 +629,7 @@ export default function CreateListing() {
                     type="button"
                     onClick={getCurrentLocation}
                     disabled={gettingLocation}
-                    className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
+                    className="w-full h-12 bg-amber-800 hover:bg-amber-900 text-white font-semibold shadow-lg"
                   >
                     {gettingLocation ? (
                       <>
@@ -664,7 +664,7 @@ export default function CreateListing() {
                       placeholder={t('createListing.googleMapsUrl')}
                       value={googleMapsUrl}
                       onChange={(e) => handleGoogleMapsUrlChange(e.target.value)}
-                      className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                      className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                     />
                     <p className="text-xs text-gray-600 font-medium">
                       {t('createListing.map.pasteHelper')}
@@ -711,15 +711,15 @@ export default function CreateListing() {
                     required
                     min="0"
                     step="0.01"
-                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-sm text-gray-600 font-medium">{t('createListing.pricing.helper')}</p>
                 </div>
 
                 {/* Check-in and Check-out Times */}
-                <div className="space-y-3 p-4 bg-orange-50 border-2 border-terracotta-200 rounded-lg">
+                <div className="space-y-3 p-4 bg-orange-50 border-2 border-orange-300 rounded-lg">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-#6B4423" />
+                    <Clock className="w-5 h-5 text-amber-800" />
                     {t('createListing.checkIn')} & {t('createListing.checkOut')} <span className="text-red-600">*</span>
                   </Label>
                   <p className="text-sm text-gray-700 font-medium mb-3">
@@ -738,7 +738,7 @@ export default function CreateListing() {
                         value={checkInTime}
                         onChange={(e) => setCheckInTime(e.target.value)}
                         required
-                        className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                        className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                       />
                       <p className="text-xs text-gray-600 font-medium">{t('createListing.times.checkInHelper')}</p>
                     </div>
@@ -754,7 +754,7 @@ export default function CreateListing() {
                         value={checkOutTime}
                         onChange={(e) => setCheckOutTime(e.target.value)}
                         required
-                        className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                        className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                       />
                       <p className="text-xs text-gray-600 font-medium">{t('createListing.times.checkOutHelper')}</p>
                     </div>
@@ -765,7 +765,7 @@ export default function CreateListing() {
                       📅 {t('createListing.map.fullDay')}
                     </p>
                     <p className="text-sm text-gray-700">
-                      {t('createListing.checkIn')}: <span className="font-bold text-#5A3820">{checkInTime}</span> → {t('createListing.checkOut')}: <span className="font-bold text-#5A3820">{checkOutTime} ({t('createListing.nextDay', { defaultValue: 'next day' })})</span>
+                      {t('createListing.checkIn')}: <span className="font-bold text-amber-800">{checkInTime}</span> → {t('createListing.checkOut')}: <span className="font-bold text-amber-800">{checkOutTime} ({t('createListing.nextDay', { defaultValue: 'next day' })})</span>
                     </p>
                   </div>
                 </div>
@@ -797,7 +797,7 @@ export default function CreateListing() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -806,7 +806,7 @@ export default function CreateListing() {
             {/* Camp Capacity & Size */}
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Users className="w-6 h-6 text-#6B4423" />
+                <Users className="w-6 h-6 text-amber-800" />
                 {t('createListing.capacity.title')}
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
@@ -822,7 +822,7 @@ export default function CreateListing() {
                     onChange={(e) => setMaxGuests(e.target.value)}
                     required
                     min="1"
-                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-sm text-gray-600 font-medium">{t('createListing.capacity.maxGuestsHelper')}</p>
                 </div>
@@ -838,7 +838,7 @@ export default function CreateListing() {
                     value={campArea}
                     onChange={(e) => setCampArea(e.target.value)}
                     min="0"
-                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-sm text-gray-600 font-medium">{t('createListing.capacity.areaHelper')}</p>
                 </div>
@@ -849,7 +849,7 @@ export default function CreateListing() {
             {listingType === 'camp' ? (
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <Tent className="w-6 h-6 text-#6B4423" />
+                  <Tent className="w-6 h-6 text-amber-800" />
                   {t('createListing.capacityTents')}
                 </h3>
                 <p className="text-sm text-gray-600 font-medium mb-4">
@@ -892,7 +892,7 @@ export default function CreateListing() {
                       <Card key={tent.id} className="bg-orange-50 border-2 border-orange-300 p-4">
                         <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Tent className="w-5 h-5 text-#6B4423" />
+                          <Tent className="w-5 h-5 text-amber-800" />
                           <h4 className="font-semibold text-gray-900">
                             {t(
                               tent.type === 'large'
@@ -927,7 +927,7 @@ export default function CreateListing() {
                                   size="sm"
                                   className={
                                     tent[feature]
-                                      ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white border-0 font-semibold'
+                                      ? 'bg-amber-800 hover:bg-amber-900 text-white border-0 font-semibold'
                                       : 'border-2 border-orange-300 text-gray-800 hover:bg-orange-100 font-semibold'
                                   }
                                 >
@@ -954,7 +954,7 @@ export default function CreateListing() {
                                   size="sm"
                                   className={
                                     tent[feature]
-                                      ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white border-0 font-semibold'
+                                      ? 'bg-amber-800 hover:bg-amber-900 text-white border-0 font-semibold'
                                       : 'border-2 border-orange-300 text-gray-800 hover:bg-orange-100 font-semibold'
                                   }
                                 >
@@ -976,7 +976,7 @@ export default function CreateListing() {
                               onChange={(e) => updateTentDescription(tent.id, e.target.value)}
                               placeholder={t('createListing.tents.descriptionPlaceholder')}
                               rows={2}
-                              className="text-sm border-orange-300 focus:border-#8B5A3C"
+                              className="text-sm border-orange-300 focus:border-amber-800"
                             />
                           </div>
                         </div>
@@ -985,13 +985,13 @@ export default function CreateListing() {
                   </div>
                 ) : (
                   <div className="text-center p-8 bg-orange-50 border-2 border-orange-300 rounded-lg">
-                    <Tent className="w-12 h-12 text-sand-400 mx-auto mb-3" />
+                    <Tent className="w-12 h-12 text-orange-400 mx-auto mb-3" />
                     <p className="text-gray-700 font-medium">{t('createListing.tents.empty', { defaultValue: 'No tents added yet. Click the buttons above to add tents.' })}</p>
                   </div>
                 )}
 
                 {tents.length > 0 && (
-                  <div className="mt-4 p-4 bg-orange-50 border-2 border-terracotta-200 rounded-lg">
+                  <div className="mt-4 p-4 bg-orange-50 border-2 border-orange-300 rounded-lg">
                     <p className="font-semibold text-gray-900 mb-2">{t('createListing.tents.sectionTitle')}</p>
                     <p className="text-gray-800">
                       <span className="font-bold">{counts.total}</span> {t('createListing.tents.sectionTitle')}
@@ -1046,7 +1046,7 @@ export default function CreateListing() {
                           size="sm"
                           className={
                             isSelected
-                              ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white border-0 font-semibold'
+                              ? 'bg-amber-800 hover:bg-amber-900 text-white border-0 font-semibold'
                               : 'border-2 border-orange-300 text-gray-800 hover:bg-orange-100 font-semibold'
                           }
                         >
@@ -1069,7 +1069,7 @@ export default function CreateListing() {
                       <Badge
                         key={amenity}
                         variant="secondary"
-                        className="bg-terracotta-100 text-terracotta-900 border border-orange-300 font-medium"
+                        className="bg-orange-100 text-gray-900 border border-orange-300 font-medium"
                       >
                         {t(`createListing.amenityItems.${amenity}`, { defaultValue: amenity })}
                       </Badge>
@@ -1102,7 +1102,7 @@ export default function CreateListing() {
                     value={specialFeatures}
                     onChange={(e) => setSpecialFeatures(e.target.value)}
                     rows={3}
-                    className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
@@ -1116,7 +1116,7 @@ export default function CreateListing() {
                     value={rules}
                     onChange={(e) => setRules(e.target.value)}
                     rows={3}
-                    className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-amber-800 resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -1127,7 +1127,7 @@ export default function CreateListing() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-14 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-lg shadow-lg disabled:opacity-50"
+                className="w-full h-14 bg-amber-800 hover:bg-amber-900 text-white font-semibold text-lg shadow-lg disabled:opacity-50"
               >
                 {submitting ? (
                   <>
