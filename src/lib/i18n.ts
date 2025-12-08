@@ -10,7 +10,7 @@ const resources = {
         bookings: 'Loading your bookings...',
         payment: 'Processing payment...',
         upload: 'Uploading files...',
-        creating: 'Creating listing...',
+        creating: 'Creating...',
         updating: 'Updating...',
         deleting: 'Deleting...',
         fetching: 'Fetching data...',
@@ -21,8 +21,8 @@ const resources = {
       notFound: {
         title: '404',
         heading: 'Page Not Found',
-        description: "The page you're looking for doesn't exist or may have been moved.",
-        returnHome: 'Return Home',
+        description: 'The page you are looking for does not exist or may have been moved.',
+        returnHome: 'Return to Home',
         goBack: 'Go Back'
       },
       
@@ -37,7 +37,7 @@ const resources = {
         phoneHint: 'Enter your Bahrain mobile number (8 digits)',
         cprHint: 'Enter your 9-digit Bahrain CPR number',
         otpHint: 'Enter the 6-digit code sent to your phone',
-        sendOtp: 'Send OTP',
+        sendOtp: 'Send Verification Code',
         sending: 'Sending...',
         sent: 'Sent',
         confirm: 'Confirm',
@@ -59,7 +59,7 @@ const resources = {
       messages: {
         signInRequired: 'Please sign in to continue',
         alreadyHost: 'You are already a host',
-        applicationPending: 'Your application is pending review',
+        applicationPending: 'Your application is under review',
         applicationRejected: 'Your application was rejected',
         phoneRequired: 'Phone number is required',
         invalidPhone: 'Invalid Bahrain phone number. Must be 8 digits starting with 3, 6, or 7',
@@ -68,17 +68,17 @@ const resources = {
         phoneVerified: 'Phone number verified successfully',
         verifyPhone: 'Please verify your phone number first',
         fillAllFields: 'Please fill in all fields',
-        applicationSubmitted: 'Application submitted successfully! We will review it shortly.',
-        otpSent: 'OTP sent to your phone',
+        applicationSubmitted: 'Application submitted successfully! We will review it soon.',
+        otpSent: 'Verification code sent to your phone',
         loadingAvailability: 'Loading availability...',
-        availabilityError: 'We could not load availability.',
+        availabilityError: 'Could not load availability.',
         signInAgain: 'Sign in again'
       },
       
       // Listing Type
       listingType: {
         sectionTitle: 'Choose Listing Type',
-        sectionDescription: 'Select the type of listing you want to view',
+        sectionDescription: 'Select the type of listing you want to create',
         camp: {
           title: 'Camp',
           description: 'Desert camping experience with tents',
@@ -236,7 +236,32 @@ const resources = {
         cancel: 'Cancel Booking',
         writeReview: 'Write Review',
         statusTitle: 'Booking Status',
-        statusDesc: 'Current reservation status'
+        statusDesc: 'Current reservation status',
+        exploreCamps: 'Explore Camps',
+        signInView: 'View Your Bookings',
+        signInDesc: 'Sign in to see your desert camp reservations',
+        signInButton: 'Sign In',
+        reservationDetails: 'Reservation Details',
+        completeInfo: 'Complete information about your booking',
+        payment: 'Payment',
+        paymentCash: 'Cash on Arrival selected',
+        paymentOnline: 'Online payment',
+        bookingId: 'Booking ID',
+        campInfo: 'Camp Information',
+        campName: 'Camp Name',
+        location: 'Location',
+        stayDetails: 'Stay Details',
+        checkIn: 'Check-in',
+        checkOut: 'Check-out',
+        totalNights: 'Total Nights',
+        nights: 'nights',
+        guestInfo: 'Guest Information',
+        numberOfGuests: 'Number of Guests',
+        priceBreakdown: 'Price Breakdown',
+        totalPrice: 'Total Price',
+        bookingCreated: 'Booking Created',
+        youReviewed: 'You reviewed this camp',
+        startingPayment: 'Starting Payment...'
       },
       
       // Camp Details page
@@ -331,7 +356,7 @@ const resources = {
         }
       },
       
-      // Cancellation Policy Selector - NEW SYSTEM
+      // Cancellation Policy Selector
       cancelSelector: {
         title: 'Cancellation Policy',
         subtitle: 'Choose your refund policy for guest cancellations',
@@ -688,6 +713,35 @@ const resources = {
         }
       },
       
+      // Host Listings
+      hostListings: {
+        title: 'My Listings',
+        count: '{{count}} listings',
+        signInRequired: 'Please sign in to view listings',
+        hostRequired: 'You need to be a host to view listings',
+        loading: 'Loading your listings...',
+        loadFail: 'Failed to load listings',
+        emptyDesc: 'You haven\'t created any listings yet',
+        createFirst: 'Create your first listing',
+        backToDashboard: 'Back to Dashboard',
+        deleteSuccess: 'Listing deleted successfully',
+        deleteFail: 'Failed to delete listing',
+        deleteConfirm: 'Are you sure you want to delete this listing?',
+        more: 'More',
+        guestsLabel: 'guests',
+        tentsLabel: 'tents',
+        status: {
+          active: 'Active',
+          pending: 'Pending Approval'
+        },
+        buttons: {
+          view: 'View',
+          edit: 'Edit',
+          newListing: 'New Listing',
+          manageAvailability: 'Manage Availability'
+        }
+      },
+      
       // Host Cancellation
       hostCancellation: {
         title: 'Cancel Booking',
@@ -722,35 +776,6 @@ const resources = {
         toastSuccessDescPenalty: 'Penalty will be deducted from your next payout',
         toastFail: 'Cancellation failed',
         toastFailDesc: 'Please try again or contact support'
-      },
-      
-      // Host Listings
-      hostListings: {
-        title: 'My Listings',
-        count: '{{count}} listings',
-        signInRequired: 'Please sign in to view listings',
-        hostRequired: 'You need to be a host to view listings',
-        loading: 'Loading your listings...',
-        loadFail: 'Failed to load listings',
-        emptyDesc: 'You haven\'t created any listings yet',
-        createFirst: 'Create your first listing',
-        backToDashboard: 'Back to Dashboard',
-        deleteSuccess: 'Listing deleted successfully',
-        deleteFail: 'Failed to delete listing',
-        deleteConfirm: 'Are you sure you want to delete this listing?',
-        more: 'More',
-        guestsLabel: 'guests',
-        tentsLabel: 'tents',
-        status: {
-          active: 'Active',
-          pending: 'Pending Approval'
-        },
-        buttons: {
-          view: 'View',
-          edit: 'Edit',
-          newListing: 'New Listing',
-          manageAvailability: 'Manage Availability'
-        }
       },
       
       // Payment Success/Status
@@ -972,7 +997,7 @@ const resources = {
   },
   ar: {
     translation: {
-      // Loading messages
+      // Loading messages (Arabic)
       loading: {
         default: 'جارٍ التحميل...',
         bookings: 'جارٍ تحميل حجوزاتك...',
@@ -985,7 +1010,7 @@ const resources = {
         processing: 'جارٍ المعالجة...'
       },
       
-      // NotFound page
+      // NotFound page (Arabic)
       notFound: {
         title: '404',
         heading: 'الصفحة غير موجودة',
@@ -1071,55 +1096,167 @@ const resources = {
         selectType: 'اختر نوع القائمة'
       },
       
-      // Home page (Arabic) - COMPLETE TRANSLATIONS
-      home: {
-        heroTitleTop: 'اكتشف تجربتك المثالية',
-        heroTitleBottom: 'للتخييم الصحراوي',
-        heroSubtitle: 'احجز أماكن تخييم فريدة في جميع أنحاء البحرين',
-        searchPlaceholder: 'البحث حسب الموقع...',
-        datePlaceholder: 'اختر التاريخ',
-        searchButton: 'بحث',
-        filters: 'فلاتر',
-        sortBy: 'ترتيب حسب',
-        sortNewest: 'الأحدث',
-        sortPriceAsc: 'السعر: من الأقل للأعلى',
-        sortPriceDesc: 'السعر: من الأعلى للأقل',
-        sortRating: 'الأعلى تقييماً',
-        loadingCamps: 'جارٍ تحميل المخيمات...',
-        noCampsTitle: 'لم يتم العثور على مخيمات',
-        noCampsGeneral: 'حاول تعديل الفلاتر أو معايير البحث',
-        noCampsDate: 'لا توجد مخيمات متاحة في التاريخ المحدد',
-        perDay: 'في اليوم',
-        viewDetails: 'عرض التفاصيل',
-        datePickedLabel: 'تم اختيار التاريخ',
-        clear: 'مسح',
-        clearAll: 'مسح الكل',
-        checkingAvailability: 'جارٍ التحقق من التوفر...',
-        availabilityHint: 'اختر تاريخاً للتحقق من التوفر',
-        campsAvailable: '{{count}} مخيم متاح',
-        filterApplied: '{{count}} فلتر مطبق',
-        reviewCount: '{{count}} تقييم',
-        upToGuests: 'حتى {{count}} ضيف',
-        tentsCount: '{{count}} خيمة',
-        guestLabel: 'ضيف',
-        guestsLabel: 'ضيوف',
-        tentLabel: 'خيمة',
-        tentsLabel: 'خيام',
-        showingListings: 'عرض {{count}} قائمة',
-        showingListingsPlural: 'عرض {{count}} قوائم',
-        listingsInBahrain: 'في البحرين',
-        campsAvailableCount: '{{count}} مخيم متاح',
-        campsAvailableCountPlural: '{{count}} مخيمات متاحة',
-        kashtasAvailableCount: '{{count}} كشتة متاحة',
-        kashtasAvailableCountPlural: '{{count}} كشتات متاحة',
-        availableOn: 'متاح في',
-        activeFilters: 'الفلاتر النشطة:',
-        reviewLabel: 'تقييم',
-        reviewsLabel: 'تقييمات',
-        nonRefundable: 'غير قابل للاسترداد'
+      // Kashta specific (Arabic)
+      kashta: {
+        seatingCapacity: '{{count}} مقعد',
+        beachfront: 'على الشاطئ',
+        shade: {
+          tent: 'ظل خيمة',
+          umbrella: 'مظلة شاطئ',
+          pergola: 'برجولا',
+          natural: 'ظل طبيعي'
+        },
+        view: {
+          sea: 'إطلالة بحرية',
+          beach: 'إطلالة على الشاطئ',
+          mixed: 'إطلالة مختلطة'
+        },
+        activities: {
+          swimming: 'سباحة',
+          fishing: 'صيد',
+          snorkeling: 'غوص',
+          boating: 'ركوب القوارب'
+        },
+        form: {
+          seatingCapacity: 'سعة الجلوس',
+          seatingCapacityPlaceholder: 'عدد الأشخاص',
+          seatingCapacityHelper: 'الحد الأقصى لعدد الأشخاص في منطقة الجلوس',
+          beachfrontAccess: 'وصول مباشر للشاطئ',
+          beachfrontAccessHelper: 'هل لهذه الكشتة وصول مباشر للشاطئ؟',
+          shadeType: 'نوع الظل',
+          shadeTypePlaceholder: 'اختر نوع الظل',
+          viewType: 'نوع الإطلالة',
+          amenities: 'مرافق الكشتة',
+          waterActivities: 'الأنشطة المائية'
+        },
+        kashtaDescription: 'الوصف',
+        kashtaDescriptionPlaceholder: 'صف كشتتك...'
       },
       
-      // Camp Details page (Arabic) - COMPLETE TRANSLATIONS
+      // Amenity Categories (Arabic)
+      amenityCategories: {
+        essential: 'أساسي',
+        comfort: 'راحة',
+        cooking: 'طبخ',
+        entertainment: 'ترفيه',
+        activities: 'أنشطة',
+        seating: 'جلوس',
+        other: 'أخرى'
+      },
+      
+      // Amenity Names (Arabic)
+      amenityNames: {
+        'Restrooms': 'دورات مياه',
+        'Kitchen': 'مطبخ',
+        'Electricity': 'كهرباء',
+        'Lighting': 'إضاءة',
+        'Water Supply': 'إمدادات المياه',
+        'Fire Pit': 'حفرة نار',
+        'BBQ Grill': 'شواية باربيكيو',
+        'Cooking Equipment': 'معدات الطبخ',
+        'Dining Area': 'منطقة تناول الطعام',
+        'Sound System': 'نظام صوتي',
+        'TV Available': 'تلفزيون متاح',
+        'Volleyball Court': 'ملعب كرة طائرة',
+        'Soccer Court': 'ملعب كرة قدم',
+        'Bouncy Castle': 'قلعة نطاطة',
+        'Furnished Tents': 'خيام مفروشة',
+        'Carpeted Tents': 'خيام مفروشة بالسجاد',
+        'Sofas & Seating': 'أرائك ومقاعد',
+        'Tea Sets': 'أطقم شاي',
+        'Air Conditioning': 'تكييف هواء',
+        'Dune Buggies': 'عربات الكثبان الرملية',
+        'Desert Tours': 'جولات صحراوية',
+        'Camel Rides': 'ركوب الجمال',
+        'Stargazing Area': 'منطقة مراقبة النجوم',
+        'Biking': 'ركوب الدراجات',
+        'Parking': 'موقف سيارات',
+        'Pet Friendly': 'مناسب للحيوانات الأليفة',
+        'Family Friendly': 'مناسب للعائلات',
+        'Security/Guards': 'أمن/حراس',
+        'Food Truck Access': 'وصول شاحنات الطعام',
+        'WiFi': 'واي فاي',
+        'Traditional Meals': 'وجبات تقليدية',
+        'Luxury Tents': 'خيام فاخرة',
+        'Showers': 'حمامات استحمام',
+        'First Aid': 'إسعافات أولية',
+        'Security': 'أمن'
+      },
+      
+      // Auth pages (Arabic)
+      auth: {
+        welcomeBack: 'مرحباً بعودتك',
+        signInSubtitle: 'سجل الدخول للوصول إلى حسابك',
+        email: 'عنوان البريد الإلكتروني',
+        password: 'كلمة المرور',
+        forgot: 'نسيت كلمة المرور؟',
+        signIn: 'تسجيل الدخول',
+        signingIn: 'جارٍ تسجيل الدخول...',
+        sending: 'جارٍ الإرسال...',
+        orContinue: 'أو تابع مع',
+        google: 'تابع مع جوجل',
+        noAccount: 'ليس لديك حساب؟',
+        signUp: 'إنشاء حساب',
+        enterEmailFirst: 'يرجى إدخال بريدك الإلكتروني أولاً'
+      },
+      
+      authSignUp: {
+        join: 'انضم إلى مخيمات',
+        subtitle: 'أنشئ حسابك لبدء الحجز',
+        fullName: 'الاسم الكامل',
+        email: 'عنوان البريد الإلكتروني',
+        password: 'كلمة المرور',
+        passwordHint: '6 أحرف على الأقل',
+        createAccount: 'إنشاء حساب',
+        creating: 'جارٍ إنشاء الحساب...',
+        orContinue: 'أو تابع مع',
+        google: 'تابع مع جوجل',
+        haveAccount: 'لديك حساب بالفعل؟',
+        signIn: 'تسجيل الدخول'
+      },
+      
+      // Bookings User page (Arabic) - COMPLETE
+      bookingsUser: {
+        title: 'حجوزاتي',
+        count: '{{count}} حجز',
+        current: 'الحالية',
+        past: 'السابقة',
+        emptyTitle: 'لا توجد حجوزات بعد',
+        emptyDesc: 'ابدأ الاستكشاف واحجز مكان التخييم المثالي!',
+        viewDetails: 'عرض التفاصيل',
+        payNow: 'ادفع الآن',
+        cancel: 'إلغاء الحجز',
+        writeReview: 'اكتب تقييماً',
+        statusTitle: 'حالة الحجز',
+        statusDesc: 'حالة الحجز الحالية',
+        exploreCamps: 'استكشف المخيمات',
+        signInView: 'عرض حجوزاتك',
+        signInDesc: 'سجل الدخول لرؤية حجوزات مخيماتك الصحراوية',
+        signInButton: 'تسجيل الدخول',
+        reservationDetails: 'تفاصيل الحجز',
+        completeInfo: 'معلومات كاملة عن حجزك',
+        payment: 'الدفع',
+        paymentCash: 'تم اختيار الدفع نقداً عند الوصول',
+        paymentOnline: 'الدفع عبر الإنترنت',
+        bookingId: 'رقم الحجز',
+        campInfo: 'معلومات المخيم',
+        campName: 'اسم المخيم',
+        location: 'الموقع',
+        stayDetails: 'تفاصيل الإقامة',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        totalNights: 'إجمالي الليالي',
+        nights: 'ليالٍ',
+        guestInfo: 'معلومات الضيف',
+        numberOfGuests: 'عدد الضيوف',
+        priceBreakdown: 'تفاصيل السعر',
+        totalPrice: 'السعر الإجمالي',
+        bookingCreated: 'تم إنشاء الحجز',
+        youReviewed: 'لقد قيمت هذا المخيم',
+        startingPayment: 'جارٍ بدء الدفع...'
+      },
+      
+      // Camp Details page (Arabic) - Already complete from previous work
       campDetails: {
         loading: 'جارٍ تحميل تفاصيل المخيم...',
         notFound: 'المخيم غير موجود',
@@ -1211,45 +1348,6 @@ const resources = {
         }
       },
       
-      // Amenity Names (Arabic)
-      amenityNames: {
-        'Restrooms': 'دورات مياه',
-        'Kitchen': 'مطبخ',
-        'Electricity': 'كهرباء',
-        'Lighting': 'إضاءة',
-        'Water Supply': 'إمدادات المياه',
-        'Fire Pit': 'حفرة نار',
-        'BBQ Grill': 'شواية باربيكيو',
-        'Cooking Equipment': 'معدات الطبخ',
-        'Dining Area': 'منطقة تناول الطعام',
-        'Sound System': 'نظام صوتي',
-        'TV Available': 'تلفزيون متاح',
-        'Volleyball Court': 'ملعب كرة طائرة',
-        'Soccer Court': 'ملعب كرة قدم',
-        'Bouncy Castle': 'قلعة نطاطة',
-        'Furnished Tents': 'خيام مفروشة',
-        'Carpeted Tents': 'خيام مفروشة بالسجاد',
-        'Sofas & Seating': 'أرائك ومقاعد',
-        'Tea Sets': 'أطقم شاي',
-        'Air Conditioning': 'تكييف هواء',
-        'Dune Buggies': 'عربات الكثبان الرملية',
-        'Desert Tours': 'جولات صحراوية',
-        'Camel Rides': 'ركوب الجمال',
-        'Stargazing Area': 'منطقة مراقبة النجوم',
-        'Biking': 'ركوب الدراجات',
-        'Parking': 'موقف سيارات',
-        'Pet Friendly': 'مناسب للحيوانات الأليفة',
-        'Family Friendly': 'مناسب للعائلات',
-        'Security/Guards': 'أمن/حراس',
-        'Food Truck Access': 'وصول شاحنات الطعام',
-        'WiFi': 'واي فاي',
-        'Traditional Meals': 'وجبات تقليدية',
-        'Luxury Tents': 'خيام فاخرة',
-        'Showers': 'حمامات استحمام',
-        'First Aid': 'إسعافات أولية',
-        'Security': 'أمن'
-      },
-      
       // Cancellation Policy Selector (Arabic)
       cancelSelector: {
         title: 'سياسة الإلغاء',
@@ -1272,6 +1370,196 @@ const resources = {
           rule2: 'الإلغاء قبل 24-48 ساعة: استرداد 50٪ (ناقص العربون ورسوم الخدمة)',
           rule3: 'الإلغاء قبل أقل من 24 ساعة: بدون استرداد',
           example: 'مثال: ضيف يحجز بـ 100 دينار مع {{arboon}}٪ عربون. إذا ألغى قبل 48 ساعة، يسترد: 100 - {{arboon}} (عربون) - 10 (رسوم خدمة) = {{refund}} دينار.'
+        }
+      },
+      
+      // Create Listing (Arabic) - Already mostly complete
+      createListing: {
+        title: 'إنشاء قائمة جديدة',
+        subtitle: 'شارك مساحة التخييم الخاصة بك مع المسافرين',
+        signInRequired: 'يرجى تسجيل الدخول لإنشاء قائمة',
+        hostRequired: 'يجب أن تكون مضيفاً لإنشاء القوائم',
+        selectType: 'اختر نوع القائمة',
+        typeLockedWarning: 'لا يمكن تغيير نوع القائمة بعد بدء ملء النموذج',
+        campDetails: 'تفاصيل المخيم',
+        kashtaDetails: 'تفاصيل الكشتة',
+        basicInfo: 'المعلومات الأساسية',
+        campName: 'اسم المخيم',
+        campLocation: 'موقع المخيم',
+        campArea: 'مساحة المخيم',
+        campAreaPlaceholder: 'مثال: القرة، المنطقة الشمالية',
+        description: 'الوصف',
+        descriptionPlaceholder: 'صف مساحة التخييم الخاصة بك، ما يجعلها مميزة، المعالم القريبة...',
+        capacity: {
+          title: 'السعة والخيام',
+          maxGuestsHelper: 'الحد الأقصى لعدد الضيوف الذي يمكن لمخيمك استيعابه',
+          areaHelper: 'المساحة الإجمالية المتاحة لأنشطة التخييم'
+        },
+        capacityTents: 'السعة والخيام',
+        maxGuests: 'الحد الأقصى للضيوف',
+        maxGuestsPlaceholder: 'مثال: 20',
+        tents: {
+          sectionTitle: 'تكوين الخيام',
+          largeLabel: 'خيام كبيرة',
+          smallLabel: 'خيام صغيرة',
+          entertainmentLabel: 'خيام ترفيهية',
+          genericLabel: 'خيام عامة',
+          none: 'لا يوجد',
+          addLarge: 'إضافة خيمة كبيرة',
+          addSmall: 'إضافة خيمة صغيرة',
+          addEntertainment: 'إضافة خيمة ترفيهية',
+          descriptionLabel: 'الوصف',
+          descriptionPlaceholder: 'صف هذه الخيمة...',
+          featuresTitle: 'الميزات',
+          basicFeatures: 'الميزات الأساسية',
+          entertainmentSports: 'الترفيه والرياضة',
+          featureLabels: {
+            furnished: 'مفروشة',
+            carpeted: 'مفروشة بالسجاد',
+            sofas: 'أرائك',
+            teaSets: 'أطقم شاي',
+            tv: 'تلفزيون',
+            airHockeyTable: 'طاولة هوكي هوائي',
+            foosballTable: 'طاولة كرة قدم',
+            pingPongTable: 'طاولة تنس الطاولة',
+            footballField: 'ملعب كرة قدم',
+            volleyballField: 'ملعب كرة طائرة'
+          },
+          helper: 'أضف خيام إلى مخيمك',
+          empty: 'لم يتم إضافة خيام بعد. انقر على الأزرار أعلاه لإضافة خيام.'
+        },
+        times: {
+          helper: 'حدد أوقات تسجيل الوصول والمغادرة',
+          checkInHelper: 'متى يمكن للضيوف الوصول',
+          checkOutHelper: 'متى يجب على الضيوف المغادرة (اليوم التالي)'
+        },
+        checkIn: 'وقت تسجيل الوصول',
+        checkOut: 'وقت تسجيل المغادرة',
+        nextDay: 'اليوم التالي',
+        pricing: {
+          perDay: 'السعر في اليوم',
+          helper: 'حدد سعرك اليومي بالدينار البحريني'
+        },
+        price: 'السعر في اليوم (د.ب)',
+        pricePlaceholder: 'مثال: 50',
+        selectLocation: 'اختر الموقع',
+        searchLocations: 'ابحث عن المواقع...',
+        useMyLocation: 'استخدم موقعي الحالي',
+        gettingLocation: 'جارٍ الحصول على موقعك...',
+        locationCaptured: 'تم التقاط الموقع!',
+        locationFailed: 'فشل الحصول على الموقع',
+        geoUnsupported: 'تحديد الموقع الجغرافي غير مدعوم من متصفحك',
+        googleMapsUrl: 'رابط خرائط جوجل',
+        locationHelper: 'حدد موقع مخيمك',
+        locationRequired: 'الموقع مطلوب',
+        noLocation: 'لم يتم تعيين موقع',
+        or: 'أو',
+        map: {
+          chooseMethod: 'اختر طريقة لتحديد الموقع',
+          pasteLink: 'الصق رابط خرائط جوجل',
+          pasteHelper: 'الصق رابط مشاركة خرائط جوجل هنا',
+          setCoordinates: 'تعيين الإحداثيات',
+          locationSet: 'تم تعيين الموقع بنجاح',
+          fullDay: 'تجربة تخييم ليوم كامل',
+          coordinates: 'الإحداثيات: {{lat}}، {{lng}}',
+          parseError: 'فشل تحليل الإحداثيات',
+          extracted: 'تم استخراج الإحداثيات من الرابط!'
+        },
+        photosTitle: 'الصور',
+        photosHelper: 'أضف صوراً لمخيمك (3 صور على الأقل)',
+        amenitiesSection: 'المرافق',
+        amenitiesHelper: 'اختر جميع المرافق المتاحة في مخيمك',
+        selectedAmenities: 'المرافق المحددة ({{count}})',
+        amenityCategories: {
+          essential: 'أساسي',
+          comfort: 'راحة',
+          cooking: 'طبخ',
+          entertainment: 'ترفيه',
+          activities: 'أنشطة',
+          other: 'أخرى'
+        },
+        amenityItems: {
+          'Restrooms': 'دورات مياه',
+          'Kitchen': 'مطبخ',
+          'Electricity': 'كهرباء',
+          'Lighting': 'إضاءة',
+          'Water Supply': 'إمدادات المياه',
+          'Fire Pit': 'حفرة نار',
+          'BBQ Grill': 'شواية باربيكيو',
+          'Cooking Equipment': 'معدات الطبخ',
+          'Dining Area': 'منطقة تناول الطعام',
+          'Sound System': 'نظام صوتي',
+          'TV Available': 'تلفزيون متاح',
+          'Volleyball Court': 'ملعب كرة طائرة',
+          'Soccer Court': 'ملعب كرة قدم',
+          'Bouncy Castle': 'قلعة نطاطة',
+          'Furnished Tents': 'خيام مفروشة',
+          'Carpeted Tents': 'خيام مفروشة بالسجاد',
+          'Sofas & Seating': 'أرائك ومقاعد',
+          'Tea Sets': 'أطقم شاي',
+          'Air Conditioning': 'تكييف هواء',
+          'Dune Buggies': 'عربات الكثبان الرملية',
+          'Desert Tours': 'جولات صحراوية',
+          'Camel Rides': 'ركوب الجمال',
+          'Stargazing Area': 'منطقة مراقبة النجوم',
+          'Biking': 'ركوب الدراجات',
+          'Parking': 'موقف سيارات',
+          'Pet Friendly': 'مناسب للحيوانات الأليفة',
+          'Family Friendly': 'مناسب للعائلات',
+          'Security/Guards': 'أمن/حراس',
+          'Food Truck Access': 'وصول شاحنات الطعام'
+        },
+        featuresRules: 'الميزات والقواعد',
+        specialFeatures: 'ميزات خاصة',
+        rules: 'قواعد المخيم',
+        sections: {
+          details: 'التفاصيل'
+        },
+        createListing: 'إنشاء القائمة',
+        submitting: 'جارٍ إنشاء القائمة...',
+        updateFail: 'فشل تحديث القائمة',
+        validation: {
+          selectLocation: 'يرجى اختيار موقع من القائمة المنسدلة',
+          locationRequired: 'يرجى تعيين موقعك باستخدام "استخدم موقعي الحالي" أو لصق رابط خرائط جوجل',
+          maxGuests: 'يرجى تحديد الحد الأقصى لعدد الضيوف',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          kashtaCapacity: 'يرجى تحديد سعة الجلوس للكشتة',
+          images: 'يرجى رفع صورة واحدة على الأقل',
+          uploading: 'يرجى الانتظار حتى تنتهي جميع الصور من الرفع',
+          success: 'تم إنشاء القائمة بنجاح!',
+          failed: 'فشل إنشاء القائمة: {{error}}',
+          kashtaSuccess: 'تم إنشاء قائمة الكشتة بنجاح!',
+          campSuccess: 'تم إنشاء قائمة المخيم بنجاح!'
+        }
+      },
+      
+      // Edit Listing (Arabic)
+      editListing: {
+        title: 'تعديل القائمة',
+        subtitle: 'تحديث قائمة مخيمك',
+        loading: 'جارٍ تحميل القائمة...',
+        signInRequired: 'يرجى تسجيل الدخول لتعديل القوائم',
+        hostRequired: 'يجب أن تكون مضيفاً لتعديل القوائم',
+        invalidId: 'معرف قائمة غير صالح',
+        notFound: 'القائمة غير موجودة',
+        noPermission: 'ليس لديك إذن لتعديل هذه القائمة',
+        back: 'العودة إلى قوائمي',
+        saveChanges: 'حفظ التغييرات',
+        saving: 'جارٍ حفظ التغييرات...',
+        success: 'تم تحديث القائمة بنجاح!',
+        cancelConfirm: 'تجاهل التغييرات؟',
+        map: {
+          geoUnsupported: 'تحديد الموقع الجغرافي غير مدعوم',
+          unableLocation: 'تعذر الحصول على الموقع',
+          parseError: 'فشل تحليل الإحداثيات'
+        },
+        validations: {
+          locationRequired: 'يرجى تعيين موقع لمخيمك',
+          coordinatesRequired: 'إحداثيات الموقع مطلوبة',
+          maxGuests: 'يجب أن يكون الحد الأقصى للضيوف 1 على الأقل',
+          tents: 'يرجى إضافة خيمة واحدة على الأقل',
+          images: 'يرجى إضافة 3 صور على الأقل',
+          uploading: 'يرجى الانتظار حتى تنتهي الصور من الرفع'
         }
       },
       
@@ -1308,7 +1596,270 @@ const resources = {
         signUp: 'إنشاء حساب'
       },
       
-      // Reserve page (Arabic) - NEW COMPLETE TRANSLATIONS
+      // Navigation (Arabic)
+      nav: {
+        search: 'بحث',
+        bookings: 'الحجوزات',
+        host: 'المضيف',
+        profile: 'الملف الشخصي'
+      },
+      
+      // Home page (Arabic)
+      home: {
+        heroTitleTop: 'اكتشف تجربتك المثالية',
+        heroTitleBottom: 'للتخييم الصحراوي',
+        heroSubtitle: 'احجز أماكن تخييم فريدة في جميع أنحاء البحرين',
+        searchPlaceholder: 'البحث حسب الموقع...',
+        datePlaceholder: 'اختر التاريخ',
+        searchButton: 'بحث',
+        filters: 'فلاتر',
+        sortBy: 'ترتيب حسب',
+        sortNewest: 'الأحدث',
+        sortPriceAsc: 'السعر: من الأقل للأعلى',
+        sortPriceDesc: 'السعر: من الأعلى للأقل',
+        sortRating: 'الأعلى تقييماً',
+        loadingCamps: 'جارٍ تحميل المخيمات...',
+        noCampsTitle: 'لم يتم العثور على مخيمات',
+        noCampsGeneral: 'حاول تعديل الفلاتر أو معايير البحث',
+        noCampsDate: 'لا توجد مخيمات متاحة في التاريخ المحدد',
+        perDay: 'في اليوم',
+        viewDetails: 'عرض التفاصيل',
+        datePickedLabel: 'تم اختيار التاريخ',
+        clear: 'مسح',
+        clearAll: 'مسح الكل',
+        checkingAvailability: 'جارٍ التحقق من التوفر...',
+        availabilityHint: 'اختر تاريخاً للتحقق من التوفر',
+        campsAvailable: '{{count}} مخيم متاح',
+        filterApplied: '{{count}} فلتر مطبق',
+        reviewCount: '{{count}} تقييم',
+        upToGuests: 'حتى {{count}} ضيف',
+        tentsCount: '{{count}} خيمة',
+        guestLabel: 'ضيف',
+        guestsLabel: 'ضيوف',
+        tentLabel: 'خيمة',
+        tentsLabel: 'خيام',
+        showingListings: 'عرض {{count}} قائمة',
+        showingListingsPlural: 'عرض {{count}} قوائم',
+        listingsInBahrain: 'في البحرين',
+        campsAvailableCount: '{{count}} مخيم متاح',
+        campsAvailableCountPlural: '{{count}} مخيمات متاحة',
+        kashtasAvailableCount: '{{count}} كشتة متاحة',
+        kashtasAvailableCountPlural: '{{count}} كشتات متاحة',
+        availableOn: 'متاح في',
+        activeFilters: 'الفلاتر النشطة:',
+        reviewLabel: 'تقييم',
+        reviewsLabel: 'تقييمات',
+        nonRefundable: 'غير قابل للاسترداد'
+      },
+      
+      // Host Dashboard (Arabic) - COMPLETE
+      host: {
+        heroTitle: 'هل أنت مستعد لمشاركة مساحتك؟',
+        heroDesc: 'أدرج مخيمك أو كشتتك وابدأ في استقبال الضيوف اليوم. يستغرق الأمر بضع دقائق فقط للبدء.',
+        heroCreate: 'إنشاء قائمة جديدة',
+        heroManage: 'إدارة القوائم',
+        dashboardTitle: 'مرحباً بعودتك!',
+        dashboardSubtitle: 'إدارة أعمال التخييم الخاصة بك',
+        createTitle: 'إنشاء قائمة جديدة',
+        createDesc: 'شارك مساحة التخييم الخاصة بك',
+        manageTitle: 'قوائمي',
+        manageDesc: 'تعديل وإدارة مخيماتك',
+        bookingsTitle: 'الحجوزات',
+        bookingsCount: '{{count}} حجز',
+        bookingsCardTitle: 'الحجوزات الأخيرة',
+        bookingsCardDesc: 'عرض وإدارة الحجوزات',
+        analyticsTitle: 'التحليلات',
+        analyticsDesc: 'تتبع أدائك',
+        back: 'العودة إلى لوحة التحكم',
+        noBookings: 'لا توجد حجوزات بعد',
+        noBookingsHint: 'ستظهر حجوزاتك هنا',
+        refresh: 'تحديث',
+        quickActions: 'إجراءات سريعة',
+        stats: {
+          totalListings: 'إجمالي القوائم',
+          active: 'نشط',
+          totalBookings: 'إجمالي الحجوزات',
+          pending: 'قيد الانتظار',
+          revenue: 'الإيرادات',
+          guests: 'إجمالي الضيوف',
+          comingSoon: 'قريباً'
+        }
+      },
+      
+      // Host Listings (Arabic) - COMPLETE
+      hostListings: {
+        title: 'قوائمي',
+        count: '{{count}} قائمة',
+        signInRequired: 'يرجى تسجيل الدخول لعرض القوائم',
+        hostRequired: 'يجب أن تكون مضيفاً لعرض القوائم',
+        loading: 'جارٍ تحميل قوائمك...',
+        loadFail: 'فشل تحميل القوائم',
+        emptyDesc: 'لم تقم بإنشاء أي قوائم بعد',
+        createFirst: 'أنشئ قائمتك الأولى',
+        backToDashboard: 'العودة إلى لوحة التحكم',
+        deleteSuccess: 'تم حذف القائمة بنجاح',
+        deleteFail: 'فشل حذف القائمة',
+        deleteConfirm: 'هل أنت متأكد أنك تريد حذف هذه القائمة؟',
+        more: 'المزيد',
+        guestsLabel: 'ضيوف',
+        tentsLabel: 'خيام',
+        status: {
+          active: 'نشط',
+          pending: 'في انتظار الموافقة'
+        },
+        buttons: {
+          view: 'عرض',
+          edit: 'تعديل',
+          newListing: 'قائمة جديدة',
+          manageAvailability: 'إدارة التوفر'
+        }
+      },
+      
+      // Host Cancellation (Arabic) - COMPLETE
+      hostCancellation: {
+        title: 'إلغاء الحجز',
+        description: 'إلغاء هذا الحجز ومعالجة الاسترداد',
+        bookingDetails: 'تفاصيل الحجز',
+        camp: 'المخيم',
+        guest: 'الضيف',
+        guests: 'الضيوف',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        bookingAmount: 'مبلغ الحجز',
+        importantNotice: 'إشعار مهم',
+        importantDesc: 'قد يؤدي إلغاء هذا الحجز إلى فرض غرامات',
+        hostPenalty: 'غرامة إلغاء المضيف',
+        penaltyRate: 'معدل الغرامة',
+        penaltyAmount: 'مبلغ الغرامة',
+        noPenalty: 'بدون غرامة (ألغى الضيف)',
+        penaltyNote: 'سيتم خصم هذا المبلغ من دفعتك التالية',
+        guestRefund: 'استرداد الضيف',
+        refundAmount: 'مبلغ الاسترداد',
+        guestRefundDesc: 'المبلغ الذي سيتم استرداده للضيف',
+        reasonLabel: 'سبب الإلغاء',
+        reasonPlaceholder: 'اختر سبباً',
+        reasonHint: 'يرجى تقديم سبب للإلغاء',
+        otherReasonPlaceholder: 'يرجى التوضيح...',
+        keepBooking: 'الاحتفاظ بالحجز',
+        confirmCancellation: 'تأكيد الإلغاء',
+        cancelling: 'جارٍ الإلغاء...',
+        toastNeedReason: 'يرجى اختيار سبب الإلغاء',
+        toastSuccess: 'تم إلغاء الحجز بنجاح',
+        toastSuccessDescNoPenalty: 'سيحصل الضيف على استرداد كامل',
+        toastSuccessDescPenalty: 'سيتم خصم الغرامة من دفعتك التالية',
+        toastFail: 'فشل الإلغاء',
+        toastFailDesc: 'يرجى المحاولة مرة أخرى أو الاتصال بالدعم'
+      },
+      
+      // Payment (Arabic)
+      payment: {
+        successTitle: 'تم الدفع بنجاح!',
+        successDesc: 'تم تأكيد حجزك',
+        pendingTitle: 'الدفع قيد الانتظار',
+        pendingDesc: 'جارٍ معالجة دفعتك',
+        bookingId: 'رقم الحجز',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        guests: 'الضيوف',
+        totalPaid: 'المبلغ المدفوع',
+        contact: 'اتصل بالمضيف للحصول على التفاصيل',
+        viewBookings: 'عرض حجوزاتي',
+        backHome: 'العودة للصفحة الرئيسية',
+        auth: {
+          Y: 'مصرح به',
+          N: 'غير مصرح به',
+          C: 'ملغى',
+          E: 'خطأ',
+          R: 'مرفوض',
+          U: 'غير معروف',
+          AI: 'التصريح قيد التقدم',
+          UNKNOWN: 'حالة غير معروفة'
+        },
+        messages: {
+          Y: 'تم التصريح بالدفع بنجاح',
+          N: 'لم يتم التصريح بالدفع',
+          C: 'تم إلغاء الدفع',
+          E: 'حدث خطأ أثناء الدفع',
+          R: 'تم رفض الدفع',
+          U: 'حالة الدفع غير معروفة',
+          AI: 'التصريح بالدفع قيد التقدم',
+          UNKNOWN: 'حالة دفع غير معروفة',
+          completed: 'تم الدفع بنجاح',
+          failed: 'فشل الدفع'
+        }
+      },
+      
+      // Payment Failed (Arabic)
+      paymentFailed: {
+        desc: 'تعذرت معالجة دفعتك',
+        tryAgain: 'حاول مرة أخرى',
+        backHome: 'العودة للصفحة الرئيسية',
+        commonIssues: 'المشاكل الشائعة',
+        issues: {
+          insufficient: 'أموال غير كافية',
+          declined: 'تم رفض البطاقة',
+          expired: 'انتهت صلاحية البطاقة',
+          incorrect: 'تفاصيل البطاقة غير صحيحة',
+          auth: 'فشل المصادقة'
+        },
+        needHelp: 'تحتاج مساعدة؟ اتصل بالدعم'
+      },
+      
+      // Profile (Arabic)
+      profile: {
+        title: 'الملف الشخصي',
+        welcome: 'مرحباً',
+        signInPrompt: 'يرجى تسجيل الدخول لعرض ملفك الشخصي',
+        signIn: 'تسجيل الدخول',
+        signOut: 'تسجيل الخروج',
+        editProfile: 'تعديل الملف الشخصي',
+        name: 'الاسم الكامل',
+        phone: 'رقم الهاتف',
+        bio: 'السيرة الذاتية',
+        noBio: 'لم يتم تقديم سيرة ذاتية',
+        notProvided: 'غير متوفر',
+        saveChanges: 'حفظ التغييرات',
+        saving: 'جارٍ الحفظ...',
+        cancel: 'إلغاء',
+        becomeHost: 'كن مضيفاً',
+        hostActive: 'حساب المضيف نشط',
+        changeEmail: 'تغيير البريد الإلكتروني',
+        verified: 'موثق',
+        active: 'نشط',
+        memberSince: 'عضو منذ',
+        statsTitle: 'الإحصائيات',
+        totalBookings: 'إجمالي الحجوزات',
+        listings: 'القوائم',
+        accountStatus: 'حالة الحساب',
+        password: {
+          title: 'تغيير كلمة المرور',
+          description: 'تحديث كلمة المرور الخاصة بك',
+          current: 'كلمة المرور الحالية',
+          new: 'كلمة المرور الجديدة',
+          confirm: 'تأكيد كلمة المرور الجديدة',
+          change: 'تغيير كلمة المرور',
+          changing: 'جارٍ التغيير...',
+          lastChanged: 'آخر تغيير'
+        },
+        toasts: {
+          updated: 'تم تحديث الملف الشخصي بنجاح',
+          updateFailed: 'فشل تحديث الملف الشخصي',
+          pwdChanged: 'تم تغيير كلمة المرور بنجاح',
+          changeFailed: 'فشل تغيير كلمة المرور',
+          mustSignIn: 'يجب أن تكون مسجلاً الدخول',
+          enterCurrent: 'يرجى إدخال كلمة المرور الحالية',
+          enterNew: 'يرجى إدخال كلمة مرور جديدة',
+          minLength: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
+          mismatch: 'كلمات المرور غير متطابقة',
+          samePassword: 'يجب أن تكون كلمة المرور الجديدة مختلفة عن الحالية',
+          weakPassword: 'كلمة المرور ضعيفة جداً',
+          wrongPassword: 'كلمة المرور الحالية غير صحيحة',
+          recentLogin: 'يرجى تسجيل الخروج ثم تسجيل الدخول مرة أخرى لتغيير كلمة المرور',
+          network: 'خطأ في الشبكة. يرجى المحاولة مرة أخرى'
+        }
+      },
+      
+      // Reserve page (Arabic) - Already complete from previous work
       reserve: {
         completeTitle: 'أكمل حجزك',
         reserveCreated: 'تم إنشاء الحجز',
