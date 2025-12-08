@@ -83,7 +83,7 @@ export function BookingCalendar({
   const modifiersClassNames = {
     booked: 'bg-red-100 text-red-900 line-through cursor-not-allowed hover:bg-red-100',
     blocked: 'bg-gray-100 text-gray-500 line-through cursor-not-allowed hover:bg-gray-100',
-    selected: 'bg-amber-500 text-white hover:bg-amber-600',
+    selected: 'bg-orange-500 text-white hover:bg-[#FF8C42]',
   };
 
   return (
@@ -93,7 +93,7 @@ export function BookingCalendar({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-terracotta-600" />
+              <CalendarDays className="w-5 h-5 text-#6B4423" />
               Select Your Date
             </h3>
             <p className="text-sm text-gray-600 mt-1">
@@ -122,11 +122,11 @@ export function BookingCalendar({
         {/* Legend */}
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-white border-2 border-sand-300"></div>
+            <div className="w-4 h-4 rounded bg-white border-2 border-orange-300"></div>
             <span className="text-gray-700">Available</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-amber-500"></div>
+            <div className="w-4 h-4 rounded bg-orange-500"></div>
             <span className="text-gray-700">Selected</span>
           </div>
           <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export function BookingCalendar({
 
         {/* Selected Date Info */}
         {selectedDate && (
-          <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+          <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-lg">
             <p className="font-semibold text-gray-900 mb-1">Selected Date</p>
             <p className="text-sm text-gray-700">
               {format(selectedDate, 'EEEE, MMMM d, yyyy')}

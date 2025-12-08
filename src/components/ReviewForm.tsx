@@ -136,7 +136,7 @@ export default function ReviewForm({
           <Button
             type="submit"
             disabled={!isValid || submitting}
-            className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+            className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820"
           >
             {submitting ? (
               <>

@@ -448,9 +448,9 @@ export default function EditListing() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">{t('editListing.loading')}</p>
         </div>
       </div>
@@ -465,12 +465,12 @@ export default function EditListing() {
   const hasCoordinates = latitude && longitude;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-20">
         <Button
           onClick={handleCancel}
           variant="ghost"
-          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
+          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('editListing.back')}
@@ -481,7 +481,7 @@ export default function EditListing() {
           <p className="text-gray-700 font-medium">{t('editListing.subtitle', { defaultValue: 'Update your camp information' })}</p>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 md:p-8 shadow-xl">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 md:p-8 shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information */}
             <div>
@@ -501,13 +501,13 @@ export default function EditListing() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="location" className="text-gray-900 font-semibold flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-terracotta-600" />
+                    <MapPin className="w-4 h-4 text-#6B4423" />
                     {t('createListing.campLocation')} <span className="text-red-600">*</span>
                   </Label>
                   <Popover open={locationOpen} onOpenChange={setLocationOpen}>
@@ -516,7 +516,7 @@ export default function EditListing() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={locationOpen}
-                        className="w-full justify-between border-sand-300 hover:border-terracotta-500 text-gray-900 h-11"
+                        className="w-full justify-between border-orange-300 hover:border-#8B5A3C text-gray-900 h-11"
                       >
                         {selectedLocation
                           ? getLocationLabel(selectedLocation)
@@ -559,9 +559,9 @@ export default function EditListing() {
                 </div>
 
                 {/* Location Coordinates */}
-                <div className="space-y-3 p-4 bg-sand-50 border-2 border-sand-300 rounded-lg">
+                <div className="space-y-3 p-4 bg-orange-50 border-2 border-orange-300 rounded-lg">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <Navigation className="w-4 h-4 text-terracotta-600" />
+                    <Navigation className="w-4 h-4 text-#6B4423" />
                     {t('createListing.map.setCoordinates')} <span className="text-red-600">*</span>
                   </Label>
 
@@ -569,7 +569,7 @@ export default function EditListing() {
                     type="button"
                     onClick={getCurrentLocation}
                     disabled={gettingLocation}
-                    className="w-full h-12 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+                    className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
                   >
                     {gettingLocation ? (
                       <>
@@ -586,10 +586,10 @@ export default function EditListing() {
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-sand-300" />
+                      <span className="w-full border-t border-orange-300" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-sand-50 px-2 text-gray-600 font-semibold">{t('createListing.or', { defaultValue: 'Or' })}</span>
+                      <span className="bg-orange-50 px-2 text-gray-600 font-semibold">{t('createListing.or', { defaultValue: 'Or' })}</span>
                     </div>
                   </div>
 
@@ -604,7 +604,7 @@ export default function EditListing() {
                       placeholder={t('createListing.googleMapsUrl')}
                       value={googleMapsUrl}
                       onChange={(e) => handleGoogleMapsUrlChange(e.target.value)}
-                      className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                      className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                     />
                   </div>
 
@@ -648,14 +648,14 @@ export default function EditListing() {
                     required
                     min="0"
                     step="0.01"
-                    className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
                 {/* Check-in and Check-out Times */}
-                <div className="space-y-3 p-4 bg-terracotta-50 border-2 border-terracotta-200 rounded-lg">
+                <div className="space-y-3 p-4 bg-orange-50 border-2 border-terracotta-200 rounded-lg">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-terracotta-600" />
+                    <Clock className="w-5 h-5 text-#6B4423" />
                     {t('createListing.checkIn')} & {t('createListing.checkOut')} <span className="text-red-600">*</span>
                   </Label>
                   <p className="text-sm text-gray-700 font-medium mb-3">
@@ -674,7 +674,7 @@ export default function EditListing() {
                         value={checkInTime}
                         onChange={(e) => setCheckInTime(e.target.value)}
                         required
-                        className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                        className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                       />
                       <p className="text-xs text-gray-600 font-medium">{t('createListing.times.checkInHelper')}</p>
                     </div>
@@ -690,18 +690,18 @@ export default function EditListing() {
                         value={checkOutTime}
                         onChange={(e) => setCheckOutTime(e.target.value)}
                         required
-                        className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                        className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                       />
                       <p className="text-xs text-gray-600 font-medium">{t('createListing.times.checkOutHelper')}</p>
                     </div>
                   </div>
 
-                  <div className="p-3 bg-white border border-terracotta-300 rounded-lg">
+                  <div className="p-3 bg-white border border-orange-300 rounded-lg">
                     <p className="text-sm font-semibold text-gray-900 mb-1">
                       📅 {t('createListing.map.fullDay')}
                     </p>
                     <p className="text-sm text-gray-700">
-                      {t('createListing.checkIn')}: <span className="font-bold text-terracotta-700">{checkInTime}</span> → {t('createListing.checkOut')}: <span className="font-bold text-terracotta-700">{checkOutTime} ({t('createListing.nextDay')})</span>
+                      {t('createListing.checkIn')}: <span className="font-bold text-#5A3820">{checkInTime}</span> → {t('createListing.checkOut')}: <span className="font-bold text-#5A3820">{checkOutTime} ({t('createListing.nextDay')})</span>
                     </p>
                   </div>
                 </div>
@@ -733,7 +733,7 @@ export default function EditListing() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="border-sand-300 focus:border-terracotta-500 resize-none text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -742,7 +742,7 @@ export default function EditListing() {
             {/* Camp Capacity & Size */}
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Users className="w-6 h-6 text-terracotta-600" />
+                <Users className="w-6 h-6 text-#6B4423" />
                 {t('createListing.capacity.title')}
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
@@ -758,7 +758,7 @@ export default function EditListing() {
                     onChange={(e) => setMaxGuests(e.target.value)}
                     required
                     min="1"
-                    className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-xs text-gray-600 font-medium">{t('createListing.capacity.maxGuestsHelper')}</p>
                 </div>
@@ -774,7 +774,7 @@ export default function EditListing() {
                     value={campArea}
                     onChange={(e) => setCampArea(e.target.value)}
                     min="0"
-                    className="border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-xs text-gray-600 font-medium">{t('createListing.capacity.areaHelper')}</p>
                 </div>
@@ -784,7 +784,7 @@ export default function EditListing() {
             {/* Tent Configuration */}
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Tent className="w-6 h-6 text-terracotta-600" />
+                <Tent className="w-6 h-6 text-#6B4423" />
                 {t('createListing.tents.sectionTitle')}
               </h3>
 
@@ -793,7 +793,7 @@ export default function EditListing() {
                   type="button"
                   onClick={() => addTent('large')}
                   variant="outline"
-                  className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                  className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   {t('createListing.tents.addLarge')}
@@ -802,7 +802,7 @@ export default function EditListing() {
                   type="button"
                   onClick={() => addTent('small')}
                   variant="outline"
-                  className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                  className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   {t('createListing.tents.addSmall')}
@@ -811,7 +811,7 @@ export default function EditListing() {
                   type="button"
                   onClick={() => addTent('entertainment')}
                   variant="outline"
-                  className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                  className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   {t('createListing.tents.addEntertainment')}
@@ -821,10 +821,10 @@ export default function EditListing() {
               {tents.length > 0 ? (
                 <div className="space-y-4">
                   {tents.map((tent, index) => (
-                    <Card key={tent.id} className="bg-sand-50 border-2 border-sand-300 p-4">
+                    <Card key={tent.id} className="bg-orange-50 border-2 border-orange-300 p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Tent className="w-5 h-5 text-terracotta-600" />
+                          <Tent className="w-5 h-5 text-#6B4423" />
                           <h4 className="font-semibold text-gray-900">
                             {getTentTypeName(tent.type)} #{index + 1}
                           </h4>
@@ -853,8 +853,8 @@ export default function EditListing() {
                                 size="sm"
                                 className={
                                   tent[feature]
-                                    ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
-                                    : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
+                                    ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white border-0 font-semibold'
+                                    : 'border-2 border-orange-300 text-gray-800 hover:bg-orange-100 font-semibold'
                                 }
                               >
                                 {tent[feature] && <Check className="w-3 h-3 mr-1" />}
@@ -880,8 +880,8 @@ export default function EditListing() {
                                 size="sm"
                                 className={
                                   tent[feature]
-                                    ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
-                                    : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-100 font-semibold'
+                                    ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white border-0 font-semibold'
+                                    : 'border-2 border-orange-300 text-gray-800 hover:bg-orange-100 font-semibold'
                                 }
                               >
                                 {tent[feature] && <Check className="w-3 h-3 mr-1" />}
@@ -904,7 +904,7 @@ export default function EditListing() {
                             onChange={(e) => updateTentDescription(tent.id, e.target.value)}
                             placeholder={t('createListing.tents.descriptionPlaceholder')}
                             rows={2}
-                            className="text-sm border-sand-300 focus:border-terracotta-500"
+                            className="text-sm border-orange-300 focus:border-#8B5A3C"
                           />
                         </div>
                       </div>
@@ -912,14 +912,14 @@ export default function EditListing() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center p-8 bg-sand-50 border-2 border-sand-300 rounded-lg">
+                <div className="text-center p-8 bg-orange-50 border-2 border-orange-300 rounded-lg">
                   <Tent className="w-12 h-12 text-sand-400 mx-auto mb-3" />
                   <p className="text-gray-700 font-medium">{t('createListing.tents.none')}</p>
                 </div>
               )}
 
               {tents.length > 0 && (
-                <div className="mt-4 p-4 bg-terracotta-50 border-2 border-terracotta-200 rounded-lg">
+                <div className="mt-4 p-4 bg-orange-50 border-2 border-terracotta-200 rounded-lg">
                   <p className="font-semibold text-gray-900 mb-2">{t('createListing.tents.sectionTitle')}:</p>
                   <p className="text-gray-800">
                     <span className="font-bold">{counts.total}</span> {t('createListing.tents.sectionTitle')}
@@ -961,8 +961,8 @@ export default function EditListing() {
                           size="sm"
                           className={
                             isSelected
-                              ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white border-0 font-semibold'
-                              : 'border-2 border-sand-300 text-gray-800 hover:bg-sand-50 font-semibold'
+                              ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white border-0 font-semibold'
+                              : 'border-2 border-orange-300 text-gray-800 hover:bg-orange-50 font-semibold'
                           }
                         >
                           {isSelected && <Check className="w-3 h-3 mr-1" />}
@@ -998,7 +998,7 @@ export default function EditListing() {
                     value={specialFeatures}
                     onChange={(e) => setSpecialFeatures(e.target.value)}
                     rows={3}
-                    className="border-sand-300 focus:border-terracotta-500 resize-none text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
@@ -1012,7 +1012,7 @@ export default function EditListing() {
                     value={rules}
                     onChange={(e) => setRules(e.target.value)}
                     rows={3}
-                    className="border-sand-300 focus:border-terracotta-500 resize-none text-gray-900 placeholder:text-gray-400"
+                    className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -1024,14 +1024,14 @@ export default function EditListing() {
                 type="button"
                 onClick={handleCancel}
                 variant="outline"
-                className="flex-1 h-14 border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold text-lg"
+                className="flex-1 h-14 border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold text-lg"
               >
                 {t('common.cancel', { defaultValue: t('editListing.back') })}
               </Button>
               <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 h-14 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg disabled:opacity-50"
+                className="flex-1 h-14 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-lg shadow-lg disabled:opacity-50"
               >
                 {submitting ? (
                   <>

@@ -44,7 +44,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🏜️</div>
@@ -52,7 +52,7 @@ export default function SignUp() {
           <p className="text-gray-700 font-medium">{t('authSignUp.subtitle')}</p>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 shadow-xl">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 shadow-xl">
           <form onSubmit={handleEmailSignUp} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-900 font-semibold">{t('authSignUp.fullName')}</Label>
@@ -66,7 +66,7 @@ export default function SignUp() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   disabled={loading}
-                  className="pl-11 border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function SignUp() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="pl-11 border-sand-300 focus:border-terracotta-500 text-gray-900 placeholder:text-gray-400"
+                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function SignUp() {
                   required
                   disabled={loading}
                   minLength={6}
-                  className="pl-11 border-sand-300 focus:border-terracotta-500 text-gray-900"
+                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900"
                 />
               </div>
               <p className="text-xs text-gray-600 font-medium">{t('authSignUp.passwordHint')}</p>
@@ -110,7 +110,7 @@ export default function SignUp() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
             >
               {loading ? (
                 <>
@@ -128,7 +128,7 @@ export default function SignUp() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-sand-300"></div>
+              <div className="w-full border-t border-orange-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-gray-700 font-medium">{t('authSignUp.orContinue')}</span>
@@ -140,7 +140,7 @@ export default function SignUp() {
             onClick={handleGoogleSignUp}
             disabled={loading}
             variant="outline"
-            className="w-full h-12 border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+            className="w-full h-12 border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -171,7 +171,7 @@ export default function SignUp() {
             {t('authSignUp.haveAccount')}{' '}
             <button
               onClick={() => navigate('/signin')}
-              className="text-terracotta-600 hover:text-terracotta-700 font-semibold"
+              className="text-#6B4423 hover:text-#5A3820 font-semibold"
             >
               {t('authSignUp.signIn')}
             </button>

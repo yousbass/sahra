@@ -67,14 +67,14 @@ export const SingleDayPicker = ({
         minDate={minDate}
         disabledDay={disabledDay}
         color="#d97706"
-        className="rounded-lg border border-sand-300"
+        className="rounded-lg border border-orange-300"
       />
       
       {selectedDate && (
-        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+        <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-1">Selected Day</p>
-            <p className="text-2xl font-bold text-terracotta-600">
+            <p className="text-2xl font-bold text-#6B4423">
               {format(selectedDate, 'EEEE, MMM dd, yyyy')}
             </p>
             <p className="text-sm text-gray-600 mt-2">

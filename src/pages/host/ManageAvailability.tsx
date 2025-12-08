@@ -187,9 +187,9 @@ export default function ManageAvailability() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">Loading availability data...</p>
         </div>
       </div>
@@ -202,12 +202,12 @@ export default function ManageAvailability() {
 
   if (camps.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
         <div className="max-w-4xl mx-auto pt-8">
           <Button
             onClick={() => navigate('/host/listings')}
             variant="ghost"
-            className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
+            className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to My Listings
@@ -221,7 +221,7 @@ export default function ManageAvailability() {
             </p>
             <Button
               onClick={() => navigate('/host/create')}
-              className="bg-terracotta-600 hover:bg-terracotta-700"
+              className="bg-#6B4423 hover:bg-#5A3820"
             >
               Create Camp Listing
             </Button>
@@ -236,12 +236,12 @@ export default function ManageAvailability() {
   const totalBlockedDays = blockedDates.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-6xl mx-auto pt-8 pb-20">
         <Button
           onClick={() => navigate('/host/listings')}
           variant="ghost"
-          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
+          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to My Listings
@@ -370,7 +370,7 @@ export default function ManageAvailability() {
                   <span className="text-gray-700">Blocked</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-white border-2 border-sand-300"></div>
+                  <div className="w-4 h-4 rounded bg-white border-2 border-orange-300"></div>
                   <span className="text-gray-700">Available</span>
                 </div>
               </div>

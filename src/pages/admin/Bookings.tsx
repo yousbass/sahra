@@ -169,7 +169,7 @@ export default function AdminBookings() {
         );
       case 'pending':
         return (
-          <Badge className="bg-amber-100 text-amber-900 border-amber-300">
+          <Badge className="bg-amber-100 text-amber-900 border-orange-300">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
@@ -191,20 +191,20 @@ export default function AdminBookings() {
       case 'completed':
         return <Badge className="bg-green-100 text-green-900 border-green-300">Paid</Badge>;
       case 'pending':
-        return <Badge className="bg-amber-100 text-amber-900 border-amber-300">Pending</Badge>;
+        return <Badge className="bg-amber-100 text-amber-900 border-orange-300">Pending</Badge>;
       case 'failed':
         return <Badge variant="destructive">Failed</Badge>;
       case 'refunded':
         return <Badge className="bg-blue-100 text-blue-900 border-blue-300">Refunded</Badge>;
       default:
-        return <Badge className="bg-amber-100 text-amber-900 border-amber-300">Pending</Badge>;
+        return <Badge className="bg-amber-100 text-amber-900 border-orange-300">Pending</Badge>;
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export default function AdminBookings() {
         <Button
           onClick={exportToCSV}
           variant="outline"
-          className="border-2 border-sand-300 hover:bg-sand-50"
+          className="border-2 border-orange-300 hover:bg-orange-50"
           disabled={filteredBookings.length === 0}
         >
           <Download className="w-4 h-4 mr-2" />
@@ -229,7 +229,7 @@ export default function AdminBookings() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -237,12 +237,12 @@ export default function AdminBookings() {
               placeholder="Search by ID, user, or camp..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-sand-300 focus:border-terracotta-500"
+              className="pl-10 border-orange-300 focus:border-#8B5A3C"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -254,7 +254,7 @@ export default function AdminBookings() {
           </Select>
 
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
               <SelectValue placeholder="Filter by payment" />
             </SelectTrigger>
             <SelectContent>
@@ -269,11 +269,11 @@ export default function AdminBookings() {
       </Card>
 
       {/* Bookings Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-sand-50 border-sand-300">
+              <TableRow className="bg-orange-50 border-orange-300">
                 <TableHead className="font-bold text-gray-900">Booking ID</TableHead>
                 <TableHead className="font-bold text-gray-900">User</TableHead>
                 <TableHead className="font-bold text-gray-900">Camp</TableHead>
@@ -287,7 +287,7 @@ export default function AdminBookings() {
             </TableHeader>
             <TableBody>
               {filteredBookings.map((booking) => (
-                <TableRow key={booking.id} className="border-sand-200 hover:bg-sand-50">
+                <TableRow key={booking.id} className="border-orange-200 hover:bg-orange-50">
                   <TableCell className="font-mono text-sm text-gray-700">
                     {booking.id.substring(0, 8)}...
                   </TableCell>
@@ -313,7 +313,7 @@ export default function AdminBookings() {
                       {booking.guests}
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold text-terracotta-600">
+                  <TableCell className="font-semibold text-#6B4423">
                     {booking.totalPrice.toFixed(3)} BD
                   </TableCell>
                   <TableCell>{getStatusBadge(booking.status)}</TableCell>
@@ -327,7 +327,7 @@ export default function AdminBookings() {
                           setSelectedBooking(booking);
                           setShowBookingDialog(true);
                         }}
-                        className="border-sand-300 hover:bg-sand-50"
+                        className="border-orange-300 hover:bg-orange-50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -410,7 +410,7 @@ export default function AdminBookings() {
               </div>
 
               {/* Price Breakdown */}
-              <div className="border-t border-sand-300 pt-4">
+              <div className="border-t border-orange-300 pt-4">
                 <p className="text-sm text-gray-600 mb-3">Price Breakdown</p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -431,9 +431,9 @@ export default function AdminBookings() {
                       {(selectedBooking.taxes || 0).toFixed(3)} BD
                     </span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-sand-300">
+                  <div className="flex justify-between pt-2 border-t border-orange-300">
                     <span className="font-bold text-gray-900">Total</span>
-                    <span className="text-xl font-bold text-terracotta-600">
+                    <span className="text-xl font-bold text-#6B4423">
                       {selectedBooking.totalPrice.toFixed(3)} BD
                     </span>
                   </div>
@@ -458,7 +458,7 @@ export default function AdminBookings() {
                     variant="outline"
                     onClick={() => handleUpdateStatus(selectedBooking.id, 'pending')}
                     disabled={actionLoading || selectedBooking.status === 'pending'}
-                    className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                    className="border-orange-300 text-amber-700 hover:bg-orange-50"
                   >
                     <Clock className="w-4 h-4 mr-1" />
                     Set Pending

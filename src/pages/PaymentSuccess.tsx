@@ -116,16 +116,16 @@ export default function PaymentSuccess() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sand-50 to-orange-50">
-        <Loader2 className="h-12 w-12 animate-spin text-terracotta-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-50">
+        <Loader2 className="h-12 w-12 animate-spin text-#6B4423" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sand-50 to-orange-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-50 py-12 px-4">
       <div className="max-w-3xl mx-auto">
-        <Card className="p-8 md:p-12 text-center space-y-8 shadow-xl border-sand-300">
+        <Card className="p-8 md:p-12 text-center space-y-8 shadow-xl border-orange-300">
           <div className="flex justify-center">
             <div className="rounded-full bg-green-100 p-4">
               <CheckCircle className="h-16 w-16 text-green-600" />
@@ -148,14 +148,14 @@ export default function PaymentSuccess() {
             className={`p-4 rounded-lg border ${
               authInfo.isSuccess
                 ? 'bg-green-50 border-green-200 text-green-900'
-                : 'bg-amber-50 border-amber-200 text-amber-900'
+                : 'bg-orange-50 border-orange-200 text-amber-900'
             }`}
           >
             <div className="flex items-center gap-2 font-semibold">
               {authInfo.isSuccess ? (
                 <CheckCircle className="w-5 h-5 text-green-600" />
               ) : (
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <AlertTriangle className="w-5 h-5 text-[#FF8C42]" />
               )}
               <span>{authInfo.label}</span>
             </div>
@@ -163,16 +163,16 @@ export default function PaymentSuccess() {
           </div>
 
           {booking && (
-            <div className="bg-gradient-to-br from-sand-50 to-orange-50 p-6 md:p-8 rounded-xl text-left space-y-6 border-2 border-sand-300">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-50 p-6 md:p-8 rounded-xl text-left space-y-6 border-2 border-orange-300">
               <div className="flex items-center gap-2 mb-4">
-                <MapPin className="h-5 w-5 text-terracotta-600" />
+                <MapPin className="h-5 w-5 text-#6B4423" />
                 <h2 className="font-bold text-xl text-gray-900">{booking.campTitle}</h2>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-terracotta-600 mt-0.5" />
+                    <Calendar className="h-5 w-5 text-#6B4423 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-600 font-medium">{t('payment.checkIn')}</p>
                       <p className="font-semibold text-gray-900">
@@ -183,7 +183,7 @@ export default function PaymentSuccess() {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-terracotta-600 mt-0.5" />
+                    <Calendar className="h-5 w-5 text-#6B4423 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-600 font-medium">{t('payment.checkOut')}</p>
                       <p className="font-semibold text-gray-900">
@@ -196,7 +196,7 @@ export default function PaymentSuccess() {
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <Users className="h-5 w-5 text-terracotta-600 mt-0.5" />
+                    <Users className="h-5 w-5 text-#6B4423 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-600 font-medium">{t('payment.guests')}</p>
                       <p className="font-semibold text-gray-900">{t('campDetails.accommodates', { count: booking.guests })}</p>
@@ -204,10 +204,10 @@ export default function PaymentSuccess() {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <CreditCard className="h-5 w-5 text-terracotta-600 mt-0.5" />
+                    <CreditCard className="h-5 w-5 text-#6B4423 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-600 font-medium">{t('payment.totalPaid')}</p>
-                      <p className="font-bold text-xl text-terracotta-600">
+                      <p className="font-bold text-xl text-#6B4423">
                         {booking.totalPrice?.toFixed(3)} BD
                       </p>
                     </div>
@@ -215,7 +215,7 @@ export default function PaymentSuccess() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t-2 border-sand-300">
+              <div className="pt-4 border-t-2 border-orange-300">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600 font-medium">{t('payment.bookingId')}</span>
                 <span className="font-mono text-sm font-semibold text-gray-900">{booking.id}</span>
@@ -227,7 +227,7 @@ export default function PaymentSuccess() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button 
               onClick={() => navigate('/bookings')} 
-              className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
+              className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold"
               size="lg"
             >
               {t('payment.viewBookings')}
@@ -235,7 +235,7 @@ export default function PaymentSuccess() {
             <Button 
               onClick={() => navigate('/')} 
               variant="outline"
-              className="border-2 border-sand-300 hover:bg-sand-50 font-semibold"
+              className="border-2 border-orange-300 hover:bg-orange-50 font-semibold"
               size="lg"
             >
               {t('payment.backHome')}
@@ -243,7 +243,7 @@ export default function PaymentSuccess() {
           </div>
 
           <p className="text-sm text-gray-600 pt-4">
-            {t('payment.contact')} <a href={`mailto:${config.supportEmail}`} className="text-terracotta-600 hover:underline font-semibold">{config.supportEmail}</a>
+            {t('payment.contact')} <a href={`mailto:${config.supportEmail}`} className="text-#6B4423 hover:underline font-semibold">{config.supportEmail}</a>
           </p>
         </Card>
       </div>

@@ -66,7 +66,7 @@ function BottomNav() {
   if (hideNav) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-amber-200 z-50 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-orange-200 z-50 shadow-lg">
       <div className="flex justify-around items-center h-16 max-w-screen-sm mx-auto rtl:flex-row-reverse">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -96,7 +96,7 @@ const App = () => (
         <LanguageDirectionHandler />
         <Toaster />
         <BrowserRouter>
-          <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100 pb-16">
+          <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-50 to-amber-100 pb-16">
             <Header />
             <Routes>
               {/* Public Routes */}

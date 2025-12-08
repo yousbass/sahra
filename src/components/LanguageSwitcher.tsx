@@ -28,7 +28,7 @@ export default function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-gray-700 hover:text-gray-900 hover:bg-sand-100"
+          className="gap-2 text-gray-700 hover:text-gray-900 hover:bg-orange-100"
         >
           <Globe className="w-4 h-4" />
           <span className="font-medium">
@@ -40,7 +40,7 @@ export default function LanguageSwitcher() {
         <DropdownMenuItem
           onClick={() => changeLanguage('en')}
           className={`cursor-pointer ${
-            currentLanguage === 'en' ? 'bg-terracotta-50 text-terracotta-900 font-semibold' : ''
+            currentLanguage === 'en' ? 'bg-orange-50 text-terracotta-900 font-semibold' : ''
           }`}
         >
           <span className="mr-2">🇬🇧</span>
@@ -49,7 +49,7 @@ export default function LanguageSwitcher() {
         <DropdownMenuItem
           onClick={() => changeLanguage('ar')}
           className={`cursor-pointer ${
-            currentLanguage === 'ar' ? 'bg-terracotta-50 text-terracotta-900 font-semibold' : ''
+            currentLanguage === 'ar' ? 'bg-orange-50 text-terracotta-900 font-semibold' : ''
           }`}
         >
           <span className="mr-2">🇧🇭</span>

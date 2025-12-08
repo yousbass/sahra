@@ -68,7 +68,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
     return (
       <div className="text-center py-20">
         <p className="text-gray-600 mb-4">{error || 'Failed to load statistics'}</p>
-        <Button onClick={loadDashboardData} className="bg-terracotta-600 hover:bg-terracotta-700">
+        <Button onClick={loadDashboardData} className="bg-#6B4423 hover:bg-#5A3820">
           Retry
         </Button>
       </div>
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
       value: `${stats.totalRevenue.toFixed(3)} BD`,
       subtitle: `${stats.monthlyRevenue.toFixed(3)} BD this month`,
       icon: DollarSign,
-      color: 'from-terracotta-500 to-terracotta-600',
+      color: 'from-#8B5A3C to-#6B4423',
       action: () => navigate('/admin/analytics')
     },
   ];
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
           return (
             <Card
               key={index}
-              className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 hover:shadow-xl transition-all cursor-pointer group"
+              className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 hover:shadow-xl transition-all cursor-pointer group"
               onClick={card.action}
             >
               <div className="flex items-start justify-between mb-4">
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-gray-900 mb-2">{card.value}</p>
               <p className="text-xs text-gray-500">{card.subtitle}</p>
               
-              <div className="mt-4 flex items-center text-terracotta-600 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="mt-4 flex items-center text-#6B4423 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                 View Details
                 <ArrowRight className="w-4 h-4 ml-1" />
               </div>
@@ -157,39 +157,39 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button
             onClick={() => navigate('/admin/users')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-sand-300 hover:bg-sand-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
           >
-            <Users className="w-6 h-6 text-terracotta-600" />
+            <Users className="w-6 h-6 text-#6B4423" />
             <span className="text-sm font-semibold">View All Users</span>
           </Button>
           <Button
             onClick={() => navigate('/admin/camps')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-sand-300 hover:bg-sand-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
           >
-            <Tent className="w-6 h-6 text-terracotta-600" />
+            <Tent className="w-6 h-6 text-#6B4423" />
             <span className="text-sm font-semibold">Manage Camps</span>
           </Button>
           <Button
             onClick={() => navigate('/admin/bookings')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-sand-300 hover:bg-sand-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
           >
-            <Calendar className="w-6 h-6 text-terracotta-600" />
+            <Calendar className="w-6 h-6 text-#6B4423" />
             <span className="text-sm font-semibold">View Bookings</span>
           </Button>
           <Button
             onClick={() => navigate('/admin/analytics')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-sand-300 hover:bg-sand-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
           >
-            <BarChart className="w-6 h-6 text-terracotta-600" />
+            <BarChart className="w-6 h-6 text-#6B4423" />
             <span className="text-sm font-semibold">Analytics</span>
           </Button>
         </div>
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bookings Trend */}
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Bookings Trend (Last 12 Months)</h3>
           {bookingTrendData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Revenue by Month */}
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Revenue by Month (BD)</h3>
           {bookingTrendData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -267,12 +267,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
         {recentActivity.length > 0 ? (
           <div className="space-y-4">
             {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-sand-50 transition-colors">
+              <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className={`w-2 h-2 rounded-full mt-2 ${
                   activity.type === 'user' ? 'bg-blue-500' :
                   activity.type === 'camp' ? 'bg-green-500' :

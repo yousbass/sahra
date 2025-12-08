@@ -219,7 +219,7 @@ export default function CampDetails() {
         const arboon = policy.arboonPercentage || 20;
         return {
           name: 'Partial Refundable',
-          icon: <Coins className="w-6 h-6 text-amber-600" />,
+          icon: <Coins className="w-6 h-6 text-[#FF8C42]" />,
           color: 'amber',
           description: t('cancelSelector.partialRefundable.description'),
           details: [
@@ -291,9 +291,9 @@ export default function CampDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">{t('campDetails.loading')}</p>
         </div>
       </div>
@@ -302,12 +302,12 @@ export default function CampDetails() {
 
   if (!camp) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 text-center shadow-xl">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 text-center shadow-xl">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('campDetails.notFound')}</h2>
           <Button
             onClick={() => navigate('/')}
-            className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold"
+            className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold"
           >
             {t('campDetails.backToSearch')}
           </Button>
@@ -352,7 +352,7 @@ export default function CampDetails() {
   const waterActivities = camp.waterActivities || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
       {/* Hero Image */}
       <div className="relative h-[38vh] sm:h-[50vh] md:h-[60vh]">
         <img
@@ -377,7 +377,7 @@ export default function CampDetails() {
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-3 mb-3">
-              <Badge className={`${isKashta ? 'bg-blue-600 hover:bg-blue-700' : 'bg-terracotta-600 hover:bg-terracotta-700'} text-white font-semibold px-3 py-1`}>
+              <Badge className={`${isKashta ? 'bg-blue-600 hover:bg-blue-700' : 'bg-#6B4423 hover:bg-#5A3820'} text-white font-semibold px-3 py-1`}>
                 {isKashta ? (
                   <>
                     <Waves className="w-4 h-4 mr-1" />
@@ -415,19 +415,19 @@ export default function CampDetails() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {!isActive && (
-              <Card className="bg-amber-50 border-amber-200 p-4 text-amber-900 font-medium">
+              <Card className="bg-orange-50 border-orange-200 p-4 text-amber-900 font-medium">
                 {t('reserve.bookingUnavailableDesc', { status: camp.status || 'pending' })}
               </Card>
             )}
             
             {/* Overview */}
-            <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Capacity */}
                 {(isKashta ? seatingCapacity : camp.maxGuests) && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
-                    <Users className="w-6 h-6 text-terracotta-600" />
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-terracotta-50 rounded-lg border-2 border-orange-300">
+                    <Users className="w-6 h-6 text-#6B4423" />
                     <div>
                       <p className="text-2xl font-bold text-gray-900">
                         {isKashta ? seatingCapacity : camp.maxGuests}
@@ -441,8 +441,8 @@ export default function CampDetails() {
                 
                 {/* Tents (Camp only) */}
                 {!isKashta && totalTents > 0 && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300">
-                    <Tent className="w-6 h-6 text-terracotta-600" />
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-terracotta-50 rounded-lg border-2 border-orange-300">
+                    <Tent className="w-6 h-6 text-#6B4423" />
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{totalTents}</p>
                       <p className="text-sm text-gray-700 font-medium">{t('campDetails.totalTents')}</p>
@@ -452,7 +452,7 @@ export default function CampDetails() {
                 
                 {/* Beachfront Access (Kashta only) */}
                 {isKashta && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-blue-50 rounded-lg border-2 border-sand-300">
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-blue-50 rounded-lg border-2 border-orange-300">
                     <Waves className="w-6 h-6 text-blue-600" />
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{beachfrontAccess ? '✓' : '✗'}</p>
@@ -463,7 +463,7 @@ export default function CampDetails() {
                 
                 {/* View Type (Kashta only) */}
                 {isKashta && viewType && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-blue-50 rounded-lg border-2 border-sand-300">
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-blue-50 rounded-lg border-2 border-orange-300">
                     <Eye className="w-6 h-6 text-blue-600" />
                     <div>
                       <p className="text-lg font-bold text-gray-900 capitalize">{viewType}</p>
@@ -474,7 +474,7 @@ export default function CampDetails() {
                 
                 {/* Shade Type (Kashta only) */}
                 {isKashta && shadeType && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-sand-50 to-blue-50 rounded-lg border-2 border-sand-300">
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-blue-50 rounded-lg border-2 border-orange-300">
                     <Umbrella className="w-6 h-6 text-blue-600" />
                     <div>
                       <p className="text-lg font-bold text-gray-900 capitalize">{shadeType}</p>
@@ -487,17 +487,17 @@ export default function CampDetails() {
               {/* Hours */}
               <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-5 h-5 text-terracotta-600" />
+                  <Clock className="w-5 h-5 text-#6B4423" />
                   <h3 className="text-lg font-bold text-gray-900">
                     {isKashta ? t('listingType.kashta.hours') : t('campDetails.campHours')}
                   </h3>
                 </div>
                 <div className="space-y-1">
                   <p className="text-gray-900 font-semibold">
-                    {t('campDetails.checkIn')} <span className="text-terracotta-600">{checkInTime}</span>
+                    {t('campDetails.checkIn')} <span className="text-#6B4423">{checkInTime}</span>
                   </p>
                   <p className="text-gray-900 font-semibold">
-                    {t('campDetails.checkOut')} <span className="text-terracotta-600">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
+                    {t('campDetails.checkOut')} <span className="text-#6B4423">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
                   </p>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">
@@ -507,20 +507,20 @@ export default function CampDetails() {
             </Card>
 
             {/* Description */}
-            <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.about')}</h2>
               <p className="text-gray-700 leading-relaxed font-medium">{camp.description}</p>
             </Card>
 
             {/* Water Activities (Kashta only) */}
             {isKashta && waterActivities.length > 0 && (
-              <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+              <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('listingType.kashta.waterActivities')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {waterActivities.map((activity, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-blue-50 to-sand-50 rounded-lg border-2 border-blue-200"
+                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-blue-50 to-orange-50 rounded-lg border-2 border-blue-200"
                     >
                       <Waves className="w-5 h-5 text-blue-600" />
                       <span className="text-sm font-semibold text-gray-900">{activity}</span>
@@ -531,7 +531,7 @@ export default function CampDetails() {
             )}
 
             {/* Cancellation Policy - UPDATED */}
-            <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
               <div className="flex items-center gap-3 mb-4">
                 {policyDetails.icon}
                 <h2 className="text-2xl font-bold text-gray-900">{t('campDetails.cancellationPolicy')}</h2>
@@ -543,7 +543,7 @@ export default function CampDetails() {
                     policyDetails.color === 'green' 
                       ? 'bg-green-100 text-green-800 border-green-300' 
                       : policyDetails.color === 'amber'
-                      ? 'bg-amber-100 text-amber-800 border-amber-300'
+                      ? 'bg-amber-100 text-amber-800 border-orange-300'
                       : policyDetails.color === 'blue'
                       ? 'bg-blue-100 text-blue-800 border-blue-300'
                       : 'bg-orange-100 text-orange-800 border-orange-300'
@@ -559,9 +559,9 @@ export default function CampDetails() {
 
               {/* Show عربون info if applicable */}
               {policyDetails.arboonPercentage > 0 && (
-                <div className="mb-4 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+                <div className="mb-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Coins className="w-5 h-5 text-amber-600" />
+                    <Coins className="w-5 h-5 text-[#FF8C42]" />
                     <h3 className="font-bold text-gray-900">
                       {t('cancelSelector.partialRefundable.arboonLabel')}
                     </h3>
@@ -580,14 +580,14 @@ export default function CampDetails() {
                       detail.color === 'green' 
                         ? 'bg-green-50 border-green-200' 
                         : detail.color === 'amber'
-                        ? 'bg-amber-50 border-amber-200'
+                        ? 'bg-orange-50 border-orange-200'
                         : 'bg-red-50 border-red-200'
                     }`}
                   >
                     {detail.color === 'green' ? (
                       <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                     ) : detail.color === 'amber' ? (
-                      <Clock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <Clock className="w-5 h-5 text-[#FF8C42] mt-0.5 flex-shrink-0" />
                     ) : (
                       <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                     )}
@@ -599,22 +599,22 @@ export default function CampDetails() {
                 ))}
               </div>
               
-              <p className="text-sm text-gray-600 font-medium pt-4 border-t border-sand-200 mt-4">
+              <p className="text-sm text-gray-600 font-medium pt-4 border-t border-orange-200 mt-4">
                 {t('campDetails.refundNote')}
               </p>
             </Card>
 
             {/* Amenities */}
-            <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('campDetails.amenities')}</h2>
               {camp.amenities && camp.amenities.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {camp.amenities.map((amenity, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-sand-50 to-terracotta-50 rounded-lg border-2 border-sand-300"
+                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-orange-50 to-terracotta-50 rounded-lg border-2 border-orange-300"
                     >
-                      <div className="text-terracotta-600">
+                      <div className="text-#6B4423">
                         {getAmenityIcon(amenity)}
                       </div>
                       <span className="text-sm font-semibold text-gray-900">{amenity}</span>
@@ -628,9 +628,9 @@ export default function CampDetails() {
 
             {/* Tent Details (Camp only) - REDESIGNED */}
             {!isKashta && tentDetails.length > 0 && (
-              <Card className="bg-white/95 backdrop-blur-sm border-sand-300 shadow-xl overflow-hidden">
+              <Card className="bg-white/95 backdrop-blur-sm border-orange-300 shadow-xl overflow-hidden">
                 {/* Header with gradient background */}
-                <div className="bg-gradient-to-r from-terracotta-500 via-terracotta-600 to-amber-600 p-6">
+                <div className="bg-gradient-to-r from-#8B5A3C via-#6B4423 to-[#FF8C42] p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -672,7 +672,7 @@ export default function CampDetails() {
                         : t('campDetails.tentTypes.generic', { defaultValue: 'Tent' });
 
                     const tentTypeColor = 
-                      tent.type === 'large' ? 'from-amber-500 to-orange-600' :
+                      tent.type === 'large' ? 'from-orange-500 to-orange-600' :
                       tent.type === 'small' ? 'from-blue-500 to-indigo-600' :
                       tent.type === 'entertainment' ? 'from-purple-500 to-pink-600' :
                       'from-gray-500 to-gray-600';
@@ -680,7 +680,7 @@ export default function CampDetails() {
                     return (
                       <div
                         key={tent.id || idx}
-                        className="group relative overflow-hidden rounded-xl border-2 border-sand-200 bg-gradient-to-br from-white via-sand-50 to-terracotta-50 hover:shadow-2xl hover:border-terracotta-300 transition-all duration-300"
+                        className="group relative overflow-hidden rounded-xl border-2 border-orange-200 bg-gradient-to-br from-white via-orange-50 to-terracotta-50 hover:shadow-2xl hover:border-orange-300 transition-all duration-300"
                       >
                         {/* Decorative gradient overlay */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-terracotta-200/30 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -704,7 +704,7 @@ export default function CampDetails() {
                               </div>
                             </div>
                             {features.length > 0 && (
-                              <Badge className="bg-gradient-to-r from-terracotta-500 to-amber-600 text-white border-0 px-3 py-1.5 font-bold shadow-md">
+                              <Badge className="bg-gradient-to-r from-#8B5A3C to-[#FF8C42] text-white border-0 px-3 py-1.5 font-bold shadow-md">
                                 <Sparkles className="w-3.5 h-3.5 mr-1" />
                                 Premium
                               </Badge>
@@ -717,9 +717,9 @@ export default function CampDetails() {
                               {features.map((feature, featureIdx) => (
                                 <div
                                   key={featureIdx}
-                                  className="flex items-center gap-2 p-2.5 bg-white/80 backdrop-blur-sm rounded-lg border border-sand-200 hover:border-terracotta-400 hover:shadow-lg hover:bg-sand-50 transition-all duration-200 group/feature"
+                                  className="flex items-center gap-2 p-2.5 bg-white/80 backdrop-blur-sm rounded-lg border border-orange-200 hover:border-terracotta-400 hover:shadow-lg hover:bg-orange-50 transition-all duration-200 group/feature"
                                 >
-                                  <div className="text-terracotta-600 group-hover/feature:scale-110 transition-transform duration-200">
+                                  <div className="text-#6B4423 group-hover/feature:scale-110 transition-transform duration-200">
                                     {feature.icon}
                                   </div>
                                   <span className="text-xs font-semibold text-gray-800">
@@ -732,7 +732,7 @@ export default function CampDetails() {
 
                           {/* Description */}
                           {tent.description && (
-                            <div className="mt-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-sand-200">
+                            <div className="mt-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-orange-200">
                               <p className="text-sm text-gray-700 leading-relaxed">
                                 {tent.description}
                               </p>
@@ -741,7 +741,7 @@ export default function CampDetails() {
 
                           {/* Empty state */}
                           {!tent.description && features.length === 0 && (
-                            <div className="p-4 bg-sand-50/50 rounded-lg border border-dashed border-sand-300">
+                            <div className="p-4 bg-orange-50/50 rounded-lg border border-dashed border-orange-300">
                               <p className="text-sm text-gray-500 text-center">
                                 {t('campDetails.tentFeatures.noDetails', { defaultValue: 'No details provided for this tent.' })}
                               </p>
@@ -762,7 +762,7 @@ export default function CampDetails() {
                 {user && canReview && (
                   <Button
                     onClick={() => setShowReviewForm(true)}
-                    className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                    className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820"
                   >
                     {t('campDetails.writeReview')}
                   </Button>
@@ -771,7 +771,7 @@ export default function CampDetails() {
                   <Button
                     onClick={() => navigate('/login')}
                     variant="outline"
-                    className="border-terracotta-500 text-terracotta-600 hover:bg-terracotta-50"
+                    className="border-#8B5A3C text-#6B4423 hover:bg-orange-50"
                   >
                     {t('campDetails.signInReview')}
                   </Button>
@@ -792,17 +792,17 @@ export default function CampDetails() {
 
           {/* Booking Card */}
           <div className="lg:col-span-1">
-            <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 sticky top-4 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 sticky top-4 shadow-xl">
               <div className="mb-6">
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-4xl font-bold text-terracotta-600">{camp.price}</span>
+                  <span className="text-4xl font-bold text-#6B4423">{camp.price}</span>
                   <span className="text-lg text-gray-700 font-medium">BD</span>
                 </div>
                 <p className="text-sm text-gray-600 font-medium">{t('campDetails.pricePerDay')}</p>
               </div>
 
               {(isKashta ? seatingCapacity : camp.maxGuests) && (
-                <div className="mb-4 p-3 bg-sand-50 rounded-lg border border-sand-300">
+                <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-300">
                   <p className="text-sm text-gray-900 font-semibold">
                     <Users className="w-4 h-4 inline mr-1" />
                     {isKashta 
@@ -816,12 +816,12 @@ export default function CampDetails() {
               <Button
                 onClick={handleReserve}
                 disabled={!isActive}
-                className="w-full h-14 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg mb-4"
+                className="w-full h-14 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-lg shadow-lg mb-4"
               >
                 {isActive ? t('campDetails.reserveNow') : t('campDetails.pendingApproval')}
               </Button>
 
-              <div className="space-y-3 pt-4 border-t border-sand-300">
+              <div className="space-y-3 pt-4 border-t border-orange-300">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-700 font-medium">Instant Confirmation</span>
                   <span className="text-green-600 font-semibold">✓</span>
@@ -830,7 +830,7 @@ export default function CampDetails() {
                   <span className="text-gray-700 font-medium">{policyDetails.name} Cancellation</span>
                   <span className={`font-semibold ${
                     policyDetails.color === 'green' ? 'text-green-600' : 
-                    policyDetails.color === 'amber' ? 'text-amber-600' :
+                    policyDetails.color === 'amber' ? 'text-[#FF8C42]' :
                     policyDetails.color === 'blue' ? 'text-blue-600' : 
                     'text-orange-600'
                   }`}>

@@ -57,7 +57,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-amber-200 shadow-sm">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-orange-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
@@ -65,10 +65,12 @@ export default function Header() {
             onClick={() => navigate('/')}
             className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg sm:text-xl">S</span>
-            </div>
-            <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-terracotta-600 to-amber-600 bg-clip-text text-transparent">
+            <img 
+              src="/assets/mukhymat-logo.svg" 
+              alt="MUKHYMAT" 
+              className="w-8 h-8 sm:w-10 sm:h-10"
+            />
+            <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#8B5A3C] to-[#FF8C42] bg-clip-text text-transparent">
               {t('header.brand')}
             </span>
           </button>
@@ -87,7 +89,7 @@ export default function Header() {
                       onClick={() => navigate('/admin')}
                       variant="outline"
                       size="sm"
-                      className="border-2 border-terracotta-500 text-terracotta-700 hover:bg-terracotta-50 font-semibold"
+                      className="border-2 border-[#8B5A3C] text-[#8B5A3C] hover:bg-orange-50 font-semibold"
                     >
                       <Shield className="w-4 h-4 ltr:mr-1.5 rtl:ml-1.5" />
                       <span className="hidden lg:inline">{t('header.admin')}</span>
@@ -98,7 +100,7 @@ export default function Header() {
                     onClick={() => navigate('/profile')}
                     variant="outline"
                     size="sm"
-                    className="border-2 border-amber-300 hover:bg-amber-50"
+                    className="border-2 border-orange-300 hover:bg-orange-50"
                   >
                     <User className="w-4 h-4 ltr:mr-1.5 rtl:ml-1.5" />
                     <span className="hidden lg:inline">{t('header.profile')}</span>
@@ -118,7 +120,7 @@ export default function Header() {
                 {/* Mobile Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="md:hidden">
-                    <Button variant="outline" size="sm" className="border-2 border-amber-300">
+                    <Button variant="outline" size="sm" className="border-2 border-orange-300">
                       <Menu className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -146,14 +148,14 @@ export default function Header() {
                   onClick={() => navigate('/signin')}
                   variant="outline"
                   size="sm"
-                  className="border-2 border-amber-300 hover:bg-amber-50 text-xs sm:text-sm px-2 sm:px-4"
+                  className="border-2 border-orange-300 hover:bg-orange-50 text-xs sm:text-sm px-2 sm:px-4"
                 >
                   {t('header.signIn')}
                 </Button>
                 <Button
                   onClick={() => navigate('/signup')}
                   size="sm"
-                  className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-xs sm:text-sm px-2 sm:px-4"
+                  className="bg-gradient-to-r from-[#8B5A3C] to-[#FF8C42] hover:from-[#6B4423] hover:to-[#E07A3C] text-white font-semibold text-xs sm:text-sm px-2 sm:px-4"
                 >
                   {t('header.signUp')}
                 </Button>

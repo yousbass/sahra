@@ -81,7 +81,7 @@ export function DateRangePicker({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-terracotta-600" />
+              <CalendarDays className="w-5 h-5 text-#6B4423" />
               Block Date Range
             </h3>
             <p className="text-sm text-gray-600 mt-1">

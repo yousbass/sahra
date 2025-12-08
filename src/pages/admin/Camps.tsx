@@ -154,7 +154,7 @@ export default function AdminCamps() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -170,7 +170,7 @@ export default function AdminCamps() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -178,12 +178,12 @@ export default function AdminCamps() {
               placeholder="Search by title, location, or host..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-sand-300 focus:border-terracotta-500"
+              className="pl-10 border-orange-300 focus:border-#8B5A3C"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -197,11 +197,11 @@ export default function AdminCamps() {
       </Card>
 
       {/* Camps Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-sand-50 border-sand-300">
+              <TableRow className="bg-orange-50 border-orange-300">
                 <TableHead className="font-bold text-gray-900">Camp</TableHead>
                 <TableHead className="font-bold text-gray-900">Host</TableHead>
                 <TableHead className="font-bold text-gray-900">Location</TableHead>
@@ -215,7 +215,7 @@ export default function AdminCamps() {
             </TableHeader>
             <TableBody>
               {filteredCamps.map((camp) => (
-                <TableRow key={camp.id} className="border-sand-200 hover:bg-sand-50">
+                <TableRow key={camp.id} className="border-orange-200 hover:bg-orange-50">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <img
@@ -243,7 +243,7 @@ export default function AdminCamps() {
                       {camp.location}
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold text-terracotta-600">
+                  <TableCell className="font-semibold text-#6B4423">
                     {camp.price} BD
                   </TableCell>
                   <TableCell>
@@ -276,7 +276,7 @@ export default function AdminCamps() {
                           setSelectedCamp(camp);
                           setShowCampDialog(true);
                         }}
-                        className="border-sand-300 hover:bg-sand-50"
+                        className="border-orange-300 hover:bg-orange-50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -329,7 +329,7 @@ export default function AdminCamps() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div>
                     <p className="text-sm text-gray-600">Price</p>
-                    <p className="text-xl font-bold text-terracotta-600">{selectedCamp.price} BD</p>
+                    <p className="text-xl font-bold text-#6B4423">{selectedCamp.price} BD</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Capacity</p>
@@ -372,7 +372,7 @@ export default function AdminCamps() {
                       <p className="text-sm text-gray-600 mb-2">Amenities</p>
                       <div className="flex flex-wrap gap-2">
                         {selectedCamp.amenities.map((amenity, index) => (
-                          <Badge key={index} variant="secondary" className="bg-sand-100 text-sand-900">
+                          <Badge key={index} variant="secondary" className="bg-orange-100 text-sand-900">
                             {amenity}
                           </Badge>
                         ))}
@@ -387,7 +387,7 @@ export default function AdminCamps() {
                 <Button
                   variant="outline"
                   onClick={() => window.open(`/camp/${selectedCamp.id}`, '_blank')}
-                  className="border-2 border-sand-300 hover:bg-sand-50"
+                  className="border-2 border-orange-300 hover:bg-orange-50"
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Public Page

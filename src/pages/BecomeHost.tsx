@@ -163,17 +163,17 @@ export default function BecomeHost() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
       </div>
     );
   }
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
         <div className="max-w-2xl mx-auto pt-8 pb-20">
-          <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 shadow-xl text-center">
+          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 shadow-xl text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
@@ -191,13 +191,13 @@ export default function BecomeHost() {
               <Button
                 onClick={() => navigate('/')}
                 variant="outline"
-                className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50"
+                className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50"
               >
                 {t('becomeHost.backHome') || 'Back to Home'}
               </Button>
               <Button
                 onClick={() => navigate('/host')}
-                className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white"
+                className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white"
               >
                 {t('host.createTitle') || 'Create Your First Listing'}
               </Button>
@@ -209,18 +209,18 @@ export default function BecomeHost() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-2xl mx-auto pt-8 pb-20">
         <Button
           onClick={() => navigate('/profile')}
           variant="ghost"
-          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100"
+          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('becomeHost.back') || 'Back'}
         </Button>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 shadow-xl">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 shadow-xl">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {t('becomeHost.title') || 'Become a Host'}
@@ -235,12 +235,12 @@ export default function BecomeHost() {
             {/* Phone Number */}
             <div className="space-y-2">
               <Label htmlFor="phone" className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-terracotta-600" />
+                <Phone className="w-4 h-4 text-#6B4423" />
                 {t('becomeHost.phoneNumber') || 'Phone Number'}
                 <span className="text-red-500">*</span>
               </Label>
               <div className="flex gap-2">
-                <div className="flex items-center bg-sand-50 border border-sand-300 rounded-lg px-3">
+                <div className="flex items-center bg-orange-50 border border-orange-300 rounded-lg px-3">
                   <span className="text-gray-700 font-medium">+973</span>
                 </div>
                 <Input
@@ -255,7 +255,7 @@ export default function BecomeHost() {
                   maxLength={8}
                   required
                   disabled={phoneVerified}
-                  className="flex-1 border-sand-300 focus:border-terracotta-500"
+                  className="flex-1 border-orange-300 focus:border-#8B5A3C"
                 />
                 <Button
                   type="button"
@@ -263,7 +263,7 @@ export default function BecomeHost() {
                   disabled={phoneVerified || !phoneNumber || phoneNumber.length !== 8}
                   className={phoneVerified 
                     ? "bg-green-600 hover:bg-green-700 text-white" 
-                    : "bg-terracotta-600 hover:bg-terracotta-700 text-white"
+                    : "bg-#6B4423 hover:bg-#5A3820 text-white"
                   }
                 >
                   {phoneVerified ? (
@@ -284,7 +284,7 @@ export default function BecomeHost() {
             {/* CPR Number */}
             <div className="space-y-2">
               <Label htmlFor="cpr" className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-terracotta-600" />
+                <CreditCard className="w-4 h-4 text-#6B4423" />
                 {t('becomeHost.cprNumber') || 'CPR Number'}
                 <span className="text-red-500">*</span>
               </Label>
@@ -296,7 +296,7 @@ export default function BecomeHost() {
                 onChange={(e) => setCprNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
                 maxLength={9}
                 required
-                className="border-sand-300 focus:border-terracotta-500"
+                className="border-orange-300 focus:border-#8B5A3C"
               />
               <p className="text-xs text-gray-600">
                 {t('becomeHost.cprHint') || 'Enter your 9-digit Bahrain CPR number'}
@@ -323,7 +323,7 @@ export default function BecomeHost() {
             <Button
               type="submit"
               disabled={submitting || !phoneVerified || !phoneNumber || !cprNumber}
-              className="w-full h-12 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg"
+              className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-lg shadow-lg"
             >
               {submitting ? (
                 <>

@@ -188,7 +188,7 @@ export default function AdminRefunds() {
         );
       case 'pending':
         return (
-          <Badge className="bg-amber-100 text-amber-900 border-amber-300">
+          <Badge className="bg-amber-100 text-amber-900 border-orange-300">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
@@ -221,7 +221,7 @@ export default function AdminRefunds() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -238,7 +238,7 @@ export default function AdminRefunds() {
           <Button
             onClick={loadRefunds}
             variant="outline"
-            className="border-2 border-sand-300 hover:bg-sand-50"
+            className="border-2 border-orange-300 hover:bg-orange-50"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -246,7 +246,7 @@ export default function AdminRefunds() {
           <Button
             onClick={exportToCSV}
             variant="outline"
-            className="border-2 border-sand-300 hover:bg-sand-50"
+            className="border-2 border-orange-300 hover:bg-orange-50"
             disabled={filteredRefunds.length === 0}
           >
             <Download className="w-4 h-4 mr-2" />
@@ -257,7 +257,7 @@ export default function AdminRefunds() {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <DollarSign className="w-5 h-5 text-blue-600" />
@@ -269,10 +269,10 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-amber-100 rounded-lg">
-              <Clock className="w-5 h-5 text-amber-600" />
+              <Clock className="w-5 h-5 text-[#FF8C42]" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Pending</p>
@@ -281,7 +281,7 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <RefreshCw className="w-5 h-5 text-blue-600" />
@@ -293,7 +293,7 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <CheckCircle className="w-5 h-5 text-green-600" />
@@ -305,7 +305,7 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 rounded-lg">
               <XCircle className="w-5 h-5 text-red-600" />
@@ -319,7 +319,7 @@ export default function AdminRefunds() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -327,12 +327,12 @@ export default function AdminRefunds() {
               placeholder="Search by refund ID, booking ID, or guest ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-sand-300 focus:border-terracotta-500"
+              className="pl-10 border-orange-300 focus:border-#8B5A3C"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -347,11 +347,11 @@ export default function AdminRefunds() {
       </Card>
 
       {/* Refunds Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-sand-50 border-sand-300">
+              <TableRow className="bg-orange-50 border-orange-300">
                 <TableHead className="font-bold text-gray-900">Refund ID</TableHead>
                 <TableHead className="font-bold text-gray-900">Booking ID</TableHead>
                 <TableHead className="font-bold text-gray-900">Guest ID</TableHead>
@@ -363,7 +363,7 @@ export default function AdminRefunds() {
             </TableHeader>
             <TableBody>
               {filteredRefunds.map((refund) => (
-                <TableRow key={refund.id} className="border-sand-200 hover:bg-sand-50">
+                <TableRow key={refund.id} className="border-orange-200 hover:bg-orange-50">
                   <TableCell className="font-mono text-sm text-gray-700">
                     {refund.id.substring(0, 8)}...
                   </TableCell>
@@ -373,7 +373,7 @@ export default function AdminRefunds() {
                   <TableCell className="font-mono text-sm text-gray-700">
                     {refund.guestId.substring(0, 8)}...
                   </TableCell>
-                  <TableCell className="font-semibold text-terracotta-600">
+                  <TableCell className="font-semibold text-#6B4423">
                     {refund.amount.toFixed(2)} BD
                   </TableCell>
                   <TableCell>{getStatusBadge(refund.status)}</TableCell>
@@ -390,7 +390,7 @@ export default function AdminRefunds() {
                           setAdminNotes(refund.adminNotes || '');
                           setShowRefundDialog(true);
                         }}
-                        className="border-sand-300 hover:bg-sand-50"
+                        className="border-orange-300 hover:bg-orange-50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -489,12 +489,12 @@ export default function AdminRefunds() {
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   rows={3}
-                  className="border-sand-300 focus:border-terracotta-500 resize-none"
+                  className="border-orange-300 focus:border-#8B5A3C resize-none"
                 />
               </div>
 
               {/* Status Actions */}
-              <div className="border-t border-sand-300 pt-4">
+              <div className="border-t border-orange-300 pt-4">
                 <p className="text-sm text-gray-600 mb-3 font-semibold">Update Status</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
@@ -520,7 +520,7 @@ export default function AdminRefunds() {
                     variant="outline"
                     onClick={() => handleUpdateStatus(selectedRefund.id, 'pending', adminNotes)}
                     disabled={actionLoading || selectedRefund.status === 'pending'}
-                    className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                    className="border-orange-300 text-amber-700 hover:bg-orange-50"
                   >
                     <Clock className="w-4 h-4 mr-1" />
                     Set Pending
@@ -544,7 +544,7 @@ export default function AdminRefunds() {
             <Button
               variant="outline"
               onClick={() => setShowRefundDialog(false)}
-              className="border-2 border-sand-300"
+              className="border-2 border-orange-300"
             >
               Close
             </Button>

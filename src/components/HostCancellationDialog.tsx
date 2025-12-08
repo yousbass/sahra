@@ -127,9 +127,9 @@ export function HostCancellationDialog({
 
         <div className="space-y-6 py-4">
           {/* Booking Details */}
-          <div className="bg-sand-50 border-2 border-sand-300 rounded-lg p-4">
+          <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-terracotta-600" />
+              <Calendar className="w-5 h-5 text-#6B4423" />
               {t('hostCancellation.bookingDetails')}
             </h3>
             <div className="space-y-2 text-sm">
@@ -153,9 +153,9 @@ export function HostCancellationDialog({
                 <span className="text-gray-700 font-medium">{t('hostCancellation.guests')}</span>
                 <span className="text-gray-900 font-bold">{booking.numberOfGuests}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-sand-300">
+              <div className="flex justify-between pt-2 border-t border-orange-300">
                 <span className="text-gray-900 font-bold">{t('hostCancellation.bookingAmount')}</span>
-                <span className="text-terracotta-600 font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
+                <span className="text-#6B4423 font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
               </div>
             </div>
           </div>
@@ -212,9 +212,9 @@ export function HostCancellationDialog({
           </div>
 
           {/* Warning */}
-          <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4">
+          <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-[#FF8C42] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="font-semibold text-gray-900 mb-1">{t('hostCancellation.importantNotice')}</p>
                 <p className="text-sm text-gray-700">
@@ -230,7 +230,7 @@ export function HostCancellationDialog({
               {t('hostCancellation.reasonLabel')} <span className="text-red-500">*</span>
             </Label>
             <Select value={selectedReason} onValueChange={setSelectedReason}>
-              <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+              <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
                 <SelectValue placeholder={t('hostCancellation.reasonPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -247,7 +247,7 @@ export function HostCancellationDialog({
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
                 rows={3}
-                className="border-sand-300 focus:border-terracotta-500 resize-none"
+                className="border-orange-300 focus:border-#8B5A3C resize-none"
               />
             )}
             
@@ -263,7 +263,7 @@ export function HostCancellationDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={cancelling}
-            className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+            className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
           >
             {t('hostCancellation.keepBooking')}
           </Button>

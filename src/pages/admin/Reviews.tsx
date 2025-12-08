@@ -170,7 +170,7 @@ export default function AdminReviews() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -186,7 +186,7 @@ export default function AdminReviews() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -194,12 +194,12 @@ export default function AdminReviews() {
               placeholder="Search by user or review text..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-sand-300 focus:border-terracotta-500"
+              className="pl-10 border-orange-300 focus:border-#8B5A3C"
             />
           </div>
 
           <Select value={ratingFilter} onValueChange={setRatingFilter}>
-            <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
               <SelectValue placeholder="Filter by rating" />
             </SelectTrigger>
             <SelectContent>
@@ -213,7 +213,7 @@ export default function AdminReviews() {
           </Select>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-sand-300 focus:border-terracotta-500">
+            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -226,11 +226,11 @@ export default function AdminReviews() {
       </Card>
 
       {/* Reviews Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-sand-50 border-sand-300">
+              <TableRow className="bg-orange-50 border-orange-300">
                 <TableHead className="font-bold text-gray-900">User</TableHead>
                 <TableHead className="font-bold text-gray-900">Camp ID</TableHead>
                 <TableHead className="font-bold text-gray-900">Rating</TableHead>
@@ -243,10 +243,10 @@ export default function AdminReviews() {
             </TableHeader>
             <TableBody>
               {filteredReviews.map((review) => (
-                <TableRow key={review.id} className="border-sand-200 hover:bg-sand-50">
+                <TableRow key={review.id} className="border-orange-200 hover:bg-orange-50">
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-terracotta-500 to-terracotta-600 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center">
                         <span className="text-white font-semibold text-sm">
                           {review.userName.charAt(0).toUpperCase()}
                         </span>
@@ -287,7 +287,7 @@ export default function AdminReviews() {
                           setSelectedReview(review);
                           setShowReviewDialog(true);
                         }}
-                        className="border-sand-300 hover:bg-sand-50"
+                        className="border-orange-300 hover:bg-orange-50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -317,7 +317,7 @@ export default function AdminReviews() {
             <div className="space-y-6">
               {/* User Info */}
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-terracotta-500 to-terracotta-600 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center">
                   <span className="text-white font-bold text-xl">
                     {selectedReview.userName.charAt(0).toUpperCase()}
                   </span>
@@ -362,7 +362,7 @@ export default function AdminReviews() {
               {/* Review Text */}
               <div>
                 <p className="text-sm text-gray-600 mb-2">Review</p>
-                <div className="p-4 bg-sand-50 rounded-lg border border-sand-300">
+                <div className="p-4 bg-orange-50 rounded-lg border border-orange-300">
                   <p className="text-gray-900">{selectedReview.reviewText}</p>
                 </div>
               </div>
@@ -386,7 +386,7 @@ export default function AdminReviews() {
                     value={flagReason}
                     onChange={(e) => setFlagReason(e.target.value)}
                     rows={3}
-                    className="border-sand-300 focus:border-terracotta-500 mb-2"
+                    className="border-orange-300 focus:border-#8B5A3C mb-2"
                   />
                 </div>
               )}
@@ -398,7 +398,7 @@ export default function AdminReviews() {
                     variant="outline"
                     onClick={() => handleFlagReview(selectedReview.id, flagReason)}
                     disabled={actionLoading || !flagReason.trim()}
-                    className="border-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+                    className="border-2 border-orange-300 text-amber-700 hover:bg-orange-50"
                   >
                     <Flag className="w-4 h-4 mr-2" />
                     Flag Review

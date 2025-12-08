@@ -136,9 +136,9 @@ export function CancellationDialog({
 
         <div className="space-y-6 py-4">
           {/* Booking Details */}
-          <div className="bg-sand-50 border-2 border-sand-300 rounded-lg p-4">
+          <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-terracotta-600" />
+              <Calendar className="w-5 h-5 text-#6B4423" />
               Booking Details
             </h3>
             <div className="space-y-2 text-sm">
@@ -162,9 +162,9 @@ export function CancellationDialog({
                 <span className="text-gray-700 font-medium">Guests:</span>
                 <span className="text-gray-900 font-bold">{booking.numberOfGuests}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-sand-300">
+              <div className="flex justify-between pt-2 border-t border-orange-300">
                 <span className="text-gray-900 font-bold">Total Paid:</span>
-                <span className="text-terracotta-600 font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
+                <span className="text-#6B4423 font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
               </div>
             </div>
           </div>
@@ -225,9 +225,9 @@ export function CancellationDialog({
           </div>
 
           {/* Warning */}
-          <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4">
+          <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-[#FF8C42] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="font-semibold text-gray-900 mb-1">Important Notice</p>
                 <p className="text-sm text-gray-700">
@@ -248,7 +248,7 @@ export function CancellationDialog({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
-              className="border-sand-300 focus:border-terracotta-500 resize-none"
+              className="border-orange-300 focus:border-#8B5A3C resize-none"
             />
             <p className="text-xs text-gray-600">
               Your feedback helps us improve our service
@@ -262,7 +262,7 @@ export function CancellationDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={cancelling}
-            className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+            className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
           >
             Keep Booking
           </Button>

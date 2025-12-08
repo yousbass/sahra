@@ -123,7 +123,7 @@ export default function AdminAnalytics() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -132,7 +132,7 @@ export default function AdminAnalytics() {
     return (
       <div className="text-center py-20">
         <p className="text-gray-600 mb-4">{error || 'Failed to load analytics'}</p>
-        <Button onClick={loadAnalytics} className="bg-terracotta-600 hover:bg-terracotta-700">
+        <Button onClick={loadAnalytics} className="bg-#6B4423 hover:bg-#5A3820">
           Retry
         </Button>
       </div>
@@ -149,7 +149,7 @@ export default function AdminAnalytics() {
         </div>
         <div className="flex gap-2">
           <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-[180px] border-sand-300">
+            <SelectTrigger className="w-[180px] border-orange-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -162,7 +162,7 @@ export default function AdminAnalytics() {
           <Button
             onClick={exportData}
             variant="outline"
-            className="border-2 border-sand-300 hover:bg-sand-50"
+            className="border-2 border-orange-300 hover:bg-orange-50"
           >
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -172,7 +172,7 @@ export default function AdminAnalytics() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
               <Users className="w-6 h-6 text-white" />
@@ -184,9 +184,9 @@ export default function AdminAnalytics() {
           <p className="text-sm text-gray-600 mt-1">{stats.totalHosts} hosts</p>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-terracotta-500 to-terracotta-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center">
               <DollarSign className="w-6 h-6 text-white" />
             </div>
             <TrendingUp className="w-5 h-5 text-green-600" />
@@ -196,7 +196,7 @@ export default function AdminAnalytics() {
           <p className="text-sm text-gray-600 mt-1">{stats.monthlyRevenue.toFixed(0)} BD this month</p>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
               <Star className="w-6 h-6 text-white" />
@@ -208,7 +208,7 @@ export default function AdminAnalytics() {
           <p className="text-sm text-gray-600 mt-1">{stats.totalReviews} reviews</p>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-white" />
@@ -224,7 +224,7 @@ export default function AdminAnalytics() {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Trend */}
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Revenue Trend (Last 12 Months)</h3>
           {revenueData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
@@ -256,7 +256,7 @@ export default function AdminAnalytics() {
         </Card>
 
         {/* User Growth */}
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">User Growth (Last 12 Months)</h3>
           {userGrowthData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
@@ -287,7 +287,7 @@ export default function AdminAnalytics() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Booking Status Distribution */}
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Booking Status Distribution</h3>
           {bookingStatusData.length > 0 && bookingStatusData.some(d => d.value > 0) ? (
             <ResponsiveContainer width="100%" height={300}>
@@ -318,13 +318,13 @@ export default function AdminAnalytics() {
         </Card>
 
         {/* Top Performing Camps */}
-        <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Top Performing Camps</h3>
           {popularCamps.length > 0 ? (
             <div className="space-y-3 max-h-[300px] overflow-y-auto">
               {popularCamps.map((camp, index) => (
-                <div key={camp.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-sand-50 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-terracotta-500 to-terracotta-600 flex items-center justify-center flex-shrink-0">
+                <div key={camp.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-sm">{index + 1}</span>
                   </div>
                   <img
@@ -343,7 +343,7 @@ export default function AdminAnalytics() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-terracotta-600">{camp.pricePerNight} BD</p>
+                    <p className="font-bold text-#6B4423">{camp.pricePerNight} BD</p>
                   </div>
                 </div>
               ))}
@@ -357,7 +357,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Additional Stats */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Platform Statistics</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>

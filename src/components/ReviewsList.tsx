@@ -59,7 +59,7 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
   if (loading) {
     return (
       <Card className="p-8 text-center">
-        <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin mx-auto mb-2" />
+        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin mx-auto mb-2" />
         <p className="text-gray-600">Loading reviews...</p>
       </Card>
     );
@@ -72,7 +72,7 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
         <Button
           onClick={loadReviews}
           variant="outline"
-          className="border-terracotta-500 text-terracotta-600 hover:bg-terracotta-50"
+          className="border-#8B5A3C text-#6B4423 hover:bg-orange-50"
         >
           Try Again
         </Button>
@@ -106,7 +106,7 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
             <div className="flex items-start gap-4 mb-4">
               <Avatar className="w-12 h-12">
                 <AvatarImage src={review.userPhoto} alt={review.userName} />
-                <AvatarFallback className="bg-terracotta-100 text-terracotta-700 font-semibold">
+                <AvatarFallback className="bg-terracotta-100 text-#5A3820 font-semibold">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
@@ -134,8 +134,8 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
                 disabled={hasVoted || !currentUserId}
                 className={`gap-2 ${
                   hasVoted
-                    ? 'text-terracotta-600'
-                    : 'text-gray-600 hover:text-terracotta-600'
+                    ? 'text-#6B4423'
+                    : 'text-gray-600 hover:text-#6B4423'
                 }`}
               >
                 <ThumbsUp className={`w-4 h-4 ${hasVoted ? 'fill-current' : ''}`} />

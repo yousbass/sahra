@@ -136,14 +136,14 @@ export function CustomCalendar({
       classes.push('bg-transparent text-gray-300 border border-gray-200 cursor-not-allowed');
       classes.push('hover:scale-100');
     } else if (isDateRangeStart(date) || isDateRangeEnd(date)) {
-      classes.push('bg-terracotta-600 text-white font-semibold shadow-md');
-      classes.push('hover:bg-terracotta-700 hover:scale-105');
+      classes.push('bg-#6B4423 text-white font-semibold shadow-md');
+      classes.push('hover:bg-#5A3820 hover:scale-105');
     } else if (isDateInRange(date)) {
-      classes.push('bg-orange-50 text-terracotta-700 border border-terracotta-100');
+      classes.push('bg-orange-50 text-#5A3820 border border-terracotta-100');
       classes.push('hover:bg-orange-100 hover:scale-105');
     } else if (isDateSelected(date)) {
-      classes.push('bg-terracotta-600 text-white font-semibold shadow-md');
-      classes.push('hover:bg-terracotta-700 hover:scale-105');
+      classes.push('bg-#6B4423 text-white font-semibold shadow-md');
+      classes.push('hover:bg-#5A3820 hover:scale-105');
     } else if (isToday(date)) {
       classes.push('ring-2 ring-terracotta-300 ring-inset font-semibold');
       classes.push('hover:bg-gray-100 hover:scale-105');

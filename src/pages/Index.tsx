@@ -257,9 +257,9 @@ export default function Index() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium text-lg">
             {filters.bookingDate ? t('home.checkingAvailability') : t('home.loadingCamps')}
           </p>
@@ -269,9 +269,9 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
       {/* Hero Section - Simplified */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-terracotta-500 via-terracotta-600 to-terracotta-700 text-white">
+      <div className="relative overflow-hidden bg-gradient-to-br from-#8B5A3C via-#6B4423 to-#5A3820 text-white">
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -289,9 +289,9 @@ export default function Index() {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
               {t('home.heroTitleTop')}
-              <span className="block text-sand-100 mt-2">{t('home.heroTitleBottom')}</span>
+              <span className="block text-orange-100 mt-2">{t('home.heroTitleBottom')}</span>
             </h1>
-            <p className="text-lg sm:text-xl text-sand-100 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700">
+            <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700">
               {t('home.heroSubtitle')}
             </p>
           </div>
@@ -299,7 +299,7 @@ export default function Index() {
       </div>
 
       {/* Search & Filter Bar - NEW PROMINENT SECTION */}
-      <div className="relative z-40 bg-white shadow-lg border-b-2 border-sand-200">
+      <div className="relative z-40 bg-white shadow-lg border-b-2 border-orange-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Listing Type Selector */}
           <div className="mb-6">
@@ -324,7 +324,7 @@ export default function Index() {
                 placeholder={t('home.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-14 h-14 border-2 border-sand-300 focus:border-terracotta-500 rounded-xl text-lg text-gray-900 placeholder:text-gray-400"
+                className="pl-14 h-14 border-2 border-orange-300 focus:border-#8B5A3C rounded-xl text-lg text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -337,13 +337,13 @@ export default function Index() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-12 px-4 border-2 border-sand-300 hover:border-terracotta-400 hover:bg-terracotta-50 rounded-xl font-semibold text-gray-900"
+                  className="h-12 px-4 border-2 border-orange-300 hover:border-terracotta-400 hover:bg-orange-50 rounded-xl font-semibold text-gray-900"
                 >
-                  <CalendarIcon className="mr-2 h-5 w-5 text-terracotta-600" />
+                  <CalendarIcon className="mr-2 h-5 w-5 text-#6B4423" />
                   {filters.bookingDate ? format(filters.bookingDate, 'MMM d, yyyy') : t('home.datePlaceholder')}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="p-2 border-2 border-sand-200 rounded-2xl shadow-xl w-auto" align="start">
+              <PopoverContent className="p-2 border-2 border-orange-200 rounded-2xl shadow-xl w-auto" align="start">
                 <Calendar
                   mode="single"
                   selected={filters.bookingDate}
@@ -360,7 +360,7 @@ export default function Index() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-terracotta-600 hover:bg-terracotta-50"
+                    className="text-#6B4423 hover:bg-orange-50"
                     onClick={() => handleBookingDateChange(undefined)}
                   >
                     {t('home.clear')}
@@ -374,8 +374,8 @@ export default function Index() {
               value={filters.minGuests.toString()} 
               onValueChange={(value) => setFilters({ ...filters, minGuests: parseInt(value) })}
             >
-              <SelectTrigger className="h-12 w-40 border-2 border-sand-300 rounded-xl font-semibold">
-                <Users className="w-5 h-5 mr-2 text-terracotta-600" />
+              <SelectTrigger className="h-12 w-40 border-2 border-orange-300 rounded-xl font-semibold">
+                <Users className="w-5 h-5 mr-2 text-#6B4423" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -390,13 +390,13 @@ export default function Index() {
             {/* Advanced Filters Button - Desktop */}
             <Button
               variant="outline"
-              className="hidden lg:flex h-12 px-4 border-2 border-sand-300 hover:bg-sand-50 rounded-xl font-semibold"
+              className="hidden lg:flex h-12 px-4 border-2 border-orange-300 hover:bg-orange-50 rounded-xl font-semibold"
               onClick={() => setShowMobileFilters(true)}
             >
               <SlidersHorizontal className="w-5 h-5 mr-2" />
               {t('home.filters')}
               {activeFilterCount > 0 && (
-                <Badge className="ml-2 bg-terracotta-600 text-white">
+                <Badge className="ml-2 bg-#6B4423 text-white">
                   {activeFilterCount}
                 </Badge>
               )}
@@ -407,12 +407,12 @@ export default function Index() {
               <SheetTrigger asChild>
                 <Button 
                   variant="outline" 
-                  className="lg:hidden h-12 px-4 border-2 border-sand-300 hover:bg-sand-50 rounded-xl font-semibold"
+                  className="lg:hidden h-12 px-4 border-2 border-orange-300 hover:bg-orange-50 rounded-xl font-semibold"
                 >
                   <SlidersHorizontal className="w-5 h-5 mr-2" />
                   {t('home.filters')}
                   {activeFilterCount > 0 && (
-                    <Badge className="ml-2 bg-terracotta-600 text-white">
+                    <Badge className="ml-2 bg-#6B4423 text-white">
                       {activeFilterCount}
                     </Badge>
                   )}
@@ -434,7 +434,7 @@ export default function Index() {
             {/* Search Button */}
             <Button 
               onClick={() => loadCamps()}
-              className="h-12 px-6 bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="h-12 px-6 bg-#6B4423 hover:bg-#5A3820 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Search className="w-5 h-5 mr-2" />
               {t('home.searchButton')}
@@ -449,7 +449,7 @@ export default function Index() {
               {filters.listingType && filters.listingType !== 'all' && (
                 <Badge 
                   variant="secondary" 
-                  className="h-8 px-3 bg-terracotta-100 text-terracotta-900 border border-terracotta-300 cursor-pointer hover:bg-terracotta-200"
+                  className="h-8 px-3 bg-terracotta-100 text-terracotta-900 border border-orange-300 cursor-pointer hover:bg-terracotta-200"
                   onClick={() => removeFilter('listingType')}
                 >
                   {filters.listingType === 'camp' ? '🏕️ Camp' : '🏖️ Kashta'}
@@ -545,7 +545,7 @@ export default function Index() {
           {/* Results Section */}
           <div className="flex-1">
             {/* Results Header */}
-            <div className="bg-white rounded-xl shadow-md border-2 border-sand-200 p-6 mb-6">
+            <div className="bg-white rounded-xl shadow-md border-2 border-orange-200 p-6 mb-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">
@@ -568,7 +568,7 @@ export default function Index() {
                 
                 <div className="flex items-center gap-3">
                   <Select value={filters.sortBy} onValueChange={handleSortChange}>
-                    <SelectTrigger className="w-48 h-11 border-2 border-sand-300 rounded-xl font-semibold">
+                    <SelectTrigger className="w-48 h-11 border-2 border-orange-300 rounded-xl font-semibold">
                       <SelectValue placeholder={t('home.sortBy')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -583,7 +583,7 @@ export default function Index() {
                     <Button
                       variant={viewMode === 'grid' ? 'default' : 'outline'}
                       size="icon"
-                      className={viewMode === 'grid' ? 'bg-terracotta-600 hover:bg-terracotta-700' : 'border-2 border-sand-300'}
+                      className={viewMode === 'grid' ? 'bg-#6B4423 hover:bg-#5A3820' : 'border-2 border-orange-300'}
                       onClick={() => setViewMode('grid')}
                     >
                       <Grid3x3 className="w-5 h-5" />
@@ -591,7 +591,7 @@ export default function Index() {
                     <Button
                       variant={viewMode === 'list' ? 'default' : 'outline'}
                       size="icon"
-                      className={viewMode === 'list' ? 'bg-terracotta-600 hover:bg-terracotta-700' : 'border-2 border-sand-300'}
+                      className={viewMode === 'list' ? 'bg-#6B4423 hover:bg-#5A3820' : 'border-2 border-orange-300'}
                       onClick={() => setViewMode('list')}
                     >
                       <List className="w-5 h-5" />
@@ -603,7 +603,7 @@ export default function Index() {
 
             {/* Listings Grid/List */}
             {filteredCamps.length === 0 ? (
-              <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-sand-200">
+              <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-orange-200">
                 {selectedListingType === 'kashta' ? (
                   <Waves className="w-20 h-20 text-gray-400 mx-auto mb-4" />
                 ) : (
@@ -618,7 +618,7 @@ export default function Index() {
                 <Button
                   onClick={clearAllFilters}
                   size="lg"
-                  className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold h-12 px-8"
+                  className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold h-12 px-8"
                 >
                   {t('home.clearAll')}
                 </Button>
@@ -668,7 +668,7 @@ export default function Index() {
                   return (
                     <Card
                       key={camp.id}
-                      className="group cursor-pointer overflow-hidden bg-white border-2 border-sand-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                      className="group cursor-pointer overflow-hidden bg-white border-2 border-orange-200 hover:border-terracotta-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                       onClick={() => handleCampClick(camp.id)}
                     >
                       {/* Camp Image */}
@@ -685,7 +685,7 @@ export default function Index() {
                           <RefundPolicyBadge policy={camp.refundPolicy} />
                         </div>
                         <div className="absolute top-4 left-4">
-                          <Badge className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold px-3 py-1">
+                          <Badge className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold px-3 py-1">
                             <Tent className="w-4 h-4 mr-1" />
                             {t('listingType.camp.badge')}
                           </Badge>
@@ -700,7 +700,7 @@ export default function Index() {
 
                       {/* Camp Details */}
                       <div className="p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-terracotta-600 transition-colors">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-#6B4423 transition-colors">
                           {camp.title}
                         </h3>
 
@@ -715,26 +715,26 @@ export default function Index() {
                         {/* Camp Info */}
                         <div className="flex items-center gap-6 text-base text-gray-700 mb-5 font-medium">
                           <div className="flex items-center">
-                            <Users className="w-5 h-5 mr-2 text-terracotta-600" />
+                            <Users className="w-5 h-5 mr-2 text-#6B4423" />
                             Up to {camp.maxGuests} guests
                           </div>
                           <div className="flex items-center">
-                            <Tent className="w-5 h-5 mr-2 text-terracotta-600" />
+                            <Tent className="w-5 h-5 mr-2 text-#6B4423" />
                             {getTotalTents(camp.tentConfiguration)} tents
                           </div>
                         </div>
 
                         {/* Price */}
-                        <div className="flex items-center justify-between pt-5 border-t-2 border-sand-200">
+                        <div className="flex items-center justify-between pt-5 border-t-2 border-orange-200">
                           <div>
-                            <span className="text-3xl font-bold text-terracotta-600">
+                            <span className="text-3xl font-bold text-#6B4423">
                               {camp.price} BD
                             </span>
                             <span className="text-base text-gray-600 ml-2 font-medium">{t('home.perDay')}</span>
                           </div>
                           <Button 
                             size="lg"
-                            className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold h-11 px-6"
+                            className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold h-11 px-6"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCampClick(camp.id);

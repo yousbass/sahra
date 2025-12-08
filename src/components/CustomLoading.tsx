@@ -28,7 +28,7 @@ export default function CustomLoading({
   };
 
   const containerClasses = fullScreen
-    ? 'fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200'
+    ? 'fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200'
     : 'flex items-center justify-center p-8';
 
   return (
@@ -112,9 +112,9 @@ export default function CustomLoading({
             {message || t('loading.default', { defaultValue: 'Loading...' })}
           </p>
           <div className="flex justify-center gap-1 mt-3">
-            <span className="w-2 h-2 bg-terracotta-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-2 h-2 bg-terracotta-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-2 h-2 bg-terracotta-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <span className="w-2 h-2 bg-#8B5A3C rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+            <span className="w-2 h-2 bg-#8B5A3C rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <span className="w-2 h-2 bg-#8B5A3C rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
           </div>
         </div>
       </div>

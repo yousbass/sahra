@@ -236,9 +236,9 @@ export default function Bookings() {
 
   if (loading || loadingBookings) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">Loading your bookings...</p>
         </div>
       </div>
@@ -247,17 +247,17 @@ export default function Bookings() {
 
   if (!user || !userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
         <div className="max-w-md mx-auto pt-20">
-          <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-8 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-full mx-auto flex items-center justify-center mb-4">
+          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 text-center shadow-xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-full mx-auto flex items-center justify-center mb-4">
               <Calendar className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">View Your Bookings</h2>
             <p className="text-gray-700 font-medium mb-6">Sign in to see your desert camp reservations</p>
             <Button
               onClick={() => navigate('/signin')}
-              className="w-full h-12 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
             >
               Sign In
             </Button>
@@ -268,7 +268,7 @@ export default function Bookings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-20">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('bookingsUser.title')}</h1>
@@ -277,14 +277,14 @@ export default function Bookings() {
               ? t('bookingsUser.count', { count: currentBookings.length })
               : t('bookingsUser.count', { count: pastBookings.length })}
           </p>
-          <div className="mt-4 inline-flex rounded-xl border-2 border-sand-300 overflow-hidden">
+          <div className="mt-4 inline-flex rounded-xl border-2 border-orange-300 overflow-hidden">
             <button
               type="button"
               onClick={() => setViewMode('current')}
               className={`px-4 py-2 font-semibold transition ${
                 viewMode === 'current'
-                  ? 'bg-terracotta-600 text-white'
-                  : 'bg-white text-gray-900 hover:bg-sand-100'
+                  ? 'bg-#6B4423 text-white'
+                  : 'bg-white text-gray-900 hover:bg-orange-100'
               }`}
             >
               {t('bookingsUser.current', 'Current')}
@@ -294,8 +294,8 @@ export default function Bookings() {
               onClick={() => setViewMode('past')}
               className={`px-4 py-2 font-semibold transition ${
                 viewMode === 'past'
-                  ? 'bg-terracotta-600 text-white'
-                  : 'bg-white text-gray-900 hover:bg-sand-100'
+                  ? 'bg-#6B4423 text-white'
+                  : 'bg-white text-gray-900 hover:bg-orange-100'
               }`}
             >
               {t('bookingsUser.past', 'Past')}
@@ -304,8 +304,8 @@ export default function Bookings() {
         </div>
 
         {displayedBookings.length === 0 ? (
-          <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-12 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-full mx-auto flex items-center justify-center mb-4">
+          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-12 text-center shadow-xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-full mx-auto flex items-center justify-center mb-4">
               <span className="text-4xl">🏕️</span>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -318,7 +318,7 @@ export default function Bookings() {
             </p>
             <Button
               onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+              className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
             >
               Explore Camps
             </Button>
@@ -328,7 +328,7 @@ export default function Bookings() {
             {displayedBookings.map((booking) => (
               <Card
                 key={booking.id}
-                className="bg-white/95 backdrop-blur-sm overflow-hidden hover:shadow-xl transition-shadow border-sand-300"
+                className="bg-white/95 backdrop-blur-sm overflow-hidden hover:shadow-xl transition-shadow border-orange-300"
               >
                 <div className="flex flex-col md:flex-row gap-4 p-4">
                   <img
@@ -364,21 +364,21 @@ export default function Bookings() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-4 h-4 text-terracotta-600" />
+                        <Calendar className="w-4 h-4 text-#6B4423" />
                         <div className="text-sm">
                           <p className="font-semibold">Check-in</p>
                           <p className="text-gray-600">{booking.checkIn}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-4 h-4 text-terracotta-600" />
+                        <Calendar className="w-4 h-4 text-#6B4423" />
                         <div className="text-sm">
                           <p className="font-semibold">Check-out</p>
                           <p className="text-gray-600">{booking.checkOut}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Users className="w-4 h-4 text-terracotta-600" />
+                        <Users className="w-4 h-4 text-#6B4423" />
                         <div className="text-sm">
                           <p className="font-semibold">Guests</p>
                           <p className="text-gray-600">{booking.guests}</p>
@@ -394,10 +394,10 @@ export default function Bookings() {
                       </div>
                     )}
 
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-sand-300">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-orange-300">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">Total Price</p>
-                        <p className="text-2xl font-bold text-terracotta-600">
+                        <p className="text-2xl font-bold text-#6B4423">
                           {booking.totalPrice} <span className="text-base text-gray-700">BD</span>
                         </p>
                       </div>
@@ -406,7 +406,7 @@ export default function Bookings() {
                           <DialogTrigger asChild>
                             <Button
                               variant="outline"
-                              className="flex-1 sm:flex-none border-2 border-sand-300 text-gray-900 hover:bg-sand-50 font-semibold"
+                              className="flex-1 sm:flex-none border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
                             >
                               {t('bookingsUser.viewDetails')}
                             </Button>
@@ -440,10 +440,10 @@ export default function Bookings() {
                                     {booking.paymentMethod === 'cash_on_arrival' ? 'Cash on Arrival selected' : 'Online payment'}
                                   </p>
                                   <div className="mt-2 flex gap-2 items-center">
-                                    <Badge className="bg-sand-100 text-gray-900 border border-sand-300">
+                                    <Badge className="bg-orange-100 text-gray-900 border border-orange-300">
                                       {(booking.paymentMethod || 'online').replace('_', ' ')}
                                     </Badge>
-                                    <Badge variant="secondary" className={booking.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-900 border border-amber-200'}>
+                                    <Badge variant="secondary" className={booking.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-900 border border-orange-200'}>
                                       {booking.paymentStatus || 'pending'}
                                     </Badge>
                                   </div>
@@ -452,7 +452,7 @@ export default function Bookings() {
                                   <Button
                                     onClick={() => handlePayPending(booking)}
                                     disabled={payingBookingId === booking.id}
-                                    className="bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold"
+                                    className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold"
                                   >
                                     {payingBookingId === booking.id ? 'Starting Payment...' : 'Pay Now'}
                                   </Button>
@@ -558,7 +558,7 @@ export default function Bookings() {
                         {booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed' || booking.paymentStatus === 'cancelled') && (
                           <Button
                             onClick={() => handlePayPending(booking)}
-                            className="flex-1 sm:flex-none bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold"
+                            className="flex-1 sm:flex-none bg-#6B4423 hover:bg-#5A3820 text-white font-semibold"
                             disabled={payingBookingId === booking.id}
                           >
                             {payingBookingId === booking.id ? t('bookingsUser.payNow') : t('bookingsUser.payNow')}
@@ -568,7 +568,7 @@ export default function Bookings() {
                         {booking.eligibleForReview && !booking.reviewId && (
                           <Button
                             onClick={() => handleWriteReview(booking)}
-                            className="flex-1 sm:flex-none bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold"
+                            className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-[#FF8C42] hover:from-[#FF8C42] hover:to-amber-700 text-white font-semibold"
                           >
                             <Star className="w-4 h-4 mr-2" />
                             {t('bookingsUser.writeReview')}

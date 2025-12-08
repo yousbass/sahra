@@ -24,7 +24,7 @@ export default function ReviewsSummary({
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-sand-50 to-white">
+    <Card className="p-6 bg-gradient-to-br from-orange-50 to-white">
       <div className="grid md:grid-cols-2 gap-8">
         {/* Overall Rating */}
         <div className="flex flex-col items-center justify-center text-center">
@@ -47,11 +47,11 @@ export default function ReviewsSummary({
               <div key={star} className="flex items-center gap-3">
                 <div className="flex items-center gap-1 w-12">
                   <span className="text-sm font-medium text-gray-700">{star}</span>
-                  <span className="text-amber-500">★</span>
+                  <span className="text-orange-500">★</span>
                 </div>
                 <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>

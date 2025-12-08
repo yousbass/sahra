@@ -163,7 +163,7 @@ const resources = {
       
       // Auth - Sign Up page
       authSignUp: {
-        join: 'Join Sahra',
+        join: 'Join MUKHYMAT',
         subtitle: 'Create your account to start booking',
         fullName: 'Full Name',
         email: 'Email Address',
@@ -531,7 +531,7 @@ const resources = {
       
       // Header
       header: {
-        brand: 'Sahra',
+        brand: 'MUKHYMAT',
         admin: 'Admin',
         profile: 'Profile',
         signOut: 'Sign Out',

@@ -7,11 +7,11 @@ const Slider = React.forwardRef<React.ElementRef<typeof SliderPrimitive.Root>, R
   ({ className, ...props }, ref) => (
     <SliderPrimitive.Root ref={ref} className={cn('relative flex w-full touch-none select-none items-center', className)} {...props}>
       <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-terracotta-100">
-        <SliderPrimitive.Range className="absolute h-full bg-gradient-to-r from-terracotta-500 to-terracotta-600" />
+        <SliderPrimitive.Range className="absolute h-full bg-gradient-to-r from-#8B5A3C to-#6B4423" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-terracotta-600 bg-white shadow-lg ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+      <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-#6B4423 bg-white shadow-lg ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-#8B5A3C focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
       {props.value && Array.isArray(props.value) && props.value.length > 1 && (
-        <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-terracotta-600 bg-white shadow-lg ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+        <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-#6B4423 bg-white shadow-lg ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-#8B5A3C focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
       )}
     </SliderPrimitive.Root>
   )

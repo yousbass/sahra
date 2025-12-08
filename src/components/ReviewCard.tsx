@@ -47,7 +47,7 @@ export default function ReviewCard({
               className="w-12 h-12 rounded-full object-cover"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-terracotta-400 to-terracotta-600 flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-terracotta-400 to-#6B4423 flex items-center justify-center text-white font-bold text-lg">
               {review.userName.charAt(0).toUpperCase()}
             </div>
           )}
@@ -86,7 +86,7 @@ export default function ReviewCard({
             {isLongReview && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-terracotta-600 hover:text-terracotta-700 font-medium text-sm mt-2"
+                className="text-#6B4423 hover:text-#5A3820 font-medium text-sm mt-2"
               >
                 {isExpanded ? 'Show less' : 'Read more'}
               </button>
@@ -101,7 +101,7 @@ export default function ReviewCard({
               onClick={handleHelpful}
               disabled={!canVote}
               className={cn(
-                'text-gray-600 hover:text-terracotta-600',
+                'text-gray-600 hover:text-#6B4423',
                 !canVote && 'opacity-50 cursor-not-allowed'
               )}
             >

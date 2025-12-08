@@ -113,14 +113,14 @@ export default function FilterSidebar({
     (localFilters.bookingDate ? 1 : 0);
 
   return (
-    <Card className="p-6 bg-white/95 backdrop-blur-sm border-2 border-sand-200">
+    <Card className="p-6 bg-white/95 backdrop-blur-sm border-2 border-orange-200">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-5 h-5 text-terracotta-600" />
+          <SlidersHorizontal className="w-5 h-5 text-#6B4423" />
           <h3 className="text-lg font-bold text-gray-900">{t('filters.apply')}</h3>
           {activeFilterCount > 0 && (
-            <span className="bg-terracotta-100 text-terracotta-700 text-xs font-semibold px-2 py-1 rounded-full">
+            <span className="bg-terracotta-100 text-#5A3820 text-xs font-semibold px-2 py-1 rounded-full">
               {activeFilterCount}
             </span>
           )}
@@ -143,7 +143,7 @@ export default function FilterSidebar({
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal border-2 border-sand-300",
+                  "w-full justify-start text-left font-normal border-2 border-orange-300",
                   !selectedDate && "text-muted-foreground"
                 )}
               >
@@ -170,7 +170,7 @@ export default function FilterSidebar({
               variant="ghost"
               size="sm"
               onClick={handleClearDate}
-              className="w-full mt-2 text-terracotta-600 hover:text-terracotta-700 hover:bg-terracotta-50"
+              className="w-full mt-2 text-#6B4423 hover:text-#5A3820 hover:bg-orange-50"
             >
               {t('filters.clearDate')}
             </Button>
@@ -195,9 +195,9 @@ export default function FilterSidebar({
               className="mb-4"
             />
             <div className="flex items-center justify-between text-sm">
-              <span className="font-semibold text-terracotta-600">{localFilters.priceRange[0]} BD</span>
+              <span className="font-semibold text-#6B4423">{localFilters.priceRange[0]} BD</span>
               <span className="text-gray-400">to</span>
-              <span className="font-semibold text-terracotta-600">{localFilters.priceRange[1]} BD</span>
+              <span className="font-semibold text-#6B4423">{localFilters.priceRange[1]} BD</span>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function FilterSidebar({
               size="sm"
               onClick={() => setLocalFilters({ ...localFilters, minGuests: Math.max(1, localFilters.minGuests - 1) })}
               disabled={localFilters.minGuests <= 1}
-              className="border-sand-300"
+              className="border-orange-300"
             >
               -
             </Button>
@@ -251,7 +251,7 @@ export default function FilterSidebar({
               size="sm"
               onClick={() => setLocalFilters({ ...localFilters, minGuests: Math.min(50, localFilters.minGuests + 1) })}
               disabled={localFilters.minGuests >= 50}
-              className="border-sand-300"
+              className="border-orange-300"
             >
               +
             </Button>
@@ -345,17 +345,17 @@ export default function FilterSidebar({
       </div>
 
       {/* Actions */}
-      <div className="mt-6 pt-6 border-t border-sand-200 space-y-3">
+      <div className="mt-6 pt-6 border-t border-orange-200 space-y-3">
         <Button
           onClick={handleApply}
-          className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+          className="w-full bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
         >
           {t('filters.apply')}
         </Button>
         <Button
           variant="outline"
           onClick={handleReset}
-          className="w-full border-2 border-sand-300 hover:bg-sand-50"
+          className="w-full border-2 border-orange-300 hover:bg-orange-50"
         >
           {t('filters.reset')}
         </Button>

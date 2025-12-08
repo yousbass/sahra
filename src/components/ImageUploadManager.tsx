@@ -221,8 +221,8 @@ export function ImageUploadManager({
         className={cn(
           'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
           isDragging
-            ? 'border-terracotta-500 bg-terracotta-50'
-            : 'border-sand-300 hover:border-terracotta-500',
+            ? 'border-#8B5A3C bg-orange-50'
+            : 'border-orange-300 hover:border-#8B5A3C',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
       >
@@ -237,7 +237,7 @@ export function ImageUploadManager({
         />
         
         <div className="flex flex-col items-center gap-3">
-          <Upload className="w-12 h-12 text-terracotta-600" />
+          <Upload className="w-12 h-12 text-#6B4423" />
           <div>
             <p className="text-gray-900 font-semibold mb-1">
               {isDragging ? 'Drop images here' : 'Click to upload or drag and drop'}
@@ -253,7 +253,7 @@ export function ImageUploadManager({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || images.length >= maxImages || !userId}
-            className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+            className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820"
           >
             <Upload className="w-4 h-4 mr-2" />
             Select Images
@@ -277,7 +277,7 @@ export function ImageUploadManager({
                 onDragOver={(e) => handleDragOverImage(e, index)}
                 className={cn(
                   'relative group overflow-hidden border-2 transition-all',
-                  image.isMain ? 'border-green-500 ring-2 ring-green-200' : 'border-sand-300',
+                  image.isMain ? 'border-green-500 ring-2 ring-green-200' : 'border-orange-300',
                   draggedIndex === index && 'opacity-50',
                   !image.uploading && !disabled && 'cursor-move'
                 )}
@@ -349,7 +349,7 @@ export function ImageUploadManager({
 
                 {/* Mobile-friendly actions */}
                 {!image.uploading && (
-                  <div className="sm:hidden flex items-center justify-between px-3 py-2 bg-white border-t border-sand-200">
+                  <div className="sm:hidden flex items-center justify-between px-3 py-2 bg-white border-t border-orange-200">
                     <Button
                       type="button"
                       size="sm"
@@ -375,7 +375,7 @@ export function ImageUploadManager({
             ))}
           </div>
 
-          <div className="p-3 bg-sand-50 border border-sand-300 rounded-lg">
+          <div className="p-3 bg-orange-50 border border-orange-300 rounded-lg">
             <p className="text-sm text-gray-700">
               <strong>💡 Tips:</strong>
             </p>

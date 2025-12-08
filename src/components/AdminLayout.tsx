@@ -76,9 +76,9 @@ export default function AdminLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-terracotta-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-#6B4423 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-700 font-medium">Loading admin panel...</p>
         </div>
       </div>
@@ -86,9 +86,9 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
       {/* Top Header */}
-      <header className="bg-white border-b border-sand-300 sticky top-0 z-40 shadow-sm">
+      <header className="bg-white border-b border-orange-300 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <Button
@@ -101,7 +101,7 @@ export default function AdminLayout() {
             </Button>
             
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">A</span>
               </div>
               <h1 className="text-xl font-bold text-gray-900 hidden sm:block">Admin Panel</h1>
@@ -117,7 +117,7 @@ export default function AdminLayout() {
               variant="outline"
               size="sm"
               onClick={handleSignOut}
-              className="border-2 border-sand-300 text-gray-900 hover:bg-sand-50"
+              className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
@@ -131,7 +131,7 @@ export default function AdminLayout() {
         <aside
           className={`
             fixed lg:sticky top-[57px] left-0 h-[calc(100vh-57px)] 
-            bg-white border-r border-sand-300 shadow-lg
+            bg-white border-r border-orange-300 shadow-lg
             transition-all duration-300 z-30
             ${sidebarOpen ? 'w-64' : 'w-0 lg:w-16'}
             overflow-hidden
@@ -149,8 +149,8 @@ export default function AdminLayout() {
                   className={`
                     w-full justify-start gap-3
                     ${active 
-                      ? 'bg-gradient-to-r from-terracotta-500 to-terracotta-600 text-white hover:from-terracotta-600 hover:to-terracotta-700' 
-                      : 'text-gray-700 hover:bg-sand-50'
+                      ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 text-white hover:from-#6B4423 hover:to-#5A3820' 
+                      : 'text-gray-700 hover:bg-orange-50'
                     }
                   `}
                   onClick={() => {
@@ -176,7 +176,7 @@ export default function AdminLayout() {
           <div className="mb-6 flex items-center gap-2 text-sm">
             {getBreadcrumbs().map((crumb, index, arr) => (
               <div key={index} className="flex items-center gap-2">
-                <span className={index === arr.length - 1 ? 'text-terracotta-600 font-semibold' : 'text-gray-600'}>
+                <span className={index === arr.length - 1 ? 'text-#6B4423 font-semibold' : 'text-gray-600'}>
                   {crumb}
                 </span>
                 {index < arr.length - 1 && <ChevronRight className="w-4 h-4 text-gray-400" />}

@@ -106,8 +106,8 @@ export default function Host() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -117,12 +117,12 @@ export default function Host() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-7xl mx-auto pt-8 pb-20">
         {/* Header */}
         <div className="mb-8">
           <div className={`flex items-center gap-3 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className="w-14 h-14 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-2xl flex items-center justify-center shadow-lg">
               <Crown className="w-7 h-7 text-white" />
             </div>
             <div className={isRTL ? 'text-right' : ''}>
@@ -190,7 +190,7 @@ export default function Host() {
         {/* Primary Action Card */}
         <Card 
           onClick={() => navigate('/host/create')}
-          className="bg-gradient-to-br from-terracotta-500 via-terracotta-600 to-terracotta-700 text-white p-8 md:p-10 shadow-xl hover:shadow-2xl transition-all cursor-pointer group mb-8 overflow-hidden relative"
+          className="bg-gradient-to-br from-#8B5A3C via-#6B4423 to-#5A3820 text-white p-8 md:p-10 shadow-xl hover:shadow-2xl transition-all cursor-pointer group mb-8 overflow-hidden relative"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32 group-hover:scale-150 transition-transform duration-700"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24 group-hover:scale-150 transition-transform duration-700"></div>
@@ -210,7 +210,7 @@ export default function Host() {
               {t('host.heroDesc')}
             </p>
             <Button
-              className="bg-white text-terracotta-600 hover:bg-white/95 font-semibold shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg group-hover:scale-105"
+              className="bg-white text-#6B4423 hover:bg-white/95 font-semibold shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg group-hover:scale-105"
             >
               <Plus className="w-5 h-5 mr-2" />
               {t('host.heroCreate')}
@@ -228,14 +228,14 @@ export default function Host() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card
             onClick={() => navigate('/host/listings')}
-            className="bg-white border-2 border-sand-200 p-6 cursor-pointer hover:shadow-xl hover:border-terracotta-300 transition-all hover:-translate-y-1 group"
+            className="bg-white border-2 border-orange-200 p-6 cursor-pointer hover:shadow-xl hover:border-orange-300 transition-all hover:-translate-y-1 group"
           >
             <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <div className="w-14 h-14 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+              <div className="w-14 h-14 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
                 <List className="w-7 h-7 text-white" />
               </div>
               <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
-                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-terracotta-600 transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-#6B4423 transition-colors">
                   {t('host.manageTitle')}
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
@@ -247,7 +247,7 @@ export default function Host() {
 
           <Card
             onClick={() => navigate('/host/bookings')}
-            className="bg-white border-2 border-sand-200 p-6 cursor-pointer hover:shadow-xl hover:border-terracotta-300 transition-all hover:-translate-y-1 group"
+            className="bg-white border-2 border-orange-200 p-6 cursor-pointer hover:shadow-xl hover:border-orange-300 transition-all hover:-translate-y-1 group"
           >
             <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
@@ -264,7 +264,7 @@ export default function Host() {
             </div>
           </Card>
 
-          <Card className="bg-white border-2 border-sand-200 p-6 opacity-60 cursor-not-allowed">
+          <Card className="bg-white border-2 border-orange-200 p-6 opacity-60 cursor-not-allowed">
             <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center shadow-md">
                 <BarChart3 className="w-7 h-7 text-white" />

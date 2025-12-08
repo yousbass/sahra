@@ -52,9 +52,9 @@ export const PriceBreakdown: React.FC<PriceBreakdownProps> = ({
           <span className="font-semibold">{taxes.toFixed(2)} {currency}</span>
         </div>
         
-        <div className="border-t-2 border-sand-300 pt-3 flex justify-between text-lg font-bold">
+        <div className="border-t-2 border-orange-300 pt-3 flex justify-between text-lg font-bold">
           <span className="text-gray-900">Total</span>
-          <span className="text-terracotta-600">
+          <span className="text-#6B4423">
             {total.toFixed(2)} {currency}
           </span>
         </div>

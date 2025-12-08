@@ -99,9 +99,9 @@ export default function MyListings() {
 
   if (loading || loadingListings) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-terracotta-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">{t('hostListings.loading')}</p>
         </div>
       </div>
@@ -113,13 +113,13 @@ export default function MyListings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-6xl mx-auto pt-8 pb-20">
         {/* Header */}
         <Button
           onClick={() => navigate('/host')}
           variant="ghost"
-          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-sand-100 font-medium"
+          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('hostListings.backToDashboard')}
@@ -136,14 +136,14 @@ export default function MyListings() {
             <Button
               onClick={() => navigate('/host/availability')}
               variant="outline"
-              className="border-2 border-terracotta-300 text-terracotta-700 hover:bg-terracotta-50 hover:border-terracotta-400 font-semibold"
+              className="border-2 border-orange-300 text-#5A3820 hover:bg-orange-50 hover:border-terracotta-400 font-semibold"
             >
               <Calendar className="w-4 h-4 mr-2" />
               {t('hostListings.buttons.manageAvailability')}
             </Button>
             <Button
               onClick={() => navigate('/host/create')}
-              className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+              className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               {t('hostListings.buttons.newListing', { defaultValue: 'New Listing' })}
@@ -152,15 +152,15 @@ export default function MyListings() {
         </div>
 
         {listings.length === 0 ? (
-          <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-12 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-terracotta-500 to-terracotta-600 rounded-full mx-auto flex items-center justify-center mb-4">
+          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-12 text-center shadow-xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-full mx-auto flex items-center justify-center mb-4">
               <span className="text-4xl">🏕️</span>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Listings Yet</h3>
             <p className="text-gray-700 font-medium mb-6">{t('hostListings.emptyDesc')}</p>
             <Button
               onClick={() => navigate('/host/create')}
-              className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold shadow-lg"
+              className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               {t('hostListings.createFirst')}
@@ -173,7 +173,7 @@ export default function MyListings() {
               return (
                 <Card
                   key={listing.id}
-                  className="bg-white/95 backdrop-blur-sm border-sand-300 overflow-hidden hover:shadow-xl transition-all group"
+                  className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden hover:shadow-xl transition-all group"
                 >
                   <div className="relative h-48 overflow-hidden">
                     <img
@@ -205,20 +205,20 @@ export default function MyListings() {
                       className={`text-xs font-semibold ${
                         listing.status === 'active'
                           ? 'bg-green-100 text-green-800 border border-green-300'
-                          : 'bg-amber-100 text-amber-800 border border-amber-300'
+                          : 'bg-amber-100 text-amber-800 border border-orange-300'
                       }`}
                     >
                           {listing.status === 'active' ? t('hostListings.status.active') : t('hostListings.status.pending')}
                     </Badge>
                   )}
                   {listing.maxGuests && (
-                    <Badge variant="secondary" className="bg-sand-100 text-gray-900 border border-sand-300 font-semibold">
+                    <Badge variant="secondary" className="bg-orange-100 text-gray-900 border border-orange-300 font-semibold">
                       <Users className="w-3 h-3 mr-1" />
                           {t('hostListings.guestsLabel', { count: listing.maxGuests })}
                     </Badge>
                   )}
                   {totalTents > 0 && (
-                    <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 font-semibold">
+                    <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-900 border border-orange-300 font-semibold">
                       <Tent className="w-3 h-3 mr-1" />
                           {t('hostListings.tentsLabel', { count: totalTents })}
                     </Badge>
@@ -227,7 +227,7 @@ export default function MyListings() {
 
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <p className="text-2xl font-bold text-terracotta-600">
+                        <p className="text-2xl font-bold text-#6B4423">
                           {listing.price} <span className="text-base text-gray-700">BD</span>
                         </p>
                     <p className="text-sm text-gray-600 font-medium">per day</p>
@@ -243,7 +243,7 @@ export default function MyListings() {
                             <Badge
                               key={amenity}
                               variant="secondary"
-                              className="bg-sand-100 text-gray-800 border border-sand-300 text-xs font-medium"
+                              className="bg-orange-100 text-gray-800 border border-orange-300 text-xs font-medium"
                             >
                               {amenity}
                             </Badge>
@@ -251,7 +251,7 @@ export default function MyListings() {
                       {listing.amenities.length > 3 && (
                         <Badge
                           variant="secondary"
-                          className="bg-terracotta-100 text-terracotta-900 border border-terracotta-300 text-xs font-semibold"
+                          className="bg-terracotta-100 text-terracotta-900 border border-orange-300 text-xs font-semibold"
                         >
                               +{listing.amenities.length - 3} {t('hostListings.more', { defaultValue: 'more' })}
                         </Badge>
@@ -264,7 +264,7 @@ export default function MyListings() {
                       <Button
                         onClick={() => handleViewCamp(listing.id)}
                         variant="outline"
-                        className="flex-1 border-2 border-sand-300 text-gray-900 hover:bg-sand-50 hover:border-sand-400 font-semibold"
+                        className="flex-1 border-2 border-orange-300 text-gray-900 hover:bg-orange-50 hover:border-sand-400 font-semibold"
                       >
                         <Eye className="w-4 h-4 mr-1" />
                         {t('hostListings.buttons.view')}

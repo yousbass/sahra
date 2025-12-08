@@ -59,9 +59,9 @@ export default function RatingStars({
         <Star
           className={cn(
             sizeClasses[size],
-            'absolute top-0 left-0 text-amber-500',
-            filled && 'fill-amber-500',
-            halfFilled && 'fill-amber-500'
+            'absolute top-0 left-0 text-orange-500',
+            filled && 'fill-orange-500',
+            halfFilled && 'fill-orange-500'
           )}
           style={
             halfFilled

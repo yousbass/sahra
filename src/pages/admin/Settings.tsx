@@ -103,7 +103,7 @@ export default function AdminSettings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
       </div>
     );
   }
@@ -117,9 +117,9 @@ export default function AdminSettings() {
       </div>
 
       {/* Platform Settings */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-terracotta-500 to-terracotta-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center">
             <Globe className="w-5 h-5 text-white" />
           </div>
           <h3 className="text-xl font-bold text-gray-900">Platform Settings</h3>
@@ -132,7 +132,7 @@ export default function AdminSettings() {
               id="platformName"
               value={platformName}
               onChange={(e) => setPlatformName(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
           </div>
 
@@ -144,7 +144,7 @@ export default function AdminSettings() {
                 type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                className="border-sand-300 focus:border-terracotta-500"
+                className="border-orange-300 focus:border-#8B5A3C"
               />
             </div>
 
@@ -155,7 +155,7 @@ export default function AdminSettings() {
                 type="tel"
                 value={supportPhone}
                 onChange={(e) => setSupportPhone(e.target.value)}
-                className="border-sand-300 focus:border-terracotta-500"
+                className="border-orange-300 focus:border-#8B5A3C"
               />
             </div>
           </div>
@@ -167,14 +167,14 @@ export default function AdminSettings() {
               value={platformDescription}
               onChange={(e) => setPlatformDescription(e.target.value)}
               rows={3}
-              className="border-sand-300 focus:border-terracotta-500 resize-none"
+              className="border-orange-300 focus:border-#8B5A3C resize-none"
             />
           </div>
         </div>
       </Card>
 
       {/* Financial Settings */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
             <DollarSign className="w-5 h-5 text-white" />
@@ -193,7 +193,7 @@ export default function AdminSettings() {
               step="0.1"
               value={serviceFeePercentage}
               onChange={(e) => setServiceFeePercentage(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Fee charged to guests on each booking</p>
           </div>
@@ -208,7 +208,7 @@ export default function AdminSettings() {
               step="0.1"
               value={hostCommissionRate}
               onChange={(e) => setHostCommissionRate(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Percentage hosts receive from bookings</p>
           </div>
@@ -223,7 +223,7 @@ export default function AdminSettings() {
               step="0.1"
               value={taxRate}
               onChange={(e) => setTaxRate(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">VAT or sales tax percentage</p>
           </div>
@@ -237,7 +237,7 @@ export default function AdminSettings() {
               step="0.1"
               value={minBookingAmount}
               onChange={(e) => setMinBookingAmount(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Minimum total booking value</p>
           </div>
@@ -245,7 +245,7 @@ export default function AdminSettings() {
       </Card>
 
       {/* Refund Policy Settings */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
             <SettingsIcon className="w-5 h-5 text-white" />
@@ -260,7 +260,7 @@ export default function AdminSettings() {
               id="defaultPolicy"
               value={defaultRefundPolicy}
               onChange={(e) => setDefaultRefundPolicy(e.target.value)}
-              className="w-full h-10 px-3 rounded-md border border-sand-300 focus:border-terracotta-500 focus:outline-none"
+              className="w-full h-10 px-3 rounded-md border border-orange-300 focus:border-#8B5A3C focus:outline-none"
             >
               <option value="refundable">Refundable</option>
               <option value="non-refundable">Non-Refundable</option>
@@ -276,7 +276,7 @@ export default function AdminSettings() {
               min="0"
               value={refundDeadlineHours}
               onChange={(e) => setRefundDeadlineHours(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Hours before check-in for full refund</p>
           </div>
@@ -291,7 +291,7 @@ export default function AdminSettings() {
               step="0.1"
               value={cancellationFeePercentage}
               onChange={(e) => setCancellationFeePercentage(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Fee for late cancellations</p>
           </div>
@@ -299,7 +299,7 @@ export default function AdminSettings() {
       </Card>
 
       {/* General Settings */}
-      <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
             <SettingsIcon className="w-5 h-5 text-white" />
@@ -316,7 +316,7 @@ export default function AdminSettings() {
               min="1"
               value={maxGuestsPerCamp}
               onChange={(e) => setMaxGuestsPerCamp(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Maximum capacity limit</p>
           </div>
@@ -329,7 +329,7 @@ export default function AdminSettings() {
               min="1"
               value={reviewDeadlineDays}
               onChange={(e) => setReviewDeadlineDays(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Days after checkout to leave review</p>
           </div>
@@ -342,7 +342,7 @@ export default function AdminSettings() {
               min="1"
               value={minBookingDuration}
               onChange={(e) => setMinBookingDuration(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Minimum stay requirement</p>
           </div>
@@ -355,7 +355,7 @@ export default function AdminSettings() {
               min="1"
               value={maxBookingDuration}
               onChange={(e) => setMaxBookingDuration(e.target.value)}
-              className="border-sand-300 focus:border-terracotta-500"
+              className="border-orange-300 focus:border-#8B5A3C"
             />
             <p className="text-xs text-gray-600">Maximum stay limit</p>
           </div>
@@ -367,7 +367,7 @@ export default function AdminSettings() {
         <Button
           onClick={handleSaveSettings}
           disabled={saving}
-          className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold px-8"
+          className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold px-8"
         >
           {saving ? (
             <>

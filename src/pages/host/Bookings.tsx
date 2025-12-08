@@ -59,7 +59,7 @@ export default function HostBookings() {
       case 'confirmed':
         return <Badge className="bg-green-100 text-green-800 border-green-200">{t('status.confirmed', 'Confirmed')}</Badge>;
       case 'pending':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">{t('status.pending', 'Pending')}</Badge>;
+        return <Badge className="bg-amber-100 text-amber-800 border-orange-200">{t('status.pending', 'Pending')}</Badge>;
       case 'cancelled':
         return <Badge className="bg-red-100 text-red-800 border-red-200">{t('status.cancelled', 'Cancelled')}</Badge>;
       default:
@@ -69,20 +69,20 @@ export default function HostBookings() {
 
   if (loading || loadingBookings) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-terracotta-600 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center p-4">
+        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand-50 via-sand-100 to-sand-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
       <div className="max-w-6xl mx-auto pt-8 pb-20 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-2">
             <button
               onClick={() => navigate('/host')}
-              className="flex items-center gap-2 text-sm font-semibold text-terracotta-700 hover:text-terracotta-800"
+              className="flex items-center gap-2 text-sm font-semibold text-#5A3820 hover:text-terracotta-800"
             >
               <ArrowLeft className="w-4 h-4" />
               {t('host.back')}
@@ -94,20 +94,20 @@ export default function HostBookings() {
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={loadBookings} className="border-sand-300">
+          <Button variant="outline" onClick={loadBookings} className="border-orange-300">
             {t('host.refresh')}
           </Button>
         </div>
 
         {bookings.length === 0 ? (
-          <Card className="p-8 bg-white/95 backdrop-blur-sm border-sand-300 text-center shadow-lg">
+          <Card className="p-8 bg-white/95 backdrop-blur-sm border-orange-300 text-center shadow-lg">
             <p className="text-lg font-semibold text-gray-900 mb-2">{t('host.noBookings')}</p>
             <p className="text-gray-700">{t('host.noBookingsHint')}</p>
           </Card>
         ) : (
           <div className="space-y-4">
             {bookings.map((booking) => (
-              <Card key={booking.id} className="p-5 bg-white/95 backdrop-blur-sm border-sand-300 shadow-sm hover:shadow-lg transition">
+              <Card key={booking.id} className="p-5 bg-white/95 backdrop-blur-sm border-orange-300 shadow-sm hover:shadow-lg transition">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -116,22 +116,22 @@ export default function HostBookings() {
                     </div>
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4 text-terracotta-600" /> {booking.campLocation}
+                        <MapPin className="w-4 h-4 text-#6B4423" /> {booking.campLocation}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4 text-terracotta-600" /> {formatDisplayDate(booking.checkInDate)}
+                        <Calendar className="w-4 h-4 text-#6B4423" /> {formatDisplayDate(booking.checkInDate)}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-terracotta-600" /> {booking.guests} guest{booking.guests === 1 ? '' : 's'}
+                        <Users className="w-4 h-4 text-#6B4423" /> {booking.guests} guest{booking.guests === 1 ? '' : 's'}
                       </span>
                     </div>
                   </div>
                   <div className="text-right space-y-1">
                     <div className="flex items-center justify-end gap-1 text-gray-700">
-                      <CreditCard className="w-4 h-4 text-terracotta-600" />
+                      <CreditCard className="w-4 h-4 text-#6B4423" />
                       <span className="font-semibold">{booking.paymentStatus || 'pending'}</span>
                     </div>
-                    <div className="text-2xl font-bold text-terracotta-600">
+                    <div className="text-2xl font-bold text-#6B4423">
                       {(booking.totalPrice || 0).toFixed(3)} BD
                     </div>
                   </div>
