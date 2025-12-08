@@ -52,6 +52,22 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
     
+    // Host Applications collection
+    match /hostApplications/{applicationId} {
+      // Users can read their own applications, admins can read all
+      allow read: if isSignedIn() && 
+                     (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Authenticated users can create their own applications
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Only admins can update applications (for approval/rejection)
+      allow update: if isAdmin();
+      
+      // Only admins can delete applications
+      allow delete: if isAdmin();
+    }
+    
     // Camps collection
     match /camps/{campId} {
       // Anyone can read active camps
