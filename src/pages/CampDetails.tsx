@@ -644,7 +644,7 @@ export default function CampDetails() {
                               {features.map((feature, featureIdx) => (
                                 <div
                                   key={featureIdx}
-                                  className="flex items-center gap-2 p-2.5 bg-white/80 backdrop-blur-sm rounded-lg border border-sand-200 hover:border-terracotta-300 hover:shadow-md transition-all duration-200 group/feature"
+                                  className="flex items-center gap-2 p-2.5 bg-white/80 backdrop-blur-sm rounded-lg border border-sand-200 hover:border-terracotta-400 hover:shadow-lg hover:bg-sand-50 transition-all duration-200 group/feature"
                                 >
                                   <div className="text-terracotta-600 group-hover/feature:scale-110 transition-transform duration-200">
                                     {feature.icon}
