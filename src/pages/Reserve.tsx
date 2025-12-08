@@ -28,6 +28,8 @@ export default function Reserve() {
   const { user, userData, loading } = useAuth();
   const campId = searchParams.get('camp');
   const { showLoading, hideLoading } = useLoading();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
 
   const [camp, setCamp] = useState<LegacyCamp | null>(null);
   const [loadingCamp, setLoadingCamp] = useState(true);
@@ -54,7 +56,6 @@ export default function Reserve() {
   const [paying, setPaying] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { t } = useTranslation();
 
   // Get check-in and check-out times with defaults
   const checkInTime = camp?.checkInTime || '08:00 AM';
@@ -254,9 +255,9 @@ export default function Reserve() {
     if (value.length >= 8) {
       const digitsOnly = value.replace(/\D/g, '');
       if (digitsOnly.length < 8) {
-        setPhoneError('Please enter a valid phone number (8-15 digits)');
+        setPhoneError(t('reserve.phoneValidMin'));
       } else if (digitsOnly.length > 15) {
-        setPhoneError('Phone number is too long (maximum 15 digits)');
+        setPhoneError(t('reserve.phoneValidMax'));
       } else {
         setPhoneError(null);
       }
@@ -348,11 +349,11 @@ export default function Reserve() {
     if (!validatePhoneNumber(phoneNumber)) {
       const digitsOnly = phoneNumber.replace(/\D/g, '');
       if (digitsOnly.length < 8) {
-        setPhoneError('Please enter a valid phone number (minimum 8 digits)');
-        toast.error('Please enter a valid phone number (8-15 digits)');
+        setPhoneError(t('reserve.phoneValidMin'));
+        toast.error(t('reserve.phoneValidFormat'));
       } else {
-        setPhoneError('Phone number is too long (maximum 15 digits)');
-        toast.error('Phone number is too long (maximum 15 digits)');
+        setPhoneError(t('reserve.phoneValidMax'));
+        toast.error(t('reserve.phoneValidMax'));
       }
       return;
     }
@@ -631,14 +632,14 @@ export default function Reserve() {
   const totalTents = getTotalTents();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-6xl mx-auto pt-6 sm:pt-8 pb-20">
         <Button
           onClick={handleBack}
           variant="ghost"
           className="mb-4 sm:mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
           {t('reserve.back')}
         </Button>
 
@@ -647,7 +648,7 @@ export default function Reserve() {
             {showPayment ? t('reserve.reserveCreated') : t('reserve.completeTitle')}
           </h1>
           <p className="text-gray-700 font-medium">
-            {showPayment ? '' : `${t('reserve.completeTitle')} (${checkInTime} - ${checkOutTime} next day)`}
+            {showPayment ? '' : `${t('reserve.completeTitle')} (${checkInTime} - ${checkOutTime} ${t('common.nextDay')})`}
           </p>
         </div>
 
@@ -662,7 +663,7 @@ export default function Reserve() {
                     {loadingAvailability ? (
                       <div className="flex items-center justify-center py-12">
                         <Loader2 className="w-8 h-8 text-[#6B4423] animate-spin" />
-                        <p className="ml-4 text-gray-600">{t('messages.loadingAvailability')}</p>
+                        <p className={`${isRTL ? 'mr-4' : 'ml-4'} text-gray-600`}>{t('messages.loadingAvailability')}</p>
                       </div>
                     ) : availabilityError ? (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
@@ -797,9 +798,9 @@ export default function Reserve() {
                           if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
                             const digitsOnly = phoneNumber.replace(/\D/g, '');
                             if (digitsOnly.length < 8) {
-                              setPhoneError('Please enter a valid phone number (minimum 8 digits)');
+                              setPhoneError(t('reserve.phoneValidMin'));
                             } else if (digitsOnly.length > 15) {
-                              setPhoneError('Phone number is too long (maximum 15 digits)');
+                              setPhoneError(t('reserve.phoneValidMax'));
                             }
                           }
                         }}
@@ -815,7 +816,7 @@ export default function Reserve() {
                         </p>
                       )}
                       <p className="text-xs text-gray-600 font-medium">
-                        Enter a valid phone number (8-15 digits). Format: +973 XXXX XXXX or similar
+                        {t('reserve.phoneHelper')}
                       </p>
                     </div>
                   </div>
@@ -842,7 +843,7 @@ export default function Reserve() {
                       <button
                         type="button"
                         onClick={() => setPaymentMethod('online')}
-                        className={`w-full rounded-xl border-2 p-4 text-left transition ${
+                        className={`w-full rounded-xl border-2 p-4 text-${isRTL ? 'right' : 'left'} transition ${
                           paymentMethod === 'online'
                             ? 'border-[#8B5A3C] bg-orange-50 shadow-md'
                             : 'border-orange-300 hover:border-orange-400 bg-white'
@@ -854,7 +855,7 @@ export default function Reserve() {
                       <button
                         type="button"
                         onClick={() => setPaymentMethod('cash_on_arrival')}
-                        className={`w-full rounded-xl border-2 p-4 text-left transition ${
+                        className={`w-full rounded-xl border-2 p-4 text-${isRTL ? 'right' : 'left'} transition ${
                           paymentMethod === 'cash_on_arrival'
                             ? 'border-[#8B5A3C] bg-orange-50 shadow-md'
                             : 'border-orange-300 hover:border-orange-400 bg-white'
@@ -891,7 +892,7 @@ export default function Reserve() {
                     </p>
                   </div>
 
-                  <div className="space-y-3 text-left bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
+                  <div className={`space-y-3 text-${isRTL ? 'right' : 'left'} bg-orange-50 p-6 rounded-lg border-2 border-orange-200`}>
                     <p className="text-sm font-bold text-gray-900 mb-3">{t('reserve.bookingDetailsHeading')}</p>
                     <div className="space-y-2">
                       <div className="flex justify-between">
@@ -923,7 +924,7 @@ export default function Reserve() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-700 font-medium">{t('reserve.checkOutLabel')}</span>
-                        <span className="text-sm font-semibold text-gray-900">{checkOutTime} (next day)</span>
+                        <span className="text-sm font-semibold text-gray-900">{checkOutTime} ({t('common.nextDay')})</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-700 font-medium">{t('reserve.guestsLabelPayment')}</span>
@@ -932,7 +933,7 @@ export default function Reserve() {
                       <div className="flex justify-between pt-2 border-t border-orange-300">
                         <span className="text-sm font-bold text-gray-900">{t('reserve.totalAmountLabel')}</span>
                         <span className="text-lg font-bold text-[#6B4423]">
-                          {priceBreakdown.total.toFixed(3)} BD
+                          {priceBreakdown.total.toFixed(3)} {t('common.currency')}
                         </span>
                       </div>
                     </div>
@@ -952,7 +953,7 @@ export default function Reserve() {
                     {paying ? t('reserve.payNowButton') : t('reserve.payNowButton')}
                   </Button>
 
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-left space-y-1">
+                  <div className={`p-4 bg-blue-50 rounded-lg border border-blue-200 text-${isRTL ? 'right' : 'left'} space-y-1`}>
                     <p className="text-sm font-semibold text-blue-900">
                       📱 {paymentMethod === 'cash_on_arrival' ? t('reserve.bringCash') : t('reserve.whatsNext')}
                     </p>
@@ -1003,13 +1004,13 @@ export default function Reserve() {
                   <div className="flex flex-wrap gap-2 mb-3">
                     {camp.maxGuests && (
                       <Badge variant="secondary" className="bg-orange-100 text-gray-900 border border-orange-300 font-semibold">
-                        <Users className="w-3 h-3 mr-1" />
+                        <Users className={`w-3 h-3 ${isRTL ? 'ml-1' : 'mr-1'}`} />
                         {t('reserve.upToGuests', { max: camp.maxGuests })}
                       </Badge>
                     )}
                     {totalTents > 0 && (
                       <Badge variant="secondary" className="bg-orange-100 text-gray-900 border border-orange-300 font-semibold">
-                        <Tent className="w-3 h-3 mr-1" />
+                        <Tent className={`w-3 h-3 ${isRTL ? 'ml-1' : 'mr-1'}`} />
                         {t('reserve.tentsLabel', { count: totalTents })}
                       </Badge>
                     )}
@@ -1028,18 +1029,18 @@ export default function Reserve() {
                   <h3 className="font-semibold text-lg text-gray-900 mb-4">{t('reserve.priceBreakdownTitle')}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700 font-medium"> {t('reserve.pricePerDay', { price: camp.price.toFixed(3) })}</span>
-                      <span className="text-gray-900 font-semibold">{priceBreakdown.basePrice.toFixed(3)} BD</span>
+                      <span className="text-gray-700 font-medium">{t('reserve.pricePerDay', { price: camp.price.toFixed(3) })}</span>
+                      <span className="text-gray-900 font-semibold">{priceBreakdown.basePrice.toFixed(3)} {t('common.currency')}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-700 font-medium">{t('reserve.serviceFeeLabel')}</span>
-                      <span className="text-gray-900 font-semibold">{priceBreakdown.serviceFee.toFixed(3)} BD</span>
+                      <span className="text-gray-900 font-semibold">{priceBreakdown.serviceFee.toFixed(3)} {t('common.currency')}</span>
                     </div>
                     <div className="border-t border-orange-300 pt-3">
                       <div className="flex justify-between">
                         <span className="font-bold text-gray-900">{t('reserve.totalLabel')}</span>
                         <span className="font-bold text-xl text-[#6B4423]">
-                          {priceBreakdown.total.toFixed(3)} BD
+                          {priceBreakdown.total.toFixed(3)} {t('common.currency')}
                         </span>
                       </div>
                     </div>
