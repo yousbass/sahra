@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MapPin, Wifi, Utensils, Wind, Tent, ArrowLeft, Users, Home, Check, Loader2, Star as StarIcon, ShieldCheck, XCircle, Clock, Waves, Umbrella, Eye, Sofa, Tv, Coffee, Table2, Gamepad2, CircleDot, Sparkles } from 'lucide-react';
+import { MapPin, Wifi, Utensils, Wind, Tent, ArrowLeft, Users, Home, Check, Loader2, Star as StarIcon, ShieldCheck, XCircle, Clock, Waves, Umbrella, Eye, Sofa, Tv, Coffee, Table2, Gamepad2, CircleDot, Sparkles, Coins } from 'lucide-react';
 import { getCampById, canUserReview, createReview } from '@/lib/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -191,7 +191,65 @@ export default function CampDetails() {
   };
 
   const getPolicyDetails = (policy: CancellationPolicy) => {
-    switch (policy) {
+    // Handle new policy structure
+    if (typeof policy === 'object' && policy.type) {
+      if (policy.type === 'full_refundable') {
+        return {
+          name: 'Full Refundable',
+          icon: <ShieldCheck className="w-6 h-6 text-green-600" />,
+          color: 'green',
+          description: t('cancelSelector.fullRefundable.description'),
+          details: [
+            { 
+              time: '24+ hours before', 
+              refund: '100%', 
+              color: 'green', 
+              description: t('cancelSelector.fullRefundable.rule1')
+            },
+            { 
+              time: 'Less than 24 hours', 
+              refund: '0%', 
+              color: 'red', 
+              description: t('cancelSelector.fullRefundable.rule2')
+            }
+          ],
+          arboonPercentage: 0
+        };
+      } else if (policy.type === 'partial_refundable') {
+        const arboon = policy.arboonPercentage || 20;
+        return {
+          name: 'Partial Refundable',
+          icon: <Coins className="w-6 h-6 text-amber-600" />,
+          color: 'amber',
+          description: t('cancelSelector.partialRefundable.description'),
+          details: [
+            { 
+              time: '48+ hours before', 
+              refund: `${100 - arboon}%`, 
+              color: 'green', 
+              description: t('cancelSelector.partialRefundable.rule1')
+            },
+            { 
+              time: '24-48 hours before', 
+              refund: `${50 - arboon}%`, 
+              color: 'amber', 
+              description: t('cancelSelector.partialRefundable.rule2')
+            },
+            { 
+              time: 'Less than 24 hours', 
+              refund: '0%', 
+              color: 'red', 
+              description: t('cancelSelector.partialRefundable.rule3')
+            }
+          ],
+          arboonPercentage: arboon
+        };
+      }
+    }
+    
+    // Handle legacy string format (backward compatibility)
+    const legacyPolicy = typeof policy === 'string' ? policy : 'moderate';
+    switch (legacyPolicy) {
       case 'flexible':
         return {
           name: 'Flexible',
@@ -201,18 +259,8 @@ export default function CampDetails() {
           details: [
             { time: '24+ hours before', refund: '100%', color: 'green', description: 'Full refund (minus service fee)' },
             { time: 'Less than 24 hours', refund: '0%', color: 'red', description: 'No refund' }
-          ]
-        };
-      case 'moderate':
-        return {
-          name: 'Moderate',
-          icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
-          color: 'blue',
-          description: '50% refund if cancelled 48+ hours before check-in',
-          details: [
-            { time: '48+ hours before', refund: '50%', color: 'green', description: '50% refund' },
-            { time: 'Less than 48 hours', refund: '0%', color: 'red', description: 'No refund' }
-          ]
+          ],
+          arboonPercentage: 0
         };
       case 'strict':
         return {
@@ -223,7 +271,8 @@ export default function CampDetails() {
           details: [
             { time: '7+ days before', refund: '50%', color: 'green', description: '50% refund' },
             { time: 'Less than 7 days', refund: '0%', color: 'red', description: 'No refund' }
-          ]
+          ],
+          arboonPercentage: 0
         };
       default:
         return {
@@ -234,7 +283,8 @@ export default function CampDetails() {
           details: [
             { time: '48+ hours before', refund: '50%', color: 'green', description: '50% refund' },
             { time: 'Less than 48 hours', refund: '0%', color: 'red', description: 'No refund' }
-          ]
+          ],
+          arboonPercentage: 0
         };
     }
   };
@@ -286,10 +336,12 @@ export default function CampDetails() {
   const checkInTime = camp?.checkInTime || '08:00 AM';
   const checkOutTime = camp?.checkOutTime || '03:00 AM';
 
-  // Get cancellation policy (default to moderate if not set)
-  const cancellationPolicy = (camp.refundPolicy === 'refundable' ? 'flexible' : 
-                              camp.refundPolicy === 'non-refundable' ? 'strict' : 
-                              'moderate') as CancellationPolicy;
+  // Get cancellation policy with backward compatibility
+  const cancellationPolicy = camp.cancellationPolicy || 
+    (camp.refundPolicy === 'refundable' ? { type: 'full_refundable' as const } : 
+     camp.refundPolicy === 'non-refundable' ? { type: 'partial_refundable' as const, arboonPercentage: 50 } : 
+     { type: 'full_refundable' as const });
+  
   const policyDetails = getPolicyDetails(cancellationPolicy);
 
   // Get kashta-specific fields
@@ -478,7 +530,7 @@ export default function CampDetails() {
               </Card>
             )}
 
-            {/* Cancellation Policy */}
+            {/* Cancellation Policy - UPDATED */}
             <Card className="bg-white/95 backdrop-blur-sm border-sand-300 p-6 shadow-xl">
               <div className="flex items-center gap-3 mb-4">
                 {policyDetails.icon}
@@ -490,18 +542,35 @@ export default function CampDetails() {
                   className={`text-base px-4 py-2 ${
                     policyDetails.color === 'green' 
                       ? 'bg-green-100 text-green-800 border-green-300' 
+                      : policyDetails.color === 'amber'
+                      ? 'bg-amber-100 text-amber-800 border-amber-300'
                       : policyDetails.color === 'blue'
                       ? 'bg-blue-100 text-blue-800 border-blue-300'
                       : 'bg-orange-100 text-orange-800 border-orange-300'
                   } border-2`}
                 >
-                  {t(`campDetails.policy.${policyDetails.name.toLowerCase()}.name`)} {t('campDetails.cancellationPolicy')}
+                  {policyDetails.name}
                 </Badge>
               </div>
 
               <p className="text-gray-700 font-medium mb-4">
-                {t(`campDetails.policy.${policyDetails.name.toLowerCase()}.description`)}
+                {policyDetails.description}
               </p>
+
+              {/* Show عربون info if applicable */}
+              {policyDetails.arboonPercentage > 0 && (
+                <div className="mb-4 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Coins className="w-5 h-5 text-amber-600" />
+                    <h3 className="font-bold text-gray-900">
+                      {t('cancelSelector.partialRefundable.arboonLabel')}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    <span className="font-bold text-amber-700">{policyDetails.arboonPercentage}%</span> {t('cancelSelector.partialRefundable.arboonHelper')}
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-3">
                 {policyDetails.details.map((detail, index) => (
@@ -510,17 +579,21 @@ export default function CampDetails() {
                     className={`flex items-start gap-3 p-3 rounded-lg border ${
                       detail.color === 'green' 
                         ? 'bg-green-50 border-green-200' 
+                        : detail.color === 'amber'
+                        ? 'bg-amber-50 border-amber-200'
                         : 'bg-red-50 border-red-200'
                     }`}
                   >
                     {detail.color === 'green' ? (
                       <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    ) : detail.color === 'amber' ? (
+                      <Clock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                     ) : (
                       <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                     )}
                     <div>
-                      <p className="font-semibold text-gray-900">{t(`campDetails.policy.${policyDetails.name.toLowerCase()}.detail${index + 1}`)}</p>
-                      <p className="text-sm text-gray-700">{t(`campDetails.policy.${policyDetails.name.toLowerCase()}.detail${index + 1}Note`)}</p>
+                      <p className="font-semibold text-gray-900">{detail.time}: {detail.refund} refund</p>
+                      <p className="text-sm text-gray-700">{detail.description}</p>
                     </div>
                   </div>
                 ))}
@@ -757,6 +830,7 @@ export default function CampDetails() {
                   <span className="text-gray-700 font-medium">{policyDetails.name} Cancellation</span>
                   <span className={`font-semibold ${
                     policyDetails.color === 'green' ? 'text-green-600' : 
+                    policyDetails.color === 'amber' ? 'text-amber-600' :
                     policyDetails.color === 'blue' ? 'text-blue-600' : 
                     'text-orange-600'
                   }`}>

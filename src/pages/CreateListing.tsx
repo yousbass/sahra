@@ -142,7 +142,7 @@ export default function CreateListing() {
   const [rules, setRules] = useState('');
   
   // Cancellation Policy
-  const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>('moderate');
+  const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>({ type: 'full_refundable' });
   
   const [submitting, setSubmitting] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
@@ -1095,8 +1095,8 @@ export default function CreateListing() {
 
             {/* Cancellation Policy */}
             <CancellationPolicySelector
-              selectedPolicy={cancellationPolicy}
-              onPolicyChange={setCancellationPolicy}
+              value={cancellationPolicy}
+              onChange={setCancellationPolicy}
             />
 
             {/* Additional Details - UPDATED: Conditional label based on listing type */}

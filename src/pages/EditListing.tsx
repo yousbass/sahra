@@ -84,7 +84,7 @@ export default function EditListing() {
   const [rules, setRules] = useState('');
   
   // Cancellation Policy
-  const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>('moderate');
+  const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>({ type: 'full_refundable' });
   
   const [gettingLocation, setGettingLocation] = useState(false);
 
@@ -157,7 +157,7 @@ export default function EditListing() {
       setSelectedAmenities(campData.amenities || []);
       setSpecialFeatures(campData.specialFeatures || '');
       setRules(campData.rules || '');
-      setCancellationPolicy(campData.cancellationPolicy || 'moderate');
+      setCancellationPolicy(campData.cancellationPolicy || { type: 'full_refundable' });
       
       // Load check-in/check-out times
       setCheckInTime(campData.checkInTime || '08:00 AM');
@@ -977,8 +977,8 @@ export default function EditListing() {
 
             {/* Cancellation Policy */}
             <CancellationPolicySelector
-              selectedPolicy={cancellationPolicy}
-              onPolicyChange={setCancellationPolicy}
+              value={cancellationPolicy}
+              onChange={setCancellationPolicy}
             />
 
             {/* Additional Details */}

@@ -2,76 +2,113 @@ export interface RefundCalculation {
   refundAmount: number;
   refundPercentage: number;
   serviceFee: number;
+  arboonAmount: number; // Non-refundable deposit (عربون)
   canCancel: boolean;
   message: string;
 }
 
-export type CancellationPolicy = 'flexible' | 'moderate' | 'strict';
+// New cancellation policy types
+export type CancellationPolicyType = 'full_refundable' | 'partial_refundable';
+
+export interface CancellationPolicy {
+  type: CancellationPolicyType;
+  arboonPercentage?: number; // Only for partial_refundable (10-50%)
+  refundRules?: RefundRule[]; // Only for partial_refundable
+}
+
+export interface RefundRule {
+  hoursBeforeCheckIn: number; // Minimum hours before check-in
+  refundPercentage: number; // Percentage of (total - arboon) to refund
+  description: string;
+}
+
+// Default refund rules for partial_refundable policy
+export const DEFAULT_PARTIAL_REFUND_RULES: RefundRule[] = [
+  {
+    hoursBeforeCheckIn: 48,
+    refundPercentage: 100,
+    description: 'Full refund (minus عربون) if cancelled 48+ hours before check-in'
+  },
+  {
+    hoursBeforeCheckIn: 24,
+    refundPercentage: 50,
+    description: '50% refund (minus عربون) if cancelled 24-48 hours before check-in'
+  },
+  {
+    hoursBeforeCheckIn: 0,
+    refundPercentage: 0,
+    description: 'No refund if cancelled less than 24 hours before check-in'
+  }
+];
 
 /**
- * Calculate refund for guest-initiated cancellations
+ * Calculate refund for guest-initiated cancellations with new عربون system
  */
 export function calculateRefund(
   totalAmount: number,
   checkInDate: Date,
   cancellationDate: Date,
-  cancellationPolicy: CancellationPolicy = 'moderate'
+  policy: CancellationPolicy
 ): RefundCalculation {
   // Service fee is always non-refundable (10% of total)
   const serviceFee = totalAmount * 0.10;
-  const refundableAmount = totalAmount - serviceFee;
   
   // Calculate hours until check-in
   const hoursUntilCheckIn = (checkInDate.getTime() - cancellationDate.getTime()) / (1000 * 60 * 60);
   
   let refundPercentage = 0;
   let message = '';
+  let arboonAmount = 0;
   
-  // Apply cancellation policy rules
-  switch (cancellationPolicy) {
-    case 'flexible':
-      if (hoursUntilCheckIn >= 24) {
-        refundPercentage = 100;
-        message = 'Full refund (cancelled 24+ hours before check-in)';
-      } else {
-        refundPercentage = 0;
-        message = 'No refund (cancelled less than 24 hours before check-in)';
+  if (policy.type === 'full_refundable') {
+    // Full Refundable Policy: 100% refund if cancelled 24+ hours before
+    if (hoursUntilCheckIn >= 24) {
+      refundPercentage = 100;
+      message = 'Full refund (cancelled 24+ hours before check-in)';
+    } else {
+      refundPercentage = 0;
+      message = 'No refund (cancelled less than 24 hours before check-in)';
+    }
+    
+    const refundableAmount = totalAmount - serviceFee;
+    const refundAmount = (refundableAmount * refundPercentage) / 100;
+    
+    return {
+      refundAmount,
+      refundPercentage,
+      serviceFee,
+      arboonAmount: 0,
+      canCancel: true,
+      message
+    };
+  } else {
+    // Partial Refundable with عربون
+    arboonAmount = totalAmount * ((policy.arboonPercentage || 20) / 100);
+    const refundableBase = totalAmount - serviceFee - arboonAmount;
+    
+    // Find applicable refund rule
+    const rules = policy.refundRules || DEFAULT_PARTIAL_REFUND_RULES;
+    const sortedRules = [...rules].sort((a, b) => b.hoursBeforeCheckIn - a.hoursBeforeCheckIn);
+    
+    for (const rule of sortedRules) {
+      if (hoursUntilCheckIn >= rule.hoursBeforeCheckIn) {
+        refundPercentage = rule.refundPercentage;
+        message = rule.description;
+        break;
       }
-      break;
-      
-    case 'moderate':
-      if (hoursUntilCheckIn >= 120) { // 5 days
-        refundPercentage = 100;
-        message = 'Full refund (cancelled 5+ days before check-in)';
-      } else if (hoursUntilCheckIn >= 48) {
-        refundPercentage = 50;
-        message = '50% refund (cancelled 2-5 days before check-in)';
-      } else {
-        refundPercentage = 0;
-        message = 'No refund (cancelled less than 48 hours before check-in)';
-      }
-      break;
-      
-    case 'strict':
-      if (hoursUntilCheckIn >= 168) { // 7 days
-        refundPercentage = 50;
-        message = '50% refund (cancelled 7+ days before check-in)';
-      } else {
-        refundPercentage = 0;
-        message = 'No refund (cancelled less than 7 days before check-in)';
-      }
-      break;
+    }
+    
+    const refundAmount = (refundableBase * refundPercentage) / 100;
+    
+    return {
+      refundAmount,
+      refundPercentage,
+      serviceFee,
+      arboonAmount,
+      canCancel: true,
+      message
+    };
   }
-  
-  const refundAmount = (refundableAmount * refundPercentage) / 100;
-  
-  return {
-    refundAmount,
-    refundPercentage,
-    serviceFee,
-    canCancel: true,
-    message
-  };
 }
 
 /**
@@ -142,7 +179,31 @@ export function calculateHostCancellationRefund(
     refundAmount: totalAmount,
     refundPercentage: 100,
     serviceFee: 0,
+    arboonAmount: 0,
     canCancel: true,
     message: 'Full refund (host-initiated cancellation)'
+  };
+}
+
+/**
+ * Helper function to create a full refundable policy
+ */
+export function createFullRefundablePolicy(): CancellationPolicy {
+  return {
+    type: 'full_refundable'
+  };
+}
+
+/**
+ * Helper function to create a partial refundable policy with عربون
+ */
+export function createPartialRefundablePolicy(
+  arboonPercentage: number = 20,
+  customRules?: RefundRule[]
+): CancellationPolicy {
+  return {
+    type: 'partial_refundable',
+    arboonPercentage,
+    refundRules: customRules || DEFAULT_PARTIAL_REFUND_RULES
   };
 }

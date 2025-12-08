@@ -2,11 +2,11 @@
 // Supports both Camp (desert camping) and Kashta (beachfront sitting areas)
 
 import { Timestamp } from 'firebase/firestore';
+import { CancellationPolicy } from '@/lib/refundCalculator';
 
 export type ListingType = 'camp' | 'kashta';
 export type ShadeType = 'tent' | 'umbrella' | 'pergola' | 'natural';
 export type ViewType = 'beach' | 'mixed'; // UPDATED: Removed 'sea' - Beach View covers both sea and beach
-export type CancellationPolicy = 'flexible' | 'moderate' | 'strict';
 
 export interface ImageData {
   id: string;

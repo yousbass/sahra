@@ -224,24 +224,29 @@ const resources = {
       },
       
       // Cancellation Policy Selector
+      
+      // Cancellation Policy Selector - NEW SYSTEM
       cancelSelector: {
         title: 'Cancellation Policy',
-        subtitle: 'Choose how flexible you want to be with cancellations',
-        mostPopular: 'Most Popular',
-        flexible: {
-          name: 'Flexible',
-          line1: 'Full refund if cancelled 24 hours before check-in',
-          line2: '50% refund if cancelled within 24 hours'
+        subtitle: 'Choose your refund policy for guest cancellations',
+        recommended: 'Recommended',
+        fullRefundable: {
+          name: 'Full Refundable',
+          description: 'Guests receive 100% refund if they cancel within the allowed timeframe',
+          rule1: 'Cancel 24+ hours before check-in: Full refund (minus 10% service fee)',
+          rule2: 'Cancel less than 24 hours: No refund',
+          example: 'Example: Guest books for 100 BD. If cancelled 48 hours before, they get 90 BD back (100 BD - 10 BD service fee).'
         },
-        moderate: {
-          name: 'Moderate',
-          line1: 'Full refund if cancelled 5 days before check-in',
-          line2: '50% refund if cancelled 2-5 days before'
-        },
-        strict: {
-          name: 'Strict',
-          line1: 'Full refund if cancelled 7 days before check-in',
-          line2: 'No refund if cancelled within 7 days'
+        partialRefundable: {
+          name: 'Partial Refundable with عربون',
+          description: 'A portion of the booking is kept as non-refundable deposit (عربون)',
+          arboonLabel: 'عربون (Non-refundable Deposit)',
+          arboonHelper: 'Set the percentage of booking price kept as عربون',
+          refundRules: 'Refund Rules:',
+          rule1: 'Cancel 48+ hours before: Refund all except عربون and service fee',
+          rule2: 'Cancel 24-48 hours before: Refund 50% (minus عربون and service fee)',
+          rule3: 'Cancel less than 24 hours: No refund',
+          example: 'Example: Guest books for 100 BD with {{arboon}}% عربون. If cancelled 48 hours before, they get back: 100 - {{arboon}} (عربون) - 10 (service fee) = {{refund}} BD.'
         }
       },
       
@@ -1024,26 +1029,32 @@ const resources = {
             detail1Note: 'استرداد 50٪',
             detail2: 'أقل من 7 أيام',
             detail2Note: 'لا يوجد استرداد'
-          }
-        }
-      },
       
-      // Cancellation Policy Selector
+        },
+      // Cancellation Policy Selector - NEW SYSTEM (Arabic)
       cancelSelector: {
         title: 'سياسة الإلغاء',
-        subtitle: 'اختر مدى المرونة التي تريدها مع الإلغاءات',
-        mostPopular: 'الأكثر شيوعاً',
-        flexible: {
-          name: 'مرن',
-          line1: 'استرداد كامل إذا تم الإلغاء قبل 24 ساعة من تسجيل الوصول',
-          line2: 'استرداد 50٪ إذا تم الإلغاء خلال 24 ساعة'
+        subtitle: 'اختر سياسة الاسترداد لإلغاءات الضيوف',
+        recommended: 'موصى به',
+        fullRefundable: {
+          name: 'قابل للاسترداد بالكامل',
+          description: 'يحصل الضيوف على استرداد 100٪ إذا ألغوا ضمن الإطار الزمني المسموح',
+          rule1: 'الإلغاء قبل 24+ ساعة من تسجيل الوصول: استرداد كامل (ناقص 10٪ رسوم خدمة)',
+          rule2: 'الإلغاء قبل أقل من 24 ساعة: لا يوجد استرداد',
+          example: 'مثال: حجز الضيف بـ 100 د.ب. إذا ألغى قبل 48 ساعة، يسترد 90 د.ب (100 د.ب - 10 د.ب رسوم خدمة).'
         },
-        moderate: {
-          name: 'معتدل',
-          line1: 'استرداد كامل إذا تم الإلغاء قبل 5 أيام من تسجيل الوصول',
-          line2: 'استرداد 50٪ إذا تم الإلغاء قبل 2-5 أيام'
-        },
-        strict: {
+        partialRefundable: {
+          name: 'قابل للاسترداد جزئياً مع عربون',
+          description: 'يتم الاحتفاظ بجزء من الحجز كعربون غير قابل للاسترداد',
+          arboonLabel: 'عربون (غير قابل للاسترداد)',
+          arboonHelper: 'حدد نسبة سعر الحجز المحتفظ بها كعربون',
+          refundRules: 'قواعد الاسترداد:',
+          rule1: 'الإلغاء قبل 48+ ساعة: استرداد الكل ما عدا العربون ورسوم الخدمة',
+          rule2: 'الإلغاء قبل 24-48 ساعة: استرداد 50٪ (ناقص العربون ورسوم الخدمة)',
+          rule3: 'الإلغاء قبل أقل من 24 ساعة: لا يوجد استرداد',
+          example: 'مثال: حجز الضيف بـ 100 د.ب مع {{arboon}}٪ عربون. إذا ألغى قبل 48 ساعة، يسترد: 100 - {{arboon}} (عربون) - 10 (رسوم خدمة) = {{refund}} د.ب.'
+        }
+      },
           name: 'صارم',
           line1: 'استرداد كامل إذا تم الإلغاء قبل 7 أيام من تسجيل الوصول',
           line2: 'لا يوجد استرداد إذا تم الإلغاء خلال 7 أيام'
