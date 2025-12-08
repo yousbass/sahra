@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { 
   Phone, 
   CreditCard, 
@@ -22,8 +21,6 @@ import {
   getHostApplicationByUserId,
   updatePhoneVerification
 } from '@/lib/hostApplication';
-import { auth } from '@/lib/firebase';
-import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult, FirebaseError } from 'firebase/auth';
 
 export default function BecomeHost() {
   const navigate = useNavigate();
@@ -33,15 +30,11 @@ export default function BecomeHost() {
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cprNumber, setCprNumber] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [step, setStep] = useState<'form' | 'verify' | 'success'>('form');
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [step, setStep] = useState<'form' | 'success'>('form');
   const [applicationId, setApplicationId] = useState<string | null>(null);
   
   const [submitting, setSubmitting] = useState(false);
-  const [sendingOTP, setSendingOTP] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -60,14 +53,6 @@ export default function BecomeHost() {
     if (user) {
       checkExistingApplication();
     }
-
-    return () => {
-      // Cleanup reCAPTCHA on unmount
-      const recaptchaContainer = document.getElementById('recaptcha-container');
-      if (recaptchaContainer) {
-        recaptchaContainer.innerHTML = '';
-      }
-    };
   }, [user, userData, authLoading, navigate, t]);
 
   const checkExistingApplication = async () => {
@@ -107,36 +92,7 @@ export default function BecomeHost() {
     return cprRegex.test(cpr);
   };
 
-  const setupRecaptcha = () => {
-    try {
-      const recaptchaContainer = document.getElementById('recaptcha-container');
-      if (!recaptchaContainer) {
-        throw new Error('reCAPTCHA container not found');
-      }
-
-      // Clear any existing reCAPTCHA
-      recaptchaContainer.innerHTML = '';
-
-      // Create new RecaptchaVerifier
-      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          console.log('✅ reCAPTCHA verified');
-        },
-        'expired-callback': () => {
-          console.warn('⚠️ reCAPTCHA expired');
-          toast.error('Verification expired. Please try again.');
-        }
-      });
-
-      return verifier;
-    } catch (error) {
-      console.error('Error setting up reCAPTCHA:', error);
-      throw error;
-    }
-  };
-
-  const handleSendOTP = async () => {
+  const handleVerifyPhone = () => {
     if (!phoneNumber) {
       toast.error(t('messages.phoneRequired') || 'Phone number is required');
       return;
@@ -150,98 +106,9 @@ export default function BecomeHost() {
       return;
     }
 
-    setSendingOTP(true);
-
-    try {
-      console.log('📱 Setting up phone verification...');
-      
-      // Format phone number for Firebase (add +973 country code)
-      const formattedPhone = `+973${phoneNumber}`;
-      console.log('📞 Formatted phone:', formattedPhone);
-
-      // Setup reCAPTCHA
-      const appVerifier = setupRecaptcha();
-      console.log('✅ reCAPTCHA setup complete');
-
-      // Send OTP
-      console.log('📤 Sending OTP...');
-      const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
-      console.log('✅ OTP sent successfully');
-
-      setConfirmationResult(result);
-      setOtpSent(true);
-      toast.success(t('messages.otpSent') || 'OTP sent to your phone');
-    } catch (error) {
-      console.error('❌ Error sending OTP:', error);
-      
-      // Clear reCAPTCHA on error
-      const recaptchaContainer = document.getElementById('recaptcha-container');
-      if (recaptchaContainer) {
-        recaptchaContainer.innerHTML = '';
-      }
-
-      // Handle specific Firebase errors
-      let errorMessage = 'Failed to send OTP. Please try again.';
-      
-      const firebaseError = error as FirebaseError;
-      if (firebaseError.code === 'auth/invalid-phone-number') {
-        errorMessage = 'Invalid phone number format.';
-      } else if (firebaseError.code === 'auth/too-many-requests') {
-        errorMessage = 'Too many requests. Please try again later.';
-      } else if (firebaseError.code === 'auth/captcha-check-failed') {
-        errorMessage = 'Verification failed. Please refresh the page and try again.';
-      } else if (firebaseError.code === 'auth/operation-not-allowed') {
-        errorMessage = 'Phone authentication is not enabled. Please contact support.';
-      } else if (firebaseError.message) {
-        errorMessage = firebaseError.message;
-      }
-      
-      toast.error(errorMessage);
-    } finally {
-      setSendingOTP(false);
-    }
-  };
-
-  const handleVerifyOTP = async () => {
-    if (!otpCode || otpCode.length !== 6) {
-      toast.error(t('messages.invalidOtp') || 'Please enter a valid 6-digit code');
-      return;
-    }
-
-    if (!confirmationResult) {
-      toast.error('Please request OTP first');
-      return;
-    }
-
-    setVerifying(true);
-
-    try {
-      console.log('🔐 Verifying OTP...');
-      await confirmationResult.confirm(otpCode);
-      console.log('✅ Phone number verified successfully');
-
-      toast.success(t('messages.phoneVerified') || 'Phone number verified successfully');
-      
-      // Mark as verified and proceed to submission
-      setStep('verify');
-    } catch (error) {
-      console.error('❌ Error verifying OTP:', error);
-      
-      let errorMessage = 'Invalid verification code';
-      
-      const firebaseError = error as FirebaseError;
-      if (firebaseError.code === 'auth/invalid-verification-code') {
-        errorMessage = 'Invalid verification code. Please check and try again.';
-      } else if (firebaseError.code === 'auth/code-expired') {
-        errorMessage = 'Verification code expired. Please request a new one.';
-      } else if (firebaseError.message) {
-        errorMessage = firebaseError.message;
-      }
-      
-      toast.error(errorMessage);
-    } finally {
-      setVerifying(false);
-    }
+    // Mark phone as verified
+    setPhoneVerified(true);
+    toast.success(t('messages.phoneVerified') || 'Phone number confirmed');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -273,8 +140,8 @@ export default function BecomeHost() {
       return;
     }
 
-    if (step !== 'verify') {
-      toast.error(t('messages.verifyPhone') || 'Please verify your phone number first');
+    if (!phoneVerified) {
+      toast.error(t('messages.verifyPhone') || 'Please confirm your phone number first');
       return;
     }
 
@@ -405,30 +272,31 @@ export default function BecomeHost() {
                   type="tel"
                   placeholder="3XXXXXXX"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 8));
+                    setPhoneVerified(false);
+                  }}
                   maxLength={8}
                   required
-                  disabled={otpSent}
+                  disabled={phoneVerified}
                   className="flex-1 border-sand-300 focus:border-terracotta-500"
                 />
                 <Button
                   type="button"
-                  onClick={handleSendOTP}
-                  disabled={sendingOTP || otpSent || !phoneNumber}
-                  className="bg-terracotta-600 hover:bg-terracotta-700 text-white"
+                  onClick={handleVerifyPhone}
+                  disabled={phoneVerified || !phoneNumber || phoneNumber.length !== 8}
+                  className={phoneVerified 
+                    ? "bg-green-600 hover:bg-green-700 text-white" 
+                    : "bg-terracotta-600 hover:bg-terracotta-700 text-white"
+                  }
                 >
-                  {sendingOTP ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t('becomeHost.sending') || 'Sending...'}
-                    </>
-                  ) : otpSent ? (
+                  {phoneVerified ? (
                     <>
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      {t('becomeHost.sent') || 'Sent'}
+                      {t('becomeHost.confirmed') || 'Confirmed'}
                     </>
                   ) : (
-                    t('becomeHost.sendOtp') || 'Send OTP'
+                    t('becomeHost.confirm') || 'Confirm'
                   )}
                 </Button>
               </div>
@@ -436,52 +304,6 @@ export default function BecomeHost() {
                 {t('becomeHost.phoneHint') || 'Enter your Bahrain mobile number (8 digits)'}
               </p>
             </div>
-
-            {/* OTP Verification */}
-            {otpSent && (
-              <div className="space-y-2">
-                <Label htmlFor="otp" className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-terracotta-600" />
-                  {t('becomeHost.verificationCode') || 'Verification Code'}
-                  <span className="text-red-500">*</span>
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="otp"
-                    type="text"
-                    placeholder="000000"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    maxLength={6}
-                    required
-                    className="flex-1 border-sand-300 focus:border-terracotta-500 text-center text-2xl tracking-widest font-mono"
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleVerifyOTP}
-                    disabled={verifying || otpCode.length !== 6 || step === 'verify'}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    {verifying ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {t('becomeHost.verifying') || 'Verifying...'}
-                      </>
-                    ) : step === 'verify' ? (
-                      <>
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Verified
-                      </>
-                    ) : (
-                      t('becomeHost.verify') || 'Verify'
-                    )}
-                  </Button>
-                </div>
-                <p className="text-xs text-gray-600">
-                  {t('becomeHost.otpHint') || 'Enter the 6-digit code sent to your phone'}
-                </p>
-              </div>
-            )}
 
             {/* CPR Number */}
             <div className="space-y-2">
@@ -521,13 +343,10 @@ export default function BecomeHost() {
               </div>
             </div>
 
-            {/* reCAPTCHA container */}
-            <div id="recaptcha-container"></div>
-
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={submitting || step !== 'verify' || !phoneNumber || !cprNumber}
+              disabled={submitting || !phoneVerified || !phoneNumber || !cprNumber}
               className="w-full h-12 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-semibold text-lg shadow-lg"
             >
               {submitting ? (
