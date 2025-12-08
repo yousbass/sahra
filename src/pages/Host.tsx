@@ -107,7 +107,7 @@ export default function Host() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
+        <Loader2 className="w-8 h-8 text-amber-900 animate-spin" />
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function Host() {
         {/* Header */}
         <div className="mb-8">
           <div className={`flex items-center gap-3 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className="w-14 h-14 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 bg-gradient-to-br from-amber-700 to-amber-900 rounded-2xl flex items-center justify-center shadow-lg">
               <Crown className="w-7 h-7 text-white" />
             </div>
             <div className={isRTL ? 'text-right' : ''}>
@@ -187,10 +187,10 @@ export default function Host() {
           </Card>
         </div>
 
-        {/* Primary Action Card */}
+        {/* Primary Action Card - FIXED: Changed to dark brown background with white text for better contrast */}
         <Card 
           onClick={() => navigate('/host/create')}
-          className="bg-gradient-to-br from-#8B5A3C via-#6B4423 to-#5A3820 text-white p-8 md:p-10 shadow-xl hover:shadow-2xl transition-all cursor-pointer group mb-8 overflow-hidden relative"
+          className="bg-gradient-to-br from-amber-800 via-amber-900 to-stone-900 text-white p-8 md:p-10 shadow-xl hover:shadow-2xl transition-all cursor-pointer group mb-8 overflow-hidden relative"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32 group-hover:scale-150 transition-transform duration-700"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24 group-hover:scale-150 transition-transform duration-700"></div>
@@ -201,18 +201,18 @@ export default function Host() {
                 <Plus className="w-8 h-8 text-white" />
               </div>
               <div className={isRTL ? 'text-right' : ''}>
-                <h2 className="text-2xl md:text-3xl font-bold drop-shadow-lg">
+                <h2 className="text-2xl md:text-3xl font-bold drop-shadow-lg text-white">
                   {t('host.heroTitle')}
                 </h2>
               </div>
             </div>
-            <p className={`text-white/95 text-base md:text-lg mb-6 drop-shadow font-medium max-w-2xl ${isRTL ? 'text-right' : ''}`}>
+            <p className={`text-white text-base md:text-lg mb-6 drop-shadow-md font-medium max-w-2xl ${isRTL ? 'text-right' : ''}`}>
               {t('host.heroDesc')}
             </p>
             <Button
-              className="bg-white text-#6B4423 hover:bg-white/95 font-semibold shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg group-hover:scale-105"
+              className="bg-white text-amber-900 hover:bg-gray-50 font-semibold shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg group-hover:scale-105"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
               {t('host.heroCreate')}
             </Button>
           </div>
@@ -231,11 +231,11 @@ export default function Host() {
             className="bg-white border-2 border-orange-200 p-6 cursor-pointer hover:shadow-xl hover:border-orange-300 transition-all hover:-translate-y-1 group"
           >
             <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <div className="w-14 h-14 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-700 to-amber-900 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
                 <List className="w-7 h-7 text-white" />
               </div>
               <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
-                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-#6B4423 transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-amber-900 transition-colors">
                   {t('host.manageTitle')}
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
