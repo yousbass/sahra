@@ -293,7 +293,7 @@ export default function CampDetails() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-[#6B4423] animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">{t('campDetails.loading')}</p>
         </div>
       </div>
@@ -307,7 +307,7 @@ export default function CampDetails() {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('campDetails.notFound')}</h2>
           <Button
             onClick={() => navigate('/')}
-            className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold"
+            className="bg-gradient-to-r from-[#8B5A3C] to-[#6B4423] hover:from-[#6B4423] hover:to-[#5A3820] text-white font-semibold"
           >
             {t('campDetails.backToSearch')}
           </Button>
@@ -377,7 +377,7 @@ export default function CampDetails() {
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-3 mb-3">
-              <Badge className={`${isKashta ? 'bg-blue-600 hover:bg-blue-700' : 'bg-#6B4423 hover:bg-#5A3820'} text-white font-semibold px-3 py-1`}>
+              <Badge className={`${isKashta ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#6B4423] hover:bg-[#5A3820]'} text-white font-semibold px-3 py-1`}>
                 {isKashta ? (
                   <>
                     <Waves className="w-4 h-4 mr-1" />
@@ -426,8 +426,8 @@ export default function CampDetails() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Capacity */}
                 {(isKashta ? seatingCapacity : camp.maxGuests) && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-terracotta-50 rounded-lg border-2 border-orange-300">
-                    <Users className="w-6 h-6 text-#6B4423" />
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border-2 border-orange-300">
+                    <Users className="w-6 h-6 text-[#6B4423]" />
                     <div>
                       <p className="text-2xl font-bold text-gray-900">
                         {isKashta ? seatingCapacity : camp.maxGuests}
@@ -441,8 +441,8 @@ export default function CampDetails() {
                 
                 {/* Tents (Camp only) */}
                 {!isKashta && totalTents > 0 && (
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-terracotta-50 rounded-lg border-2 border-orange-300">
-                    <Tent className="w-6 h-6 text-#6B4423" />
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border-2 border-orange-300">
+                    <Tent className="w-6 h-6 text-[#6B4423]" />
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{totalTents}</p>
                       <p className="text-sm text-gray-700 font-medium">{t('campDetails.totalTents')}</p>
@@ -487,17 +487,17 @@ export default function CampDetails() {
               {/* Hours */}
               <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-5 h-5 text-#6B4423" />
+                  <Clock className="w-5 h-5 text-[#6B4423]" />
                   <h3 className="text-lg font-bold text-gray-900">
                     {isKashta ? t('listingType.kashta.hours') : t('campDetails.campHours')}
                   </h3>
                 </div>
                 <div className="space-y-1">
                   <p className="text-gray-900 font-semibold">
-                    {t('campDetails.checkIn')} <span className="text-#6B4423">{checkInTime}</span>
+                    {t('campDetails.checkIn')} <span className="text-[#6B4423]">{checkInTime}</span>
                   </p>
                   <p className="text-gray-900 font-semibold">
-                    {t('campDetails.checkOut')} <span className="text-#6B4423">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
+                    {t('campDetails.checkOut')} <span className="text-[#6B4423]">{checkOutTime}</span> <span className="text-sm text-gray-600">{t('campDetails.nextDay')}</span>
                   </p>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">
@@ -612,9 +612,9 @@ export default function CampDetails() {
                   {camp.amenities.map((amenity, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-orange-50 to-terracotta-50 rounded-lg border-2 border-orange-300"
+                      className="flex items-center gap-3 p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border-2 border-orange-300"
                     >
-                      <div className="text-#6B4423">
+                      <div className="text-[#6B4423]">
                         {getAmenityIcon(amenity)}
                       </div>
                       <span className="text-sm font-semibold text-gray-900">{amenity}</span>
@@ -626,11 +626,11 @@ export default function CampDetails() {
               )}
             </Card>
 
-            {/* Tent Details (Camp only) - REDESIGNED */}
+            {/* Tent Details (Camp only) - FIXED CONTRAST */}
             {!isKashta && tentDetails.length > 0 && (
               <Card className="bg-white/95 backdrop-blur-sm border-orange-300 shadow-xl overflow-hidden">
                 {/* Header with gradient background */}
-                <div className="bg-gradient-to-r from-#8B5A3C via-#6B4423 to-[#FF8C42] p-6">
+                <div className="bg-gradient-to-r from-[#8B5A3C] via-[#6B4423] to-[#FF8C42] p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -638,7 +638,7 @@ export default function CampDetails() {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-white">{t('campDetails.tentDetails', { defaultValue: 'Tent Details' })}</h2>
-                        <p className="text-white/90 text-sm font-medium mt-1">Explore our luxury tent accommodations</p>
+                        <p className="text-white text-sm font-medium mt-1">Explore our luxury tent accommodations</p>
                       </div>
                     </div>
                     <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 text-base px-4 py-2 font-bold">
@@ -659,8 +659,8 @@ export default function CampDetails() {
                     if (tent.pingPongTable) features.push({ name: t('campDetails.tentFeatures.pingPong', { defaultValue: 'Ping Pong' }), icon: <Table2 className="w-4 h-4" /> });
                     if (tent.foosballTable) features.push({ name: t('campDetails.tentFeatures.foosball', { defaultValue: 'Foosball' }), icon: <Gamepad2 className="w-4 h-4" /> });
                     if (tent.airHockeyTable) features.push({ name: t('campDetails.tentFeatures.airHockey', { defaultValue: 'Air Hockey' }), icon: <Gamepad2 className="w-4 h-4" /> });
-                    if (tent.volleyballField) features.push({ name: t('campDetails.tentFeatures.volleyball', { defaultValue: 'CircleDot' }), icon: <CircleDot className="w-4 h-4" /> });
-                    if (tent.footballField) features.push({ name: t('campDetails.tentFeatures.football', { defaultValue: 'CircleDot' }), icon: <CircleDot className="w-4 h-4" /> });
+                    if (tent.volleyballField) features.push({ name: t('campDetails.tentFeatures.volleyball', { defaultValue: 'Volleyball' }), icon: <CircleDot className="w-4 h-4" /> });
+                    if (tent.footballField) features.push({ name: t('campDetails.tentFeatures.football', { defaultValue: 'Football' }), icon: <CircleDot className="w-4 h-4" /> });
 
                     const typeLabel =
                       tent.type === 'large'
@@ -680,10 +680,10 @@ export default function CampDetails() {
                     return (
                       <div
                         key={tent.id || idx}
-                        className="group relative overflow-hidden rounded-xl border-2 border-orange-200 bg-gradient-to-br from-white via-orange-50 to-terracotta-50 hover:shadow-2xl hover:border-orange-300 transition-all duration-300"
+                        className="group relative overflow-hidden rounded-xl border-2 border-orange-200 bg-gradient-to-br from-white via-orange-50 to-orange-100 hover:shadow-2xl hover:border-orange-300 transition-all duration-300"
                       >
                         {/* Decorative gradient overlay */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-terracotta-200/30 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200/30 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         
                         <div className="relative p-5">
                           {/* Header */}
@@ -696,7 +696,7 @@ export default function CampDetails() {
                                 <h3 className="text-lg font-bold text-gray-900">
                                   {typeLabel} #{idx + 1}
                                 </h3>
-                                <p className="text-sm text-gray-600 font-medium">
+                                <p className="text-sm text-gray-700 font-medium">
                                   {features.length > 0 
                                     ? `${features.length} premium ${features.length === 1 ? 'feature' : 'features'}` 
                                     : 'Standard configuration'}
@@ -704,7 +704,7 @@ export default function CampDetails() {
                               </div>
                             </div>
                             {features.length > 0 && (
-                              <Badge className="bg-gradient-to-r from-#8B5A3C to-[#FF8C42] text-white border-0 px-3 py-1.5 font-bold shadow-md">
+                              <Badge className="bg-gradient-to-r from-[#8B5A3C] to-[#FF8C42] text-white border-0 px-3 py-1.5 font-bold shadow-md">
                                 <Sparkles className="w-3.5 h-3.5 mr-1" />
                                 Premium
                               </Badge>
@@ -717,9 +717,9 @@ export default function CampDetails() {
                               {features.map((feature, featureIdx) => (
                                 <div
                                   key={featureIdx}
-                                  className="flex items-center gap-2 p-2.5 bg-white/80 backdrop-blur-sm rounded-lg border border-orange-200 hover:border-terracotta-400 hover:shadow-lg hover:bg-orange-50 transition-all duration-200 group/feature"
+                                  className="flex items-center gap-2 p-2.5 bg-white/80 backdrop-blur-sm rounded-lg border border-orange-200 hover:border-orange-400 hover:shadow-lg hover:bg-orange-50 transition-all duration-200 group/feature"
                                 >
-                                  <div className="text-#6B4423 group-hover/feature:scale-110 transition-transform duration-200">
+                                  <div className="text-[#6B4423] group-hover/feature:scale-110 transition-transform duration-200">
                                     {feature.icon}
                                   </div>
                                   <span className="text-xs font-semibold text-gray-800">
@@ -733,7 +733,7 @@ export default function CampDetails() {
                           {/* Description */}
                           {tent.description && (
                             <div className="mt-3 p-3 bg-white/60 backdrop-blur-sm rounded-lg border border-orange-200">
-                              <p className="text-sm text-gray-700 leading-relaxed">
+                              <p className="text-sm text-gray-700 leading-relaxed font-medium">
                                 {tent.description}
                               </p>
                             </div>
@@ -762,7 +762,7 @@ export default function CampDetails() {
                 {user && canReview && (
                   <Button
                     onClick={() => setShowReviewForm(true)}
-                    className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820"
+                    className="bg-[#8B5A3C] hover:bg-[#6B4423] text-white font-semibold"
                   >
                     {t('campDetails.writeReview')}
                   </Button>
@@ -771,7 +771,7 @@ export default function CampDetails() {
                   <Button
                     onClick={() => navigate('/login')}
                     variant="outline"
-                    className="border-#8B5A3C text-#6B4423 hover:bg-orange-50"
+                    className="border-2 border-[#8B5A3C] text-[#6B4423] hover:bg-orange-50 font-semibold"
                   >
                     {t('campDetails.signInReview')}
                   </Button>
@@ -790,12 +790,12 @@ export default function CampDetails() {
             </div>
           </div>
 
-          {/* Booking Card */}
+          {/* Booking Card - FIXED CONTRAST */}
           <div className="lg:col-span-1">
             <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 sticky top-4 shadow-xl">
               <div className="mb-6">
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-4xl font-bold text-#6B4423">{camp.price}</span>
+                  <span className="text-4xl font-bold text-[#6B4423]">{camp.price}</span>
                   <span className="text-lg text-gray-700 font-medium">BD</span>
                 </div>
                 <p className="text-sm text-gray-600 font-medium">{t('campDetails.pricePerDay')}</p>
@@ -816,7 +816,7 @@ export default function CampDetails() {
               <Button
                 onClick={handleReserve}
                 disabled={!isActive}
-                className="w-full h-14 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-lg shadow-lg mb-4"
+                className="w-full h-14 bg-[#8B5A3C] hover:bg-[#6B4423] text-white font-semibold text-lg shadow-lg mb-4 disabled:opacity-50"
               >
                 {isActive ? t('campDetails.reserveNow') : t('campDetails.pendingApproval')}
               </Button>

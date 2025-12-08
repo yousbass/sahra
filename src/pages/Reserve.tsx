@@ -542,7 +542,7 @@ export default function Reserve() {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('reserve.campNotFound')}</h2>
           <Button
             onClick={() => navigate('/')}
-            className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold"
+            className="bg-gradient-to-r from-[#8B5A3C] to-[#6B4423] hover:from-[#6B4423] hover:to-[#5A3820] text-white font-semibold"
           >
             {t('reserve.backToSearch')}
           </Button>
@@ -569,7 +569,7 @@ export default function Reserve() {
             </Button>
             <Button
               onClick={() => navigate(`/camp/${camp.id}`)}
-              className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold"
+              className="bg-gradient-to-r from-[#8B5A3C] to-[#6B4423] hover:from-[#6B4423] hover:to-[#5A3820] text-white font-semibold"
             >
               {t('reserve.viewListing')}
             </Button>
@@ -612,7 +612,7 @@ export default function Reserve() {
                   <div id="booking-calendar-section">
                     {loadingAvailability ? (
                       <div className="flex items-center justify-center py-12">
-                        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin" />
+                        <Loader2 className="w-8 h-8 text-[#6B4423] animate-spin" />
                         <p className="ml-4 text-gray-600">{t('messages.loadingAvailability')}</p>
                       </div>
                     ) : availabilityError ? (
@@ -652,8 +652,8 @@ export default function Reserve() {
 
                   {/* Arrival Time */}
                   <div className="space-y-2">
-                    <Label htmlFor="arrivalTime" className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-#6B4423" />
+                    <Label htmlFor="arrivalTime" className="flex items-center gap-2 text-gray-900 font-semibold">
+                      <Clock className="w-4 h-4 text-[#6B4423]" />
                       {t('reserve.arrivalTime')}
                     </Label>
                     <Input
@@ -661,7 +661,7 @@ export default function Reserve() {
                       type="time"
                       value={arrivalTime}
                       onChange={(e) => setArrivalTime(e.target.value)}
-                      className="border-orange-300 focus:border-#8B5A3C text-gray-900"
+                      className="border-orange-300 focus:border-[#8B5A3C] text-gray-900"
                     />
                     <p className="text-xs text-gray-600 font-medium">
                       {t('reserve.checkinHint', { time: checkInTime })}
@@ -671,7 +671,7 @@ export default function Reserve() {
                   {/* Guests */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Users className="w-5 h-5 text-#6B4423" />
+                      <Users className="w-5 h-5 text-[#6B4423]" />
                       {t('reserve.guests')}
                     </h3>
                     {camp.maxGuests && (
@@ -711,7 +711,7 @@ export default function Reserve() {
                             if (guests < 1) setGuests(1);
                             if (camp.maxGuests && guests > camp.maxGuests) setGuests(camp.maxGuests);
                           }}
-                          className="h-12 text-center text-xl font-semibold border-2 border-orange-300 focus:border-#8B5A3C no-spin"
+                          className="h-12 text-center text-xl font-semibold border-2 border-orange-300 focus:border-[#8B5A3C] no-spin"
                         />
                         <p className="text-sm text-gray-700 mt-1 text-center font-medium">
                           {t('reserve.guestsLabelShort')}
@@ -731,11 +731,11 @@ export default function Reserve() {
                   {/* Contact Information */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Phone className="w-5 h-5 text-#6B4423" />
+                      <Phone className="w-5 h-5 text-[#6B4423]" />
                       {t('reserve.contactInfo')}
                     </h3>
                     <div className="space-y-2">
-                      <Label htmlFor="phone">{t('reserve.phone')}</Label>
+                      <Label htmlFor="phone" className="text-gray-900 font-semibold">{t('reserve.phone')}</Label>
                       <Input
                         id="phone"
                         type="tel"
@@ -743,7 +743,7 @@ export default function Reserve() {
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         required
-                        className="border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                        className="border-orange-300 focus:border-[#8B5A3C] text-gray-900 placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -751,7 +751,7 @@ export default function Reserve() {
                   {/* Special Requests */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-#6B4423" />
+                      <MessageSquare className="w-5 h-5 text-[#6B4423]" />
                       {t('reserve.specialRequests')}
                     </h3>
                     <Textarea
@@ -759,11 +759,11 @@ export default function Reserve() {
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
                       rows={4}
-                      className="border-orange-300 focus:border-#8B5A3C resize-none text-gray-900 placeholder:text-gray-400"
+                      className="border-orange-300 focus:border-[#8B5A3C] resize-none text-gray-900 placeholder:text-gray-400"
                     />
                   </div>
 
-                  {/* Payment Method */}
+                  {/* Payment Method - FIXED CONTRAST */}
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold text-gray-900">{t('reserve.paymentMethod')}</h3>
                     <div className="grid sm:grid-cols-2 gap-3">
@@ -772,24 +772,24 @@ export default function Reserve() {
                         onClick={() => setPaymentMethod('online')}
                         className={`w-full rounded-xl border-2 p-4 text-left transition ${
                           paymentMethod === 'online'
-                            ? 'border-#8B5A3C bg-orange-50 shadow-md'
-                            : 'border-orange-300 hover:border-orange-300 bg-white'
+                            ? 'border-[#8B5A3C] bg-orange-50 shadow-md'
+                            : 'border-orange-300 hover:border-orange-400 bg-white'
                         }`}
                       >
-                        <p className="font-semibold text-gray-900">{t('reserve.payOnline')}</p>
-                        <p className="text-sm text-gray-700">{t('reserve.payOnlineDesc')}</p>
+                        <p className="font-bold text-gray-900 text-base mb-1">{t('reserve.payOnline')}</p>
+                        <p className="text-sm text-gray-700 font-medium">{t('reserve.payOnlineDesc')}</p>
                       </button>
                       <button
                         type="button"
                         onClick={() => setPaymentMethod('cash_on_arrival')}
                         className={`w-full rounded-xl border-2 p-4 text-left transition ${
                           paymentMethod === 'cash_on_arrival'
-                            ? 'border-#8B5A3C bg-orange-50 shadow-md'
-                            : 'border-orange-300 hover:border-orange-300 bg-white'
+                            ? 'border-[#8B5A3C] bg-orange-50 shadow-md'
+                            : 'border-orange-300 hover:border-orange-400 bg-white'
                         }`}
                       >
-                        <p className="font-semibold text-gray-900">{t('reserve.cashOnArrival')}</p>
-                        <p className="text-sm text-gray-700">{t('reserve.cashOnArrivalDesc')}</p>
+                        <p className="font-bold text-gray-900 text-base mb-1">{t('reserve.cashOnArrival')}</p>
+                        <p className="text-sm text-gray-700 font-medium">{t('reserve.cashOnArrivalDesc')}</p>
                       </button>
                     </div>
                   </div>
@@ -797,7 +797,7 @@ export default function Reserve() {
                   <Button
                     type="submit"
                     disabled={!selectedDate || checkingAvailability || submitting}
-                    className="w-full h-14 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-14 bg-[#8B5A3C] hover:bg-[#6B4423] text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {checkingAvailability ? t('reserve.checkingAvailability') : submitting ? t('reserve.creatingReservation') : t('reserve.createReservation')}
                   </Button>
@@ -823,43 +823,43 @@ export default function Reserve() {
                     <p className="text-sm font-bold text-gray-900 mb-3">{t('reserve.bookingDetailsHeading')}</p>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">{t('reserve.bookingId')}</span>
+                        <span className="text-sm text-gray-700 font-medium">{t('reserve.bookingId')}</span>
                         <span className="text-sm font-semibold text-gray-900">{bookingId}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">{t('reserve.statusLabel')}</span>
+                        <span className="text-sm text-gray-700 font-medium">{t('reserve.statusLabel')}</span>
                         <div className="flex gap-2 items-center">
-                          <Badge variant="secondary" className="bg-amber-100 text-amber-900 border border-orange-300">
+                          <Badge variant="secondary" className="bg-amber-100 text-amber-900 border border-orange-300 font-semibold">
                             {t('reserve.pendingStatus')}
                           </Badge>
-                          <Badge variant="secondary" className="bg-orange-100 text-gray-900 border border-orange-300">
+                          <Badge variant="secondary" className="bg-orange-100 text-gray-900 border border-orange-300 font-semibold">
                             {paymentMethod === 'cash_on_arrival' ? t('reserve.methodCash') : t('reserve.methodOnline')}
                           </Badge>
                         </div>
                       </div>
                       {selectedDate && (
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-700">{t('reserve.dateLabel')}</span>
+                          <span className="text-sm text-gray-700 font-medium">{t('reserve.dateLabel')}</span>
                           <span className="text-sm font-semibold text-gray-900">
                             {format(selectedDate, 'EEEE, MMM dd, yyyy')}
                           </span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">{t('reserve.checkInLabel')}</span>
+                        <span className="text-sm text-gray-700 font-medium">{t('reserve.checkInLabel')}</span>
                         <span className="text-sm font-semibold text-gray-900">{checkInTime}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">{t('reserve.checkOutLabel')}</span>
+                        <span className="text-sm text-gray-700 font-medium">{t('reserve.checkOutLabel')}</span>
                         <span className="text-sm font-semibold text-gray-900">{checkOutTime} (next day)</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-700">{t('reserve.guestsLabelPayment')}</span>
+                        <span className="text-sm text-gray-700 font-medium">{t('reserve.guestsLabelPayment')}</span>
                         <span className="text-sm font-semibold text-gray-900">{guests}</span>
                       </div>
                       <div className="flex justify-between pt-2 border-t border-orange-300">
                         <span className="text-sm font-bold text-gray-900">{t('reserve.totalAmountLabel')}</span>
-                        <span className="text-lg font-bold text-#6B4423">
+                        <span className="text-lg font-bold text-[#6B4423]">
                           {priceBreakdown.total.toFixed(3)} BD
                         </span>
                       </div>
@@ -867,7 +867,7 @@ export default function Reserve() {
                   </div>
 
                   {paymentError && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+                    <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800 font-medium">
                       {paymentError}
                     </div>
                   )}
@@ -875,7 +875,7 @@ export default function Reserve() {
                   <Button
                     onClick={handlePayNow}
                     disabled={paying}
-                    className="w-full h-12 bg-#6B4423 hover:bg-#5A3820 text-white font-semibold shadow-lg disabled:opacity-50"
+                    className="w-full h-12 bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold shadow-lg disabled:opacity-50"
                   >
                     {paying ? t('reserve.payNowButton') : t('reserve.payNowButton')}
                   </Button>
@@ -884,7 +884,7 @@ export default function Reserve() {
                     <p className="text-sm font-semibold text-blue-900">
                       📱 {paymentMethod === 'cash_on_arrival' ? t('reserve.bringCash') : t('reserve.whatsNext')}
                     </p>
-                    <p className="text-sm text-blue-800">
+                    <p className="text-sm text-blue-800 font-medium">
                       {paymentMethod === 'cash_on_arrival'
                         ? t('reserve.payAnytime')
                         : t('reserve.methodsSupported')}
@@ -894,7 +894,7 @@ export default function Reserve() {
                   <div className="flex gap-3">
                     <Button
                       onClick={() => navigate('/bookings')}
-                      className="flex-1 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold"
+                      className="flex-1 bg-[#8B5A3C] hover:bg-[#6B4423] text-white font-semibold"
                     >
                       {t('reserve.viewBookings')}
                     </Button>
@@ -936,7 +936,7 @@ export default function Reserve() {
                       </Badge>
                     )}
                     {totalTents > 0 && (
-                      <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-900 border border-orange-300 font-semibold">
+                      <Badge variant="secondary" className="bg-orange-100 text-gray-900 border border-orange-300 font-semibold">
                         <Tent className="w-3 h-3 mr-1" />
                         {t('reserve.tentsLabel', { count: totalTents })}
                       </Badge>
@@ -956,17 +956,17 @@ export default function Reserve() {
                   <h3 className="font-semibold text-lg text-gray-900 mb-4">{t('reserve.priceBreakdownTitle')}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700"> {t('reserve.pricePerDay', { price: camp.price.toFixed(3) })}</span>
+                      <span className="text-gray-700 font-medium"> {t('reserve.pricePerDay', { price: camp.price.toFixed(3) })}</span>
                       <span className="text-gray-900 font-semibold">{priceBreakdown.basePrice.toFixed(3)} BD</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">{t('reserve.serviceFeeLabel')}</span>
+                      <span className="text-gray-700 font-medium">{t('reserve.serviceFeeLabel')}</span>
                       <span className="text-gray-900 font-semibold">{priceBreakdown.serviceFee.toFixed(3)} BD</span>
                     </div>
                     <div className="border-t border-orange-300 pt-3">
                       <div className="flex justify-between">
                         <span className="font-bold text-gray-900">{t('reserve.totalLabel')}</span>
-                        <span className="font-bold text-xl text-#6B4423">
+                        <span className="font-bold text-xl text-[#6B4423]">
                           {priceBreakdown.total.toFixed(3)} BD
                         </span>
                       </div>
