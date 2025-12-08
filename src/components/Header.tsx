@@ -68,7 +68,7 @@ export default function Header() {
             <img 
               src="/assets/mukhymat-logo.jpg" 
               alt="MUKHYMAT" 
-              className="h-10 sm:h-12 w-auto object-contain"
+              className="h-10 sm:h-12 w-10 sm:w-12 object-cover rounded-full shadow-sm"
             />
             <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#8B5A3C] to-[#FF8C42] bg-clip-text text-transparent">
               {t('header.brand')}
@@ -135,7 +135,7 @@ export default function Header() {
                       <User className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
                       {t('header.profile')}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignOut}>
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
                       <LogOut className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
                       {t('header.signOut')}
                     </DropdownMenuItem>
