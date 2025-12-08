@@ -90,7 +90,14 @@ const resources = {
           description: 'Beachfront sitting area by the sea',
           badge: 'Kashta',
           features: 'Beach access, water activities, sea views',
-          nameLabel: 'Kashta Name'
+          nameLabel: 'Kashta Name',
+          seatingCapacity: 'Seating Capacity',
+          beachfrontAccess: 'Beachfront Access',
+          shadeType: 'Shade Type',
+          viewType: 'View Type',
+          waterActivities: 'Water Activities',
+          accommodates: 'Up to {{count}} seats',
+          hours: 'Kashta Hours'
         },
         all: 'All Listings',
         selectType: 'Select Listing Type'
@@ -884,7 +891,15 @@ const resources = {
       common: {
         cancel: 'Cancel',
         currency: 'BD',
-        night: 'night'
+        night: 'night',
+        instantConfirmation: 'Instant Confirmation',
+        support247: '24/7 Support',
+        premiumFeatures: 'premium features',
+        premiumFeature: 'premium feature',
+        standardConfiguration: 'Standard configuration',
+        exploreAccommodations: 'Explore our luxury tent accommodations',
+        tent: 'Tent',
+        tents: 'Tents'
       },
       
       // Status labels
@@ -969,7 +984,7 @@ const resources = {
         signInAgain: 'تسجيل الدخول مرة أخرى'
       },
       
-      // Listing Type
+      // Listing Type (Arabic)
       listingType: {
         sectionTitle: 'اختر نوع القائمة',
         sectionDescription: 'اختر نوع القائمة التي تريد عرضها',
@@ -984,7 +999,14 @@ const resources = {
           description: 'منطقة جلوس على شاطئ البحر',
           badge: 'كشتة',
           features: 'وصول للشاطئ، أنشطة مائية، إطلالات بحرية',
-          nameLabel: 'اسم الكشتة'
+          nameLabel: 'اسم الكشتة',
+          seatingCapacity: 'سعة الجلوس',
+          beachfrontAccess: 'وصول مباشر للشاطئ',
+          shadeType: 'نوع الظل',
+          viewType: 'نوع الإطلالة',
+          waterActivities: 'الأنشطة المائية',
+          accommodates: 'حتى {{count}} مقعد',
+          hours: 'ساعات الكشتة'
         },
         all: 'جميع القوائم',
         selectType: 'اختر نوع القائمة'
@@ -1038,6 +1060,110 @@ const resources = {
         nonRefundable: 'غير قابل للاسترداد'
       },
       
+      // Camp Details page (Arabic) - NEW COMPLETE TRANSLATIONS
+      campDetails: {
+        loading: 'جارٍ تحميل تفاصيل المخيم...',
+        notFound: 'المخيم غير موجود',
+        back: 'العودة للبحث',
+        backToSearch: 'العودة للبحث',
+        pendingApproval: 'هذه القائمة في انتظار الموافقة',
+        overview: 'نظرة عامة',
+        about: 'عن هذا المخيم',
+        amenities: 'المرافق',
+        reviews: 'التقييمات',
+        campHours: 'ساعات المخيم',
+        checkIn: 'تسجيل الوصول',
+        checkOut: 'تسجيل المغادرة',
+        nextDay: 'اليوم التالي',
+        fullDayHint: 'تجربة يوم كامل من الصباح إلى اليوم التالي',
+        maxGuests: 'الحد الأقصى للضيوف',
+        totalTents: 'إجمالي الخيام',
+        pricePerDay: 'في اليوم',
+        reserveNow: 'احجز الآن',
+        cancellationPolicy: 'سياسة الإلغاء',
+        refundNote: 'إلغاء مجاني ضمن شروط السياسة',
+        writeReview: 'اكتب تقييماً',
+        reviewDialog: 'شارك تجربتك',
+        reviewSuccess: 'شكراً لك على تقييمك!',
+        signInReview: 'يرجى تسجيل الدخول لكتابة تقييم',
+        loadCampFailed: 'فشل تحميل تفاصيل المخيم',
+        accommodates: 'يستوعب',
+        tentsLabel: 'خيام',
+        tentDetails: 'تفاصيل الخيام',
+        tentTypes: {
+          small: 'خيمة صغيرة',
+          large: 'خيمة كبيرة',
+          entertainment: 'خيمة ترفيهية',
+          generic: 'خيمة'
+        },
+        tentFeatures: {
+          count: '{{count}} خيمة',
+          none: 'لم يتم تحديد ميزات',
+          noDetails: 'لا توجد تفاصيل متاحة',
+          furnished: 'مفروشة',
+          carpeted: 'مفروشة بالسجاد',
+          sofas: 'أرائك',
+          teaSets: 'أطقم شاي',
+          tv: 'تلفزيون',
+          airHockey: 'طاولة هوكي هوائي',
+          foosball: 'طاولة كرة القدم',
+          pingPong: 'طاولة تنس الطاولة',
+          football: 'ملعب كرة قدم',
+          volleyball: 'ملعب كرة طائرة'
+        },
+        policy: {
+          flexible: {
+            name: 'مرن',
+            description: 'استرداد كامل إذا تم الإلغاء قبل 24+ ساعة من تسجيل الوصول',
+            detail1: '24+ ساعة قبل تسجيل الوصول',
+            detail1Note: 'استرداد كامل (ناقص رسوم الخدمة)',
+            detail2: 'أقل من 24 ساعة',
+            detail2Note: 'بدون استرداد'
+          },
+          moderate: {
+            name: 'معتدل',
+            description: 'استرداد 50٪ إذا تم الإلغاء قبل 48+ ساعة من تسجيل الوصول',
+            detail1: '48+ ساعة قبل تسجيل الوصول',
+            detail1Note: 'استرداد 50٪',
+            detail2: 'أقل من 48 ساعة',
+            detail2Note: 'بدون استرداد'
+          },
+          strict: {
+            name: 'صارم',
+            description: 'استرداد 50٪ إذا تم الإلغاء قبل 7+ أيام من تسجيل الوصول',
+            detail1: '7+ أيام قبل تسجيل الوصول',
+            detail1Note: 'استرداد 50٪',
+            detail2: 'أقل من 7 أيام',
+            detail2Note: 'بدون استرداد'
+          }
+        }
+      },
+      
+      // Cancellation Policy Selector (Arabic)
+      cancelSelector: {
+        title: 'سياسة الإلغاء',
+        subtitle: 'اختر سياسة الاسترداد لإلغاءات الضيوف',
+        recommended: 'موصى به',
+        fullRefundable: {
+          name: 'استرداد كامل',
+          description: 'يحصل الضيوف على استرداد 100٪ إذا ألغوا ضمن الإطار الزمني المسموح',
+          rule1: 'الإلغاء قبل 24+ ساعة من تسجيل الوصول: استرداد كامل (ناقص 10٪ رسوم خدمة)',
+          rule2: 'الإلغاء قبل أقل من 24 ساعة: بدون استرداد',
+          example: 'مثال: ضيف يحجز بـ 100 دينار. إذا ألغى قبل 48 ساعة، يسترد 90 ديناراً (100 دينار - 10 دينار رسوم خدمة).'
+        },
+        partialRefundable: {
+          name: 'استرداد جزئي مع عربون',
+          description: 'يتم الاحتفاظ بجزء من الحجز كوديعة غير قابلة للاسترداد (عربون)',
+          arboonLabel: 'عربون (وديعة غير قابلة للاسترداد)',
+          arboonHelper: 'حدد نسبة سعر الحجز المحتفظ بها كعربون',
+          refundRules: 'قواعد الاسترداد:',
+          rule1: 'الإلغاء قبل 48+ ساعة: استرداد الكل ما عدا العربون ورسوم الخدمة',
+          rule2: 'الإلغاء قبل 24-48 ساعة: استرداد 50٪ (ناقص العربون ورسوم الخدمة)',
+          rule3: 'الإلغاء قبل أقل من 24 ساعة: بدون استرداد',
+          example: 'مثال: ضيف يحجز بـ 100 دينار مع {{arboon}}٪ عربون. إذا ألغى قبل 48 ساعة، يسترد: 100 - {{arboon}} (عربون) - 10 (رسوم خدمة) = {{refund}} دينار.'
+        }
+      },
+      
       // Filters (Arabic)
       filters: {
         location: 'الموقع',
@@ -1069,6 +1195,29 @@ const resources = {
         signOut: 'تسجيل الخروج',
         signIn: 'تسجيل الدخول',
         signUp: 'إنشاء حساب'
+      },
+      
+      // Common (Arabic)
+      common: {
+        cancel: 'إلغاء',
+        currency: 'د.ب',
+        night: 'ليلة',
+        instantConfirmation: 'تأكيد فوري',
+        support247: 'دعم على مدار الساعة',
+        premiumFeatures: 'ميزات مميزة',
+        premiumFeature: 'ميزة مميزة',
+        standardConfiguration: 'تكوين قياسي',
+        exploreAccommodations: 'استكشف أماكن الإقامة الفاخرة في خيامنا',
+        tent: 'خيمة',
+        tents: 'خيام'
+      },
+      
+      // Status labels (Arabic)
+      status: {
+        pending: 'قيد الانتظار',
+        confirmed: 'مؤكد',
+        cancelled: 'ملغى',
+        na: 'غير متاح'
       }
     }
   }
