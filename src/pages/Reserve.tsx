@@ -43,6 +43,7 @@ export default function Reserve() {
   const [arrivalTime, setArrivalTime] = useState('08:00');
   const [guests, setGuests] = useState(2);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [specialRequests, setSpecialRequests] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash_on_arrival'>('online');
   
@@ -227,6 +228,41 @@ export default function Reserve() {
     }
   };
 
+  // Validate phone number
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Remove all non-digit characters
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    // Check length (8-15 digits for international format)
+    if (digitsOnly.length < 8 || digitsOnly.length > 15) {
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Handle phone number change with validation
+  const handlePhoneChange = (value: string) => {
+    setPhoneNumber(value);
+    
+    // Clear error when user starts typing
+    if (phoneError && value.length > 0) {
+      setPhoneError(null);
+    }
+    
+    // Validate on blur or when length is sufficient
+    if (value.length >= 8) {
+      const digitsOnly = value.replace(/\D/g, '');
+      if (digitsOnly.length < 8) {
+        setPhoneError('Please enter a valid phone number (8-15 digits)');
+      } else if (digitsOnly.length > 15) {
+        setPhoneError('Phone number is too long (maximum 15 digits)');
+      } else {
+        setPhoneError(null);
+      }
+    }
+  };
+
   // Calculate price for single day
   const calculateDayPrice = () => {
     if (!camp || !selectedDate) return { basePrice: 0, serviceFee: 0, tax: 0, total: 0 };
@@ -305,6 +341,19 @@ export default function Reserve() {
 
     if (!phoneNumber) {
       toast.error(t('reserve.toastPhoneRequired'));
+      return;
+    }
+
+    // Validate phone number before submission
+    if (!validatePhoneNumber(phoneNumber)) {
+      const digitsOnly = phoneNumber.replace(/\D/g, '');
+      if (digitsOnly.length < 8) {
+        setPhoneError('Please enter a valid phone number (minimum 8 digits)');
+        toast.error('Please enter a valid phone number (8-15 digits)');
+      } else {
+        setPhoneError('Phone number is too long (maximum 15 digits)');
+        toast.error('Phone number is too long (maximum 15 digits)');
+      }
       return;
     }
 
@@ -728,23 +777,46 @@ export default function Reserve() {
                     </div>
                   </div>
 
-                  {/* Contact Information */}
+                  {/* Contact Information - FIXED VALIDATION */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                       <Phone className="w-5 h-5 text-[#6B4423]" />
                       {t('reserve.contactInfo')}
                     </h3>
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-gray-900 font-semibold">{t('reserve.phone')}</Label>
+                      <Label htmlFor="phone" className="text-gray-900 font-semibold">
+                        {t('reserve.phone')} <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="phone"
                         type="tel"
                         placeholder="+973 XXXX XXXX"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
+                        onBlur={() => {
+                          if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+                            const digitsOnly = phoneNumber.replace(/\D/g, '');
+                            if (digitsOnly.length < 8) {
+                              setPhoneError('Please enter a valid phone number (minimum 8 digits)');
+                            } else if (digitsOnly.length > 15) {
+                              setPhoneError('Phone number is too long (maximum 15 digits)');
+                            }
+                          }
+                        }}
                         required
-                        className="border-orange-300 focus:border-[#8B5A3C] text-gray-900 placeholder:text-gray-400"
+                        className={`border-orange-300 focus:border-[#8B5A3C] text-gray-900 placeholder:text-gray-400 ${
+                          phoneError ? 'border-red-500 focus:border-red-500' : ''
+                        }`}
                       />
+                      {phoneError && (
+                        <p className="text-xs text-red-600 font-medium flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {phoneError}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-600 font-medium">
+                        Enter a valid phone number (8-15 digits). Format: +973 XXXX XXXX or similar
+                      </p>
                     </div>
                   </div>
 
@@ -796,7 +868,7 @@ export default function Reserve() {
 
                   <Button
                     type="submit"
-                    disabled={!selectedDate || checkingAvailability || submitting}
+                    disabled={!selectedDate || checkingAvailability || submitting || !!phoneError}
                     className="w-full h-14 bg-[#8B5A3C] hover:bg-[#6B4423] text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {checkingAvailability ? t('reserve.checkingAvailability') : submitting ? t('reserve.creatingReservation') : t('reserve.createReservation')}
