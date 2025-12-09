@@ -238,7 +238,7 @@ export default function Bookings() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-amber-800 animate-spin mx-auto mb-4" />
           <p className="text-gray-700 font-medium">Loading your bookings...</p>
         </div>
       </div>
@@ -250,14 +250,14 @@ export default function Bookings() {
       <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
         <div className="max-w-md mx-auto pt-20">
           <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-full mx-auto flex items-center justify-center mb-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full mx-auto flex items-center justify-center mb-4">
               <Calendar className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">View Your Bookings</h2>
             <p className="text-gray-700 font-medium mb-6">Sign in to see your desert camp reservations</p>
             <Button
               onClick={() => navigate('/signin')}
-              className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white font-semibold shadow-lg"
             >
               Sign In
             </Button>
@@ -277,14 +277,14 @@ export default function Bookings() {
               ? t('bookingsUser.count', { count: currentBookings.length })
               : t('bookingsUser.count', { count: pastBookings.length })}
           </p>
-          <div className="mt-4 inline-flex rounded-xl border-2 border-orange-300 overflow-hidden">
+          <div className="mt-4 inline-flex rounded-xl border-2 border-amber-800 overflow-hidden">
             <button
               type="button"
               onClick={() => setViewMode('current')}
-              className={`px-4 py-2 font-semibold transition ${
+              className={`px-6 py-2.5 font-semibold transition ${
                 viewMode === 'current'
-                  ? 'bg-#6B4423 text-white'
-                  : 'bg-white text-gray-900 hover:bg-orange-100'
+                  ? 'bg-amber-800 text-white'
+                  : 'bg-white text-amber-800 hover:bg-amber-50'
               }`}
             >
               {t('bookingsUser.current', 'Current')}
@@ -292,10 +292,10 @@ export default function Bookings() {
             <button
               type="button"
               onClick={() => setViewMode('past')}
-              className={`px-4 py-2 font-semibold transition ${
+              className={`px-6 py-2.5 font-semibold transition ${
                 viewMode === 'past'
-                  ? 'bg-#6B4423 text-white'
-                  : 'bg-white text-gray-900 hover:bg-orange-100'
+                  ? 'bg-amber-800 text-white'
+                  : 'bg-white text-amber-800 hover:bg-amber-50'
               }`}
             >
               {t('bookingsUser.past', 'Past')}
@@ -305,7 +305,7 @@ export default function Bookings() {
 
         {displayedBookings.length === 0 ? (
           <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-12 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-#8B5A3C to-#6B4423 rounded-full mx-auto flex items-center justify-center mb-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full mx-auto flex items-center justify-center mb-4">
               <span className="text-4xl">🏕️</span>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -318,7 +318,7 @@ export default function Bookings() {
             </p>
             <Button
               onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
+              className="bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white font-semibold shadow-lg"
             >
               Explore Camps
             </Button>
@@ -364,21 +364,21 @@ export default function Bookings() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-4 h-4 text-#6B4423" />
+                        <Calendar className="w-4 h-4 text-amber-800" />
                         <div className="text-sm">
                           <p className="font-semibold">Check-in</p>
                           <p className="text-gray-600">{booking.checkIn}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-4 h-4 text-#6B4423" />
+                        <Calendar className="w-4 h-4 text-amber-800" />
                         <div className="text-sm">
                           <p className="font-semibold">Check-out</p>
                           <p className="text-gray-600">{booking.checkOut}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Users className="w-4 h-4 text-#6B4423" />
+                        <Users className="w-4 h-4 text-amber-800" />
                         <div className="text-sm">
                           <p className="font-semibold">Guests</p>
                           <p className="text-gray-600">{booking.guests}</p>
@@ -397,7 +397,7 @@ export default function Bookings() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-orange-300">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">Total Price</p>
-                        <p className="text-2xl font-bold text-#6B4423">
+                        <p className="text-2xl font-bold text-amber-800">
                           {booking.totalPrice} <span className="text-base text-gray-700">BD</span>
                         </p>
                       </div>
@@ -406,7 +406,7 @@ export default function Bookings() {
                           <DialogTrigger asChild>
                             <Button
                               variant="outline"
-                              className="flex-1 sm:flex-none border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
+                              className="flex-1 sm:flex-none border-2 border-amber-800 text-amber-800 hover:bg-amber-50 font-semibold"
                             >
                               {t('bookingsUser.viewDetails')}
                             </Button>
@@ -452,7 +452,7 @@ export default function Bookings() {
                                   <Button
                                     onClick={() => handlePayPending(booking)}
                                     disabled={payingBookingId === booking.id}
-                                    className="bg-#6B4423 hover:bg-#5A3820 text-white font-semibold"
+                                    className="bg-amber-800 hover:bg-amber-900 text-white font-semibold"
                                   >
                                     {payingBookingId === booking.id ? 'Starting Payment...' : 'Pay Now'}
                                   </Button>
@@ -558,10 +558,10 @@ export default function Bookings() {
                         {booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed' || booking.paymentStatus === 'cancelled') && (
                           <Button
                             onClick={() => handlePayPending(booking)}
-                            className="flex-1 sm:flex-none bg-#6B4423 hover:bg-#5A3820 text-white font-semibold"
+                            className="flex-1 sm:flex-none bg-amber-800 hover:bg-amber-900 text-white font-semibold"
                             disabled={payingBookingId === booking.id}
                           >
-                            {payingBookingId === booking.id ? t('bookingsUser.payNow') : t('bookingsUser.payNow')}
+                            {payingBookingId === booking.id ? t('bookingsUser.startingPayment') : t('bookingsUser.payNow')}
                           </Button>
                         )}
 
