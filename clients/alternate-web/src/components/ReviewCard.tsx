@@ -1,0 +1,130 @@
+import { ThumbsUp, Flag } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import RatingStars from './RatingStars';
+import { Review } from '@/lib/firestore';
+import { formatRelativeTime } from '@/lib/firestore';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+interface ReviewCardProps {
+  review: Review;
+  showCampName?: boolean;
+  onHelpful?: (reviewId: string) => void;
+  currentUserId?: string;
+}
+
+export default function ReviewCard({
+  review,
+  showCampName = false,
+  onHelpful,
+  currentUserId
+}: ReviewCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { i18n } = useTranslation();
+  const isLongReview = review.reviewText.length > 200;
+  const displayText = isExpanded || !isLongReview 
+    ? review.reviewText 
+    : review.reviewText.substring(0, 200) + '...';
+
+  const canVote = currentUserId && currentUserId !== review.userId && 
+    !review.helpfulVoters.includes(currentUserId);
+
+  const handleHelpful = () => {
+    if (canVote && onHelpful) {
+      onHelpful(review.id);
+    }
+  };
+
+  return (
+    <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+      <div className="flex items-start gap-4">
+        {/* User Avatar */}
+        <div className="flex-shrink-0">
+          {review.userPhoto ? (
+            <img
+              src={review.userPhoto}
+              alt={review.userName}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/40 to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-lg">
+              {review.userName.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
+
+        {/* Review Content */}
+        <div className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="font-semibold text-gray-900">{review.userName}</h4>
+                {review.verified && (
+                  <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
+                    ✓ Verified
+                  </Badge>
+                )}
+              </div>
+              <p className="text-sm text-gray-600" dir="ltr">
+                {new Date(review.checkInDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { month: 'short', day: 'numeric' })} – {new Date(review.checkOutDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <RatingStars rating={review.rating} size="sm" showValue />
+              <span className="text-xs text-gray-500">
+                {formatRelativeTime(review.createdAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* Review Text */}
+          <div className="mb-4">
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {displayText}
+            </p>
+            {isLongReview && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-primary hover:text-primary font-medium text-sm mt-2"
+              >
+                {isExpanded ? 'Show less' : 'Read more'}
+              </button>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleHelpful}
+              disabled={!canVote}
+              className={cn(
+                'text-gray-600 hover:text-primary',
+                !canVote && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              <ThumbsUp className="w-4 h-4 mr-1" />
+              Helpful ({review.helpful})
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:text-red-600"
+            >
+              <Flag className="w-4 h-4 mr-1" />
+              Report
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
+}

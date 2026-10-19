@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +16,7 @@ export default function NotFoundPage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild>
-            <a href="/">{t('notFound.returnHome')}</a>
+            <Link to="/">{t('notFound.returnHome')}</Link>
           </Button>
           <Button variant="outline" onClick={() => window.history.back()}>
             {t('notFound.goBack')}

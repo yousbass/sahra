@@ -1,8 +1,9 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ThumbsUp, Flag, Loader2 } from 'lucide-react';
+import { ThumbsUp, Flag } from 'lucide-react';
 import { getReviewsByCamp, markReviewHelpful, formatRelativeTime } from '@/lib/firestore';
 import RatingStars from './RatingStars';
 import type { Review } from '@/lib/firestore';
@@ -59,7 +60,7 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
   if (loading) {
     return (
       <Card className="p-8 text-center">
-        <Loader2 className="w-8 h-8 text-#6B4423 animate-spin mx-auto mb-2" />
+        <CampfireLoader size="md" className="mx-auto my-4" />
         <p className="text-gray-600">Loading reviews...</p>
       </Card>
     );
@@ -72,7 +73,7 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
         <Button
           onClick={loadReviews}
           variant="outline"
-          className="border-#8B5A3C text-#6B4423 hover:bg-orange-50"
+          className="border-primary text-primary hover:bg-secondary/50"
         >
           Try Again
         </Button>
@@ -106,7 +107,7 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
             <div className="flex items-start gap-4 mb-4">
               <Avatar className="w-12 h-12">
                 <AvatarImage src={review.userPhoto} alt={review.userName} />
-                <AvatarFallback className="bg-terracotta-100 text-#5A3820 font-semibold">
+                <AvatarFallback className="bg-secondary text-primary-foreground font-semibold">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
@@ -134,8 +135,8 @@ export default function ReviewsList({ campId, currentUserId }: ReviewsListProps)
                 disabled={hasVoted || !currentUserId}
                 className={`gap-2 ${
                   hasVoted
-                    ? 'text-#6B4423'
-                    : 'text-gray-600 hover:text-#6B4423'
+                    ? 'text-primary'
+                    : 'text-gray-600 hover:text-primary'
                 }`}
               >
                 <ThumbsUp className={`w-4 h-4 ${hasVoted ? 'fill-current' : ''}`} />

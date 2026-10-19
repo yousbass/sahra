@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -10,7 +11,6 @@ import {
   TrendingUp, 
   TrendingDown,
   ArrowRight,
-  Loader2,
   BarChart
 } from 'lucide-react';
 import { getAdminStats, getRecentActivity, AdminStats, RecentActivity } from '@/lib/firestore';
@@ -23,10 +23,10 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [bookingTrendData, setBookingTrendData] = useState<Array<{ month: string; bookings: number; revenue: number }>>([]);
   const [revenueStats, setRevenueStats] = useState<{
-    totalRevenue: number;
-    monthlyRevenue: number;
-    yearlyRevenue: number;
-    averageBookingValue: number;
+    currentMonth: number;
+    lastMonth: number;
+    total: number;
+    percentageChange: number;
   } | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
     return (
       <div className="text-center py-20">
         <p className="text-gray-600 mb-4">{error || 'Failed to load statistics'}</p>
-        <Button onClick={loadDashboardData} className="bg-#6B4423 hover:bg-#5A3820">
+        <Button onClick={loadDashboardData} className="bg-primary hover:bg-#5A3820">
           Retry
         </Button>
       </div>
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
           return (
             <Card
               key={index}
-              className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 hover:shadow-xl transition-all cursor-pointer group"
+              className="bg-white/95 backdrop-blur-sm border-border/80 p-6 hover:shadow-xl transition-all cursor-pointer group"
               onClick={card.action}
             >
               <div className="flex items-start justify-between mb-4">
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-gray-900 mb-2">{card.value}</p>
               <p className="text-xs text-gray-500">{card.subtitle}</p>
               
-              <div className="mt-4 flex items-center text-#6B4423 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="mt-4 flex items-center text-primary text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                 View Details
                 <ArrowRight className="w-4 h-4 ml-1" />
               </div>
@@ -157,39 +157,39 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button
             onClick={() => navigate('/admin/users')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border/80 hover:bg-secondary/50"
           >
-            <Users className="w-6 h-6 text-#6B4423" />
+            <Users className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">View All Users</span>
           </Button>
           <Button
             onClick={() => navigate('/admin/camps')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border/80 hover:bg-secondary/50"
           >
-            <Tent className="w-6 h-6 text-#6B4423" />
+            <Tent className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">Manage Camps</span>
           </Button>
           <Button
             onClick={() => navigate('/admin/bookings')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border/80 hover:bg-secondary/50"
           >
-            <Calendar className="w-6 h-6 text-#6B4423" />
+            <Calendar className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">View Bookings</span>
           </Button>
           <Button
             onClick={() => navigate('/admin/analytics')}
             variant="outline"
-            className="h-auto flex-col gap-2 py-4 border-2 border-orange-300 hover:bg-orange-50"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border/80 hover:bg-secondary/50"
           >
-            <BarChart className="w-6 h-6 text-#6B4423" />
+            <BarChart className="w-6 h-6 text-primary" />
             <span className="text-sm font-semibold">Analytics</span>
           </Button>
         </div>
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bookings Trend */}
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Bookings Trend (Last 12 Months)</h3>
           {bookingTrendData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Revenue by Month */}
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Revenue by Month (BD)</h3>
           {bookingTrendData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -267,12 +267,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
         {recentActivity.length > 0 ? (
           <div className="space-y-4">
             {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
                 <div className={`w-2 h-2 rounded-full mt-2 ${
                   activity.type === 'user' ? 'bg-blue-500' :
                   activity.type === 'camp' ? 'bg-green-500' :

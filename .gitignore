@@ -38,3 +38,10 @@ firebase-debug.log
 *.pem
 .vercel
 .env
+
+# Native tooling and generated output
+.expo/
+static-build/
+*.tsbuildinfo
+.env.*
+!.env.example

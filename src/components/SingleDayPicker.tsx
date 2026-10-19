@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar } from 'react-date-range';
 import { isSameDay, format } from 'date-fns';
 import 'react-date-range/dist/styles.css';
@@ -21,6 +22,7 @@ export const SingleDayPicker = ({
   checkInTime = '08:00 AM',
   checkOutTime = '03:00 AM'
 }: SingleDayPickerProps) => {
+  const { i18n } = useTranslation();
   console.log('=== SINGLE DAY PICKER RENDER ===');
   console.log('Booked dates count:', bookedDates.length);
   console.log('Booked dates:', bookedDates);
@@ -67,15 +69,15 @@ export const SingleDayPicker = ({
         minDate={minDate}
         disabledDay={disabledDay}
         color="#d97706"
-        className="rounded-lg border border-orange-300"
+        className="rounded-lg border border-border/80"
       />
       
       {selectedDate && (
-        <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+        <div className="mt-4 p-4 bg-secondary/50 rounded-lg border border-border">
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-1">Selected Day</p>
-            <p className="text-2xl font-bold text-#6B4423">
-              {format(selectedDate, 'EEEE, MMM dd, yyyy')}
+            <p className="text-2xl font-bold text-primary">
+              {selectedDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
             </p>
             <p className="text-sm text-gray-600 mt-2">
               Full day reservation ({checkInTime} - {checkOutTime} next day)

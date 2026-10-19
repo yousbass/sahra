@@ -51,7 +51,7 @@ export default function RatingStars({
         <Star
           className={cn(
             sizeClasses[size],
-            'text-gray-300'
+            'text-muted-foreground'
           )}
         />
         
@@ -59,9 +59,9 @@ export default function RatingStars({
         <Star
           className={cn(
             sizeClasses[size],
-            'absolute top-0 left-0 text-orange-500',
-            filled && 'fill-orange-500',
-            halfFilled && 'fill-orange-500'
+            'absolute top-0 left-0 text-primary',
+            filled && 'fill-primary',
+            halfFilled && 'fill-primary'
           )}
           style={
             halfFilled

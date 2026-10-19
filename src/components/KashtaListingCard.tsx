@@ -5,6 +5,8 @@ import { MapPin, Users, Waves, Eye } from 'lucide-react';
 import RatingStars from '@/components/RatingStars';
 import { RefundPolicyBadge } from '@/components/RefundPolicyBadge';
 import type { KashtaListing } from '@/types/listing';
+import { FavoriteButton } from '@/components/FavoriteButton';
+import { hasPeakPricing, getStartingRate } from '@/lib/peakPricing';
 
 interface KashtaListingCardProps {
   listing: KashtaListing;
@@ -31,13 +33,13 @@ export function KashtaListingCard({ listing, onClick }: KashtaListingCardProps) 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-              <Waves className="w-16 h-16 text-blue-400" />
+            <div className="w-full h-full bg-accent/10 flex items-center justify-center">
+              <Waves className="w-16 h-16 text-accent" />
             </div>
           )}
           
           {/* Listing type badge */}
-          <Badge className="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600">
+          <Badge className="absolute top-2 right-2 bg-accent hover:bg-accent/90 text-accent-foreground">
             <Waves className="w-3 h-3 mr-1" />
             {t('listingType.kashta.badge')}
           </Badge>
@@ -45,14 +47,16 @@ export function KashtaListingCard({ listing, onClick }: KashtaListingCardProps) 
           {/* Refund policy badge */}
           {listing.cancellationPolicy && (
             <div className="absolute top-2 left-2">
-              <RefundPolicyBadge policy={listing.cancellationPolicy} />
+              <RefundPolicyBadge policy={listing.cancellationPolicy as unknown as 'refundable' | 'non-refundable'} />
             </div>
           )}
+
+          <FavoriteButton campId={listing.id} size="sm" className="absolute bottom-2 ltr:right-2 rtl:left-2" />
         </div>
         
         {/* Listing details */}
         <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 line-clamp-1">
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2">
             {listing.title}
           </h3>
           
@@ -116,8 +120,11 @@ export function KashtaListingCard({ listing, onClick }: KashtaListingCardProps) 
           {/* Price */}
           <div className="flex items-center justify-between pt-3 border-t">
             <div>
+              {hasPeakPricing(listing) && (
+                <span className="text-sm font-medium text-gray-500 ltr:mr-1 rtl:ml-1 lowercase">{t('common.from')}</span>
+              )}
               <span className="text-2xl font-bold">
-                {listing.price} {t('common.currency')}
+                {hasPeakPricing(listing) ? getStartingRate(listing) : listing.price} {t('common.currency')}
               </span>
               <span className="text-sm font-normal text-gray-600">
                 /{t('common.night')}

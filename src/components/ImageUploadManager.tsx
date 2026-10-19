@@ -1,9 +1,10 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Upload, X, Check, GripVertical, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Check, GripVertical, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { uploadImage, deleteImage, validateImageFile } from '@/lib/imageUpload';
@@ -221,8 +222,8 @@ export function ImageUploadManager({
         className={cn(
           'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
           isDragging
-            ? 'border-#8B5A3C bg-orange-50'
-            : 'border-orange-300 hover:border-#8B5A3C',
+            ? 'border-primary bg-secondary/50'
+            : 'border-border/80 hover:border-primary',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
       >
@@ -237,7 +238,7 @@ export function ImageUploadManager({
         />
         
         <div className="flex flex-col items-center gap-3">
-          <Upload className="w-12 h-12 text-#6B4423" />
+          <Upload className="w-12 h-12 text-primary" />
           <div>
             <p className="text-gray-900 font-semibold mb-1">
               {isDragging ? 'Drop images here' : 'Click to upload or drag and drop'}
@@ -277,7 +278,7 @@ export function ImageUploadManager({
                 onDragOver={(e) => handleDragOverImage(e, index)}
                 className={cn(
                   'relative group overflow-hidden border-2 transition-all',
-                  image.isMain ? 'border-green-500 ring-2 ring-green-200' : 'border-orange-300',
+                  image.isMain ? 'border-green-500 ring-2 ring-green-200' : 'border-border/80',
                   draggedIndex === index && 'opacity-50',
                   !image.uploading && !disabled && 'cursor-move'
                 )}
@@ -293,7 +294,7 @@ export function ImageUploadManager({
                   {/* Upload Progress */}
                   {image.uploading && (
                     <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
-                      <Loader2 className="w-8 h-8 text-white animate-spin" />
+                      <CampfireLoader size="md" className="mx-auto my-4" />
                       <Progress value={image.progress || 0} className="w-3/4" />
                       <p className="text-white text-sm font-medium">
                         {image.progress || 0}%
@@ -349,7 +350,7 @@ export function ImageUploadManager({
 
                 {/* Mobile-friendly actions */}
                 {!image.uploading && (
-                  <div className="sm:hidden flex items-center justify-between px-3 py-2 bg-white border-t border-orange-200">
+                  <div className="sm:hidden flex items-center justify-between px-3 py-2 bg-white border-t border-border">
                     <Button
                       type="button"
                       size="sm"
@@ -375,7 +376,7 @@ export function ImageUploadManager({
             ))}
           </div>
 
-          <div className="p-3 bg-orange-50 border border-orange-300 rounded-lg">
+          <div className="p-3 bg-secondary border border-border/80 rounded-lg">
             <p className="text-sm text-gray-700">
               <strong>💡 Tips:</strong>
             </p>

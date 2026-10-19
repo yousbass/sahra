@@ -25,10 +25,12 @@ import type {
   KashtaListing,
   ListingType,
   FilterState,
+} from '@/types/listing';
+import {
   isCampListing,
   isKashtaListing,
   validateCampFields,
-  validateKashtaFields
+  validateKashtaFields,
 } from '@/types/listing';
 
 // Get all active listings

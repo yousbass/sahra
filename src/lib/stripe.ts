@@ -4,6 +4,7 @@
  */
 
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import type { PaymentIntent } from '@stripe/stripe-js';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import app from './firebase';
 
@@ -73,7 +74,7 @@ export const confirmPayment = async (
 ): Promise<{
   success: boolean;
   status: string;
-  paymentIntent?: Stripe.PaymentIntent;
+  paymentIntent?: PaymentIntent;
   error?: string;
 }> => {
   console.log('=== CONFIRM PAYMENT ===');

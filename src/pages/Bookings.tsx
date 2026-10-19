@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -11,15 +12,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Calendar, MapPin, Users, Loader2, X, Star } from 'lucide-react';
+import { Calendar, MapPin, Users, X, Star, Tent, Banknote, MessageCircle, Flag, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { getBookingsByUser, Booking, getCampById, Camp, canUserReview, createReview } from '@/lib/firestore';
+import { getBookingsByUser, Booking, getCampById, Camp, canUserReview, createReview, getMyDisputes, type GuestDisputeStatus } from '@/lib/firestore';
+import { getDepartureDate, getDepartureDateStr } from '@/lib/bookingDates';
+import { MessagingDialog } from '@/components/MessagingDialog';
 import { toast } from 'sonner';
 import ReviewForm from '@/components/ReviewForm';
 import { CancellationDialog } from '@/components/CancellationDialog';
-import type { CancellationPolicy } from '@/lib/refundCalculator';
-import { createPaymentSession } from '@/lib/payments';
+import { ReportIssueDialog } from '@/components/ReportIssueDialog';
+import { createPaymentSession, verifyBookingPayment } from '@/lib/payments';
 import { useTranslation } from 'react-i18next';
+import { PatternDunes } from '@/components/BackgroundPatterns';
 
 interface BookingWithCamp extends Booking {
   camp?: Camp;
@@ -36,8 +40,29 @@ export default function Bookings() {
   const [reviewingBooking, setReviewingBooking] = useState<BookingWithCamp | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'current' | 'past'>('current');
-  const { t } = useTranslation();
+  const [verifyingBookingId, setVerifyingBookingId] = useState<string | null>(null);
+  // Per-booking verification outcome: 'failed' means terminal failure (Pay Now re-exposed),
+  // 'inflight' means the charge is still being processed (Pay Now stays hidden).
+  // Using a single Map keeps the two states mutually exclusive.
+  const [verifyOutcome, setVerifyOutcome] = useState<Map<string, 'inflight' | 'failed'>>(new Map());
+  const [viewMode, setViewMode] = useState<'current' | 'past' | 'cancelled'>('current');
+  const [messagingBooking, setMessagingBooking] = useState<BookingWithCamp | null>(null);
+  const [reportingBooking, setReportingBooking] = useState<BookingWithCamp | null>(null);
+  const [myDisputes, setMyDisputes] = useState<Map<string, GuestDisputeStatus>>(new Map());
+  const { t, i18n } = useTranslation();
+
+  // Load the guest's own dispute reports so resolved ones can be surfaced.
+  useEffect(() => {
+    if (!user) return;
+    getMyDisputes().then(list => {
+      const map = new Map<string, GuestDisputeStatus>();
+      // Keep the most recent dispute per booking (list is createdAt-desc).
+      for (const d of list) {
+        if (!map.has(d.bookingId)) map.set(d.bookingId, d);
+      }
+      setMyDisputes(map);
+    }).catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     console.log('=== BOOKINGS PAGE ===');
@@ -70,9 +95,9 @@ export default function Bookings() {
       const userBookings = await getBookingsByUser(user.uid);
       console.log('✅ Successfully loaded bookings:', userBookings);
       
-      // FIXED: Filter out cancelled bookings completely
-      const activeBookings = userBookings.filter(booking => booking.status !== 'cancelled');
-      console.log(`📋 Filtered bookings: ${userBookings.length} total, ${activeBookings.length} active (${userBookings.length - activeBookings.length} cancelled removed)`);
+      // Keep cancelled bookings so guests can track refund status on them —
+      // they are shown under the dedicated "Cancelled" view.
+      const activeBookings = userBookings;
       
       // Fetch camp details and check review eligibility for each active booking
       const bookingsWithCamps = await Promise.all(
@@ -80,10 +105,11 @@ export default function Bookings() {
           try {
             const camp = await getCampById(booking.campId);
             
-            // Check if booking is eligible for review
-            const checkOutDate = new Date(booking.checkOutDate);
+            // Check if booking is eligible for review — use the real
+            // departure date (checkOutDate equals checkInDate by convention).
+            const departure = getDepartureDate(booking);
             const today = new Date();
-            const isCompleted = checkOutDate < today && booking.status !== 'cancelled';
+            const isCompleted = departure < today && booking.status !== 'cancelled';
             
             let eligibleForReview = false;
             if (isCompleted && !booking.reviewId) {
@@ -105,6 +131,16 @@ export default function Bookings() {
       );
       
       setBookings(bookingsWithCamps);
+
+      // Clear stale pending/failed notices for bookings that are now paid
+      setVerifyOutcome(prev => {
+        if (prev.size === 0) return prev;
+        const next = new Map(prev);
+        for (const b of bookingsWithCamps) {
+          if (b.paymentStatus === 'paid') next.delete(b.id);
+        }
+        return next.size === prev.size ? prev : next;
+      });
     } catch (error) {
       console.error('❌ Error loading bookings:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -149,7 +185,7 @@ export default function Bookings() {
           userName: user.displayName || user.email || 'Anonymous',
           userPhoto: user.photoURL,
           checkInDate: reviewingBooking.checkInDate,
-          checkOutDate: reviewingBooking.checkOutDate
+          checkOutDate: getDepartureDateStr(reviewingBooking)
         },
         user.uid
       );
@@ -166,6 +202,39 @@ export default function Bookings() {
     }
   };
 
+  const handleVerifyPayment = async (booking: BookingWithCamp) => {
+    if (!booking.tapChargeId) return;
+    setVerifyingBookingId(booking.id);
+    try {
+      const result = await verifyBookingPayment(booking.id, booking.tapChargeId);
+      if (!result.checked) {
+        toast.error(t('bookingsUser.verifyPaymentError'));
+      } else if (result.settled) {
+        toast.success(t('bookingsUser.verifyPaymentSuccess'));
+        setVerifyOutcome(prev => { const m = new Map(prev); m.delete(booking.id); return m; });
+        loadBookings();
+      } else {
+        // Block Pay Now only for known in-flight Tap statuses. Every other
+        // status (FAILED, CANCELLED, VOID, DECLINED, RESTRICTED, and any
+        // future Tap status the server doesn't explicitly list) is treated as
+        // terminal — the server will create a fresh charge when the guest
+        // retries, so it is safe to re-expose Pay Now.
+        const inFlightStatuses = new Set(['INITIATED', 'AUTHORIZED', 'CAPTURED']);
+        const statusUpper = result.status ? result.status.toUpperCase() : '';
+        if (!inFlightStatuses.has(statusUpper)) {
+          setVerifyOutcome(prev => new Map(prev).set(booking.id, 'failed'));
+        } else {
+          setVerifyOutcome(prev => new Map(prev).set(booking.id, 'inflight'));
+        }
+        toast.info(t('bookingsUser.verifyPaymentPending'));
+      }
+    } catch {
+      toast.error(t('bookingsUser.verifyPaymentError'));
+    } finally {
+      setVerifyingBookingId(null);
+    }
+  };
+
   const handlePayPending = async (booking: BookingWithCamp) => {
     if (!user) return;
     setPayingBookingId(booking.id);
@@ -173,7 +242,7 @@ export default function Bookings() {
     try {
       const redirectUrl =
         import.meta.env.VITE_PAYMENT_REDIRECT_URL ||
-        `${window.location.origin}/payment-success?bookingId=${booking.id}`;
+        `${window.location.origin}${import.meta.env.BASE_URL}payment/success?bookingId=${booking.id}`;
 
       const session = await createPaymentSession({
         amount: booking.totalPrice,
@@ -211,7 +280,8 @@ export default function Bookings() {
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    const locale = i18n.language === 'ar' ? 'ar-BH' : 'en-US';
+    return date.toLocaleDateString(locale, {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -220,26 +290,56 @@ export default function Bookings() {
   };
 
   const isPastBooking = (booking: BookingWithCamp) => {
-    const endDateStr = (booking as { checkOutDate?: string }).checkOutDate || booking.checkOut;
-    if (!endDateStr) return false;
-    const end = new Date(endDateStr);
-    if (isNaN(end.getTime())) return false;
+    // checkOutDate === checkInDate by convention; the checkOut datetime
+    // carries the real departure day.
+    const end = getDepartureDate(booking);
     end.setHours(0, 0, 0, 0);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return end < today;
   };
 
-  const currentBookings = bookings.filter(b => !isPastBooking(b));
-  const pastBookings = bookings.filter(b => isPastBooking(b));
-  const displayedBookings = viewMode === 'current' ? currentBookings : pastBookings;
+  // An online booking whose payment hold lapsed before it was paid.
+  // Display-only: the client never cancels these; the server/webhook owns state.
+  const isExpiredUnpaidOnline = (booking: BookingWithCamp) =>
+    booking.paymentMethod !== 'cash_on_arrival' &&
+    booking.status !== 'cancelled' &&
+    (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed') &&
+    typeof booking.expiresAt === 'number' &&
+    booking.expiresAt < Date.now();
+
+  // Payment action is only offered while the hold is still valid and no
+  // Tap charge is already in flight. When tapChargeId is present the guest
+  // must verify first; Pay Now re-appears only after verification confirms
+  // the charge was not settled (i.e. the session truly failed/cancelled).
+  const canPayOnline = (booking: BookingWithCamp) =>
+    booking.paymentMethod !== 'cash_on_arrival' &&
+    booking.status !== 'cancelled' &&
+    (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed') &&
+    !isExpiredUnpaidOnline(booking) &&
+    (!booking.tapChargeId || verifyOutcome.get(booking.id) === 'failed');
+
+  // Verify action is offered for any unpaid online booking that already has a
+  // stored Tap charge — covers both 'pending' and 'failed' paymentStatus so a
+  // guest with a failed booking + in-flight charge is never locked out.
+  const canVerifyPayment = (booking: BookingWithCamp) =>
+    booking.paymentMethod !== 'cash_on_arrival' &&
+    booking.status !== 'cancelled' &&
+    (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed') &&
+    !!booking.tapChargeId;
+
+  const currentBookings = bookings.filter(b => b.status !== 'cancelled' && !isPastBooking(b));
+  const pastBookings = bookings.filter(b => b.status !== 'cancelled' && isPastBooking(b));
+  const cancelledBookings = bookings.filter(b => b.status === 'cancelled');
+  const displayedBookings =
+    viewMode === 'current' ? currentBookings : viewMode === 'past' ? pastBookings : cancelledBookings;
 
   if (loading || loadingBookings) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b desert-bg p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-amber-800 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">Loading your bookings...</p>
+          <CampfireLoader size="lg" className="mx-auto mb-4" />
+          <p className="text-gray-700 font-medium">{t('bookingsUser.loadingYourBookings', 'Loading your bookings…')}</p>
         </div>
       </div>
     );
@@ -247,19 +347,19 @@ export default function Bookings() {
 
   if (!user || !userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+      <div className="min-h-screen bg-gradient-to-b desert-bg p-4">
         <div className="max-w-md mx-auto pt-20">
-          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full mx-auto flex items-center justify-center mb-4">
-              <Calendar className="w-10 h-10 text-white" />
+          <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-8 text-center shadow-xl">
+            <div className="w-20 h-20 bg-primary/20 rounded-full mx-auto flex items-center justify-center mb-4">
+              <Calendar className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">View Your Bookings</h2>
-            <p className="text-gray-700 font-medium mb-6">Sign in to see your desert camp reservations</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('bookingsUser.signInView')}</h2>
+            <p className="text-gray-700 font-medium mb-6">{t('bookingsUser.signInDesc')}</p>
             <Button
               onClick={() => navigate('/signin')}
-              className="w-full h-12 bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg lantern-halo"
             >
-              Sign In
+              {t('bookingsUser.signInButton')}
             </Button>
           </Card>
         </div>
@@ -268,23 +368,21 @@ export default function Bookings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b desert-bg p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-20">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('bookingsUser.title')}</h1>
           <p className="text-gray-700 font-medium">
-            {viewMode === 'current'
-              ? t('bookingsUser.count', { count: currentBookings.length })
-              : t('bookingsUser.count', { count: pastBookings.length })}
+            {t('bookingsUser.count', { count: displayedBookings.length })}
           </p>
-          <div className="mt-4 inline-flex rounded-xl border-2 border-amber-800 overflow-hidden">
+          <div className="mt-4 inline-flex rounded-xl border-2 border-primary overflow-hidden">
             <button
               type="button"
               onClick={() => setViewMode('current')}
               className={`px-6 py-2.5 font-semibold transition ${
                 viewMode === 'current'
-                  ? 'bg-amber-800 text-white'
-                  : 'bg-white text-amber-800 hover:bg-amber-50'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background text-primary hover:bg-secondary'
               }`}
             >
               {t('bookingsUser.current', 'Current')}
@@ -294,19 +392,31 @@ export default function Bookings() {
               onClick={() => setViewMode('past')}
               className={`px-6 py-2.5 font-semibold transition ${
                 viewMode === 'past'
-                  ? 'bg-amber-800 text-white'
-                  : 'bg-white text-amber-800 hover:bg-amber-50'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background text-primary hover:bg-secondary'
               }`}
             >
               {t('bookingsUser.past', 'Past')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('cancelled')}
+              className={`px-6 py-2.5 font-semibold transition ${
+                viewMode === 'cancelled'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background text-primary hover:bg-secondary'
+              }`}
+            >
+              {t('bookingsUser.cancelledTab', 'Cancelled')}
             </button>
           </div>
         </div>
 
         {displayedBookings.length === 0 ? (
-          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-12 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full mx-auto flex items-center justify-center mb-4">
-              <span className="text-4xl">🏕️</span>
+          <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-12 text-center shadow-xl relative overflow-hidden">
+            <PatternDunes color="#0A1128" opacity={0.05} />
+            <div className="w-20 h-20 bg-primary/20 rounded-full mx-auto flex items-center justify-center mb-4">
+              <Tent className="w-10 h-10 text-primary mx-auto" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               {viewMode === 'current' ? t('bookingsUser.emptyTitle') : t('bookingsUser.emptyTitle')}
@@ -318,7 +428,7 @@ export default function Bookings() {
             </p>
             <Button
               onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white font-semibold shadow-lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg lantern-halo"
             >
               Explore Camps
             </Button>
@@ -328,11 +438,11 @@ export default function Bookings() {
             {displayedBookings.map((booking) => (
               <Card
                 key={booking.id}
-                className="bg-white/95 backdrop-blur-sm overflow-hidden hover:shadow-xl transition-shadow border-orange-300"
+                className="bg-white/95 backdrop-blur-sm overflow-hidden hover:shadow-xl transition-shadow border-border/80"
               >
                 <div className="flex flex-col md:flex-row gap-4 p-4">
                   <img
-                    src={booking.campPhoto}
+                    src={booking.campImages?.[0] ?? ''}
                     alt={booking.campTitle}
                     className="w-full md:w-48 h-48 object-cover rounded-lg flex-shrink-0"
                     onError={(e) => {
@@ -346,7 +456,7 @@ export default function Bookings() {
                           {booking.campTitle}
                         </h3>
                         <div className="flex items-center text-gray-700 text-sm font-medium">
-                          <MapPin className="w-4 h-4 mr-1" />
+                          <MapPin className="w-4 h-4 ltr:mr-1 rtl:ml-1" />
                           <span>{booking.campLocation}</span>
                         </div>
                       </div>
@@ -356,31 +466,78 @@ export default function Bookings() {
                         </span>
                       )}
                       {booking.status === 'pending' && (
-                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-semibold rounded-full">
-                          PENDING
-                        </span>
+                        isExpiredUnpaidOnline(booking) ? (
+                          <span className="px-3 py-1 bg-gray-200 text-gray-600 text-sm font-semibold rounded-full">
+                            {t('bookingsUser.expiredBadge')}
+                          </span>
+                        ) : booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending') ? (
+                          <span className="px-3 py-1 bg-amber-100 text-amber-800 text-sm font-semibold rounded-full">
+                            {t('bookingsUser.awaitingPaymentBadge')}
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-semibold rounded-full">
+                            PENDING
+                          </span>
+                        )
+                      )}
+                      {booking.status === 'cancelled' && (
+                        <div className="flex flex-col items-end gap-1.5">
+                          <span className="px-3 py-1 bg-red-100 text-red-700 text-sm font-semibold rounded-full">
+                            {t('status.cancelled', 'Cancelled')}
+                          </span>
+                          {(booking.refundStatus === 'refunded' || booking.paymentStatus === 'refunded') ? (
+                            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200">
+                              {t('bookingsUser.refunded', 'Refunded')}
+                              {booking.refundAmount ? ` · ${Number(booking.refundAmount).toFixed(3)} BHD` : ''}
+                            </span>
+                          ) : (booking.refundStatus === 'processing' || booking.refundStatus === 'pending') ? (
+                            <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full border border-blue-200">
+                              {t('bookingsUser.refundProcessing', 'Refund processing')}
+                              {booking.refundAmount ? ` · ${Number(booking.refundAmount).toFixed(3)} BHD` : ''}
+                            </span>
+                          ) : null}
+                        </div>
                       )}
                     </div>
 
+                    {booking.paymentMethod === 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending') && booking.status !== 'cancelled' && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-amber-800 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200 w-fit">
+                          <Banknote className="w-4 h-4" />
+                          <span className="font-medium">{t('reserve.cashDueBadge', 'Payment due at check-in')}</span>
+                        </div>
+                        {booking.status === 'confirmed' && (
+                          <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-sm">
+                            <p className="font-semibold text-gray-800 mb-1">{t('bookingsUser.cashNextTitle', 'What happens next')}</p>
+                            <ul className="list-disc list-inside space-y-0.5">
+                              <li>{t('bookingsUser.cashNext1', 'Your host will contact you to confirm arrival details')}</li>
+                              <li>{t('bookingsUser.cashNext2', 'Bring cash on the day of check-in')}</li>
+                              <li>{t('bookingsUser.cashNext3', 'Payment is collected by the host at the site')}</li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-4 h-4 text-amber-800" />
+                        <Calendar className="w-4 h-4 text-primary" />
                         <div className="text-sm">
-                          <p className="font-semibold">Check-in</p>
-                          <p className="text-gray-600">{booking.checkIn}</p>
+                          <p className="font-semibold">{t('bookingsUser.checkIn')}</p>
+                          <p className="text-gray-600">{formatDate(booking.checkInDate)}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-4 h-4 text-amber-800" />
+                        <Calendar className="w-4 h-4 text-primary" />
                         <div className="text-sm">
-                          <p className="font-semibold">Check-out</p>
-                          <p className="text-gray-600">{booking.checkOut}</p>
+                          <p className="font-semibold">{t('bookingsUser.checkOut')}</p>
+                          <p className="text-gray-600">{formatDate(getDepartureDateStr(booking))}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700">
-                        <Users className="w-4 h-4 text-amber-800" />
+                        <Users className="w-4 h-4 text-primary" />
                         <div className="text-sm">
-                          <p className="font-semibold">Guests</p>
+                          <p className="font-semibold">{t('bookingsUser.numberOfGuests')}</p>
                           <p className="text-gray-600">{booking.guests}</p>
                         </div>
                       </div>
@@ -390,15 +547,15 @@ export default function Bookings() {
                     {booking.reviewId && (
                       <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
                         <Star className="w-4 h-4 fill-current" />
-                        <span className="font-medium">You reviewed this camp</span>
+                        <span className="font-medium">{t('bookingsUser.youReviewed')}</span>
                       </div>
                     )}
 
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-orange-300">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-border/80">
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Total Price</p>
-                        <p className="text-2xl font-bold text-amber-800">
-                          {booking.totalPrice} <span className="text-base text-gray-700">BD</span>
+                        <p className="text-sm text-gray-600 font-medium">{t('bookingsUser.totalPrice')}</p>
+                        <p className="text-2xl font-bold text-primary">
+                          {booking.totalPrice} <span className="text-base text-gray-700">BHD</span>
                         </p>
                       </div>
                       <div className="flex gap-2 w-full sm:w-auto flex-wrap">
@@ -406,7 +563,7 @@ export default function Bookings() {
                           <DialogTrigger asChild>
                             <Button
                               variant="outline"
-                              className="flex-1 sm:flex-none border-2 border-amber-800 text-amber-800 hover:bg-amber-50 font-semibold"
+                              className="flex-1 sm:flex-none border-2 border-primary text-primary hover:bg-secondary font-semibold"
                             >
                               {t('bookingsUser.viewDetails')}
                             </Button>
@@ -433,158 +590,224 @@ export default function Bookings() {
                                 </span>
                               </div>
 
-                              <div className="pb-4 border-b flex items-start justify-between gap-4">
-                                <div>
-                                  <h3 className="font-semibold text-lg">Payment</h3>
-                                  <p className="text-sm text-muted-foreground">
-                                    {booking.paymentMethod === 'cash_on_arrival' ? 'Cash on Arrival selected' : 'Online payment'}
-                                  </p>
-                                  <div className="mt-2 flex gap-2 items-center">
-                                    <Badge className="bg-orange-100 text-gray-900 border border-orange-300">
-                                      {(booking.paymentMethod || 'online').replace('_', ' ')}
-                                    </Badge>
-                                    <Badge variant="secondary" className={booking.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-900 border border-orange-200'}>
-                                      {booking.paymentStatus || 'pending'}
-                                    </Badge>
+                              <div className="pb-4 border-b space-y-3">
+                                <div className="flex items-start justify-between gap-4">
+                                  <div>
+                                    <h3 className="font-semibold text-lg">Payment</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                      {booking.paymentMethod === 'cash_on_arrival' ? 'Cash on Arrival selected' : 'Online payment'}
+                                    </p>
+                                    <div className="mt-2 flex gap-2 items-center">
+                                      <Badge className="bg-primary/10 text-foreground border border-border/80">
+                                        {(booking.paymentMethod || 'online').replace('_', ' ')}
+                                      </Badge>
+                                      <Badge variant="secondary" className={(booking.paymentStatus === 'paid' || booking.paymentStatus === 'cash_collected') ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-secondary text-primary border border-border'}>
+                                        {t(`reserve.paymentState.${booking.paymentStatus || 'pending'}`, booking.paymentStatus || 'pending')}
+                                      </Badge>
+                                      {booking.paymentMethod === 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending') && booking.status !== 'cancelled' && (
+                                        <Badge className="bg-amber-50 text-amber-800 border border-amber-200">
+                                          {t('reserve.cashDueBadge', 'Payment due at check-in')}
+                                        </Badge>
+                                      )}
+                                    </div>
                                   </div>
+                                  {canPayOnline(booking) && (
+                                    <Button
+                                      onClick={() => handlePayPending(booking)}
+                                      disabled={payingBookingId === booking.id}
+                                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                                    >
+                                      {payingBookingId === booking.id ? t('bookingsUser.startingPayment') : t('bookingsUser.payNow')}
+                                    </Button>
+                                  )}
+                                  {canVerifyPayment(booking) && (
+                                    <Button
+                                      onClick={() => handleVerifyPayment(booking)}
+                                      variant="outline"
+                                      disabled={verifyingBookingId === booking.id}
+                                      className="border-2 border-primary text-primary hover:bg-secondary font-semibold"
+                                    >
+                                      {verifyingBookingId === booking.id ? t('bookingsUser.verifyingPayment') : t('bookingsUser.verifyPayment')}
+                                    </Button>
+                                  )}
                                 </div>
-                                {booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed' || booking.paymentStatus === 'cancelled') && (
-                                  <Button
-                                    onClick={() => handlePayPending(booking)}
-                                    disabled={payingBookingId === booking.id}
-                                    className="bg-amber-800 hover:bg-amber-900 text-white font-semibold"
-                                  >
-                                    {payingBookingId === booking.id ? 'Starting Payment...' : 'Pay Now'}
-                                  </Button>
+                                {verifyOutcome.has(booking.id) && (
+                                  <div className={`flex items-start gap-2 text-sm px-3 py-2.5 rounded-lg border ${verifyOutcome.get(booking.id) === 'inflight' ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-amber-800 bg-amber-50 border-amber-200'}`}>
+                                    <span>{verifyOutcome.get(booking.id) === 'inflight' ? t('bookingsUser.verifyPaymentInFlightMsg') : t('bookingsUser.verifyPaymentFailedMsg')}</span>
+                                  </div>
                                 )}
                               </div>
 
                               <div className="pb-4 border-b">
-                                <h3 className="font-semibold mb-2">Booking ID</h3>
-                                <p className="text-sm text-muted-foreground font-mono break-all">{booking.id}</p>
+                                <h3 className="font-semibold mb-2">{t('bookingsUser.bookingId')}</h3>
+                                <p className="text-sm text-muted-foreground font-mono break-all" dir="ltr">{booking.id}</p>
                               </div>
 
                               <div className="pb-4 border-b">
-                                <h3 className="font-semibold mb-3">Camp Information</h3>
+                                <h3 className="font-semibold mb-3">{t('bookingsUser.campInfo')}</h3>
                                 <div className="space-y-2">
                                   <div className="flex items-start">
-                                    <span className="font-medium w-32">Camp Name:</span>
+                                    <span className="font-medium w-32">{t('bookingsUser.campName')}:</span>
                                     <span className="text-muted-foreground">{booking.campTitle}</span>
                                   </div>
                                   <div className="flex items-start">
-                                    <MapPin className="h-4 w-4 mr-2 mt-1 text-primary flex-shrink-0" />
-                                    <span className="font-medium w-28">Location:</span>
+                                    <MapPin className="h-4 w-4 ltr:mr-2 rtl:ml-2 mt-1 text-primary flex-shrink-0" />
+                                    <span className="font-medium w-28">{t('bookingsUser.location')}:</span>
                                     <span className="text-muted-foreground">{booking.campLocation}</span>
                                   </div>
                                 </div>
                               </div>
 
                               <div className="pb-4 border-b">
-                                <h3 className="font-semibold mb-3">Stay Details</h3>
+                                <h3 className="font-semibold mb-3">{t('bookingsUser.stayDetails')}</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
                                     <div className="flex items-center mb-1">
-                                      <Calendar className="h-4 w-4 mr-2 text-primary" />
-                                      <span className="font-medium">Check-in</span>
+                                      <Calendar className="h-4 w-4 ltr:mr-2 rtl:ml-2 text-primary" />
+                                      <span className="font-medium">{t('bookingsUser.checkIn')}</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground ml-6">
-                                      {formatDate(booking.checkIn)}
+                                    <p className="text-sm text-muted-foreground ltr:ml-6 rtl:mr-6">
+                                      {formatDate(booking.checkInDate)}
                                     </p>
                                   </div>
                                   <div>
                                     <div className="flex items-center mb-1">
-                                      <Calendar className="h-4 w-4 mr-2 text-primary" />
-                                      <span className="font-medium">Check-out</span>
+                                      <Calendar className="h-4 w-4 ltr:mr-2 rtl:ml-2 text-primary" />
+                                      <span className="font-medium">{t('bookingsUser.checkOut')}</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground ml-6">
-                                      {formatDate(booking.checkOut)}
+                                    <p className="text-sm text-muted-foreground ltr:ml-6 rtl:mr-6">
+                                      {formatDate(getDepartureDateStr(booking))}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="mt-3 flex items-center">
-                                  <span className="font-medium">Total Nights:</span>
-                                  <span className="ml-2 text-muted-foreground">
-                                    {calculateNights(booking.checkIn, booking.checkOut)} nights
+                                  <span className="font-medium">{t('bookingsUser.totalNights')}:</span>
+                                  <span className="ltr:ml-2 rtl:mr-2 text-muted-foreground">
+                                    {calculateNights(booking.checkInDate, getDepartureDateStr(booking))} {t('bookingsUser.nights')}
                                   </span>
                                 </div>
                               </div>
 
                               <div className="pb-4 border-b">
-                                <h3 className="font-semibold mb-3">Guest Information</h3>
+                                <h3 className="font-semibold mb-3">{t('bookingsUser.guestInfo')}</h3>
                                 <div className="flex items-center">
-                                  <Users className="h-4 w-4 mr-2 text-primary" />
-                                  <span className="font-medium">Number of Guests:</span>
-                                  <span className="ml-2 text-muted-foreground">{booking.guests}</span>
+                                  <Users className="h-4 w-4 ltr:mr-2 rtl:ml-2 text-primary" />
+                                  <span className="font-medium">{t('bookingsUser.numberOfGuests')}:</span>
+                                  <span className="ltr:ml-2 rtl:mr-2 text-muted-foreground">{booking.guests}</span>
                                 </div>
                               </div>
 
                               <div className="pb-4 border-b">
-                                <h3 className="font-semibold mb-3">Price Breakdown</h3>
+                                <h3 className="font-semibold mb-3">{t('bookingsUser.priceBreakdown')}</h3>
                                 <div className="space-y-2">
                                   <div className="flex justify-between">
                                     <span className="text-muted-foreground">
-                                      {booking.camp?.price || 0} BD × {calculateNights(booking.checkIn, booking.checkOut)} nights
+                                      {booking.priceBreakdown?.basePrice || 0} BHD × {calculateNights(booking.checkInDate, getDepartureDateStr(booking))} {t('bookingsUser.nights')}
                                     </span>
                                     <span className="font-medium">
-                                      {(booking.camp?.price || 0) * calculateNights(booking.checkIn, booking.checkOut)} BD
+                                      {(booking.priceBreakdown?.basePrice || 0) * calculateNights(booking.checkInDate, getDepartureDateStr(booking))} BHD
                                     </span>
                                   </div>
                                   <div className="flex justify-between pt-2 border-t">
-                                    <span className="font-semibold">Total Price</span>
+                                    <span className="font-semibold">{t('bookingsUser.totalPrice')}</span>
                                     <span className="font-bold text-primary text-xl">
-                                      {booking.totalPrice} BD
+                                      {booking.totalPrice} BHD
                                     </span>
                                   </div>
                                 </div>
                               </div>
 
                               <div>
-                                <h3 className="font-semibold mb-2">Booking Created</h3>
+                                <h3 className="font-semibold mb-2">{t('bookingsUser.bookingCreated')}</h3>
                                 <p className="text-sm text-muted-foreground">
                                   {booking.createdAt ? new Date(
                                     typeof booking.createdAt === 'string' 
                                       ? booking.createdAt 
                                       : booking.createdAt.toDate()
-                                  ).toLocaleString('en-US', {
+                                  ).toLocaleString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', {
                                     dateStyle: 'long',
                                     timeStyle: 'short'
-                                  }) : 'N/A'}
+                                  }) : t('status.na')}
                                 </p>
                               </div>
                             </div>
                           </DialogContent>
                         </Dialog>
                         
-                        {booking.paymentMethod !== 'cash_on_arrival' && (!booking.paymentStatus || booking.paymentStatus === 'pending' || booking.paymentStatus === 'failed' || booking.paymentStatus === 'cancelled') && (
+                        {canPayOnline(booking) && (
                           <Button
                             onClick={() => handlePayPending(booking)}
-                            className="flex-1 sm:flex-none bg-amber-800 hover:bg-amber-900 text-white font-semibold"
+                            className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                             disabled={payingBookingId === booking.id}
                           >
                             {payingBookingId === booking.id ? t('bookingsUser.startingPayment') : t('bookingsUser.payNow')}
                           </Button>
                         )}
 
+                        {canVerifyPayment(booking) && (
+                          <Button
+                            onClick={() => handleVerifyPayment(booking)}
+                            variant="outline"
+                            className="flex-1 sm:flex-none border-2 border-primary text-primary hover:bg-secondary font-semibold"
+                            disabled={verifyingBookingId === booking.id}
+                          >
+                            {verifyingBookingId === booking.id ? t('bookingsUser.verifyingPayment') : t('bookingsUser.verifyPayment')}
+                          </Button>
+                        )}
+
                         {booking.eligibleForReview && !booking.reviewId && (
                           <Button
                             onClick={() => handleWriteReview(booking)}
-                            className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-[#FF8C42] hover:from-[#FF8C42] hover:to-amber-700 text-white font-semibold"
+                            className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold lantern-halo"
                           >
-                            <Star className="w-4 h-4 mr-2" />
+                            <Star className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
                             {t('bookingsUser.writeReview')}
                           </Button>
                         )}
 
+                        {booking.status !== 'cancelled' && isPastBooking(booking) && myDisputes.get(booking.id)?.status !== 'resolved' && (
+                          <Button
+                            onClick={() => setReportingBooking(booking)}
+                            variant="outline"
+                            className="flex-1 sm:flex-none border-2 border-amber-500 text-amber-700 hover:bg-amber-50 font-semibold"
+                          >
+                            <Flag className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                            {t('reportIssue.button', 'Report an Issue')}
+                          </Button>
+                        )}
+
                         <Button
-                          onClick={() => handleCancelClick(booking)}
-                          variant="destructive"
-                          className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white font-semibold"
+                          onClick={() => setMessagingBooking(booking)}
+                          variant="outline"
+                          className="flex-1 sm:flex-none border-2 border-primary text-primary hover:bg-secondary font-semibold"
                         >
-                          <X className="w-4 h-4 mr-2" />
-                          {t('bookingsUser.cancel')}
+                          <MessageCircle className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                          {t('messaging.messageHost', 'Message Host')}
                         </Button>
+
+                        {booking.status !== 'cancelled' && (
+                          <Button
+                            onClick={() => handleCancelClick(booking)}
+                            variant="destructive"
+                            className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white font-semibold"
+                          >
+                            <X className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                            {t('bookingsUser.cancel')}
+                          </Button>
+                        )}
                       </div>
                     </div>
+                    {verifyOutcome.has(booking.id) && (
+                      <div className={`flex items-start gap-2 text-sm px-3 py-2.5 rounded-lg border ${verifyOutcome.get(booking.id) === 'inflight' ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-amber-800 bg-amber-50 border-amber-200'}`}>
+                        <span>{verifyOutcome.get(booking.id) === 'inflight' ? t('bookingsUser.verifyPaymentInFlightMsg') : t('bookingsUser.verifyPaymentFailedMsg')}</span>
+                      </div>
+                    )}
+                    {myDisputes.get(booking.id)?.status === 'resolved' && (
+                      <div className="flex items-start gap-2 text-sm px-3 py-2.5 rounded-lg border text-green-800 bg-green-50 border-green-200">
+                        <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span>{t('disputeResolved.notice')}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -592,6 +815,31 @@ export default function Bookings() {
           </div>
         )}
       </div>
+
+      {/* Messaging Dialog */}
+      {messagingBooking && (
+        <MessagingDialog
+          open={!!messagingBooking}
+          onClose={() => setMessagingBooking(null)}
+          bookingId={messagingBooking.id}
+          campId={messagingBooking.campId}
+          campTitle={messagingBooking.campTitle}
+          guestId={user.uid}
+          hostId={(messagingBooking as any).hostId || ''}
+          currentUserId={user.uid}
+          currentUserRole="guest"
+        />
+      )}
+
+      {/* Report Issue Dialog */}
+      {reportingBooking && (
+        <ReportIssueDialog
+          bookingId={reportingBooking.id}
+          campTitle={reportingBooking.campTitle}
+          open={!!reportingBooking}
+          onOpenChange={(open) => { if (!open) setReportingBooking(null); }}
+        />
+      )}
 
       {/* Cancellation Dialog */}
       {bookingToCancel && (
@@ -602,13 +850,13 @@ export default function Bookings() {
             campName: bookingToCancel.campTitle,
             campLocation: bookingToCancel.campLocation,
             checkInDate: bookingToCancel.checkInDate,
-            checkOutDate: bookingToCancel.checkOutDate,
+            checkOutDate: getDepartureDateStr(bookingToCancel),
             numberOfGuests: bookingToCancel.guests,
             totalPrice: bookingToCancel.totalPrice,
             status: bookingToCancel.status,
             userId: bookingToCancel.userId,
             userEmail: user?.email || '',
-            cancellationPolicy: (bookingToCancel.camp?.cancellationPolicy as CancellationPolicy) || 'moderate',
+            cancellationPolicy: bookingToCancel.camp?.cancellationPolicy ?? 'moderate',
           }}
           open={showCancellationDialog}
           onOpenChange={setShowCancellationDialog}
@@ -628,7 +876,7 @@ export default function Bookings() {
               campName={reviewingBooking.campTitle}
               bookingId={reviewingBooking.id}
               checkInDate={reviewingBooking.checkInDate}
-              checkOutDate={reviewingBooking.checkOutDate}
+              checkOutDate={getDepartureDateStr(reviewingBooking)}
               onSubmit={handleSubmitReview}
               onCancel={() => {
                 setShowReviewForm(false);

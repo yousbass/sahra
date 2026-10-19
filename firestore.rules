@@ -26,6 +26,13 @@ service cloud.firestore {
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isHost == true;
     }
+
+    // Helper function to check if user is an approved marketplace seller
+    function isSeller() {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSeller == true;
+    }
     
     // Settings collection (for admin settings)
     match /settings/{settingId} {
@@ -38,16 +45,34 @@ service cloud.firestore {
     
     // Users collection
     match /users/{userId} {
-      // Anyone can read user profiles (for displaying host info, etc.)
-      allow read: if true;
+      // Profiles hold PII (email, phone) and are readable ONLY by their
+      // owner and admins (Audit v4 C-5). Camp/booking IDs are enumerable
+      // from public docs, so any-signed-in-user get() enabled directory
+      // harvesting. Server flows that need another user's email (e.g. the
+      // host recipient for booking emails) use the Admin SDK, which
+      // bypasses these rules. Client UIs display denormalized names
+      // (userName on reviews/bookings), never live profile reads.
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
       
       // Users can create their own profile during sign-up
       // This is crucial for Firebase Auth sign-up to work
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      // Role flags are controlled by admins. Without this guard, a newly
+      // signed-in user could create their own profile with isAdmin: true and
+      // immediately satisfy the isAdmin() helper above.
+      allow create: if isAdmin() ||
+                    (isSignedIn() &&
+                     request.auth.uid == userId &&
+                     !request.resource.data.keys()
+                       .hasAny(['isAdmin', 'isHost', 'isSeller']));
       
-      // Users can update their own profile (including isHost field for host application)
-      // Admins can update any profile
-      allow update: if isOwner(userId) || isAdmin();
+      // Users can update their own profile, but can never change their own
+      // role flags (isAdmin / isHost / isSeller) — role changes are admin-only.
+      // Admins can update any profile.
+      allow update: if isAdmin() ||
+                       (isOwner(userId) &&
+                        !request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['isAdmin', 'isHost', 'isSeller']));
       
       // Only admins can delete users
       allow delete: if isAdmin();
@@ -59,26 +84,211 @@ service cloud.firestore {
       allow read: if isSignedIn() && 
                      (resource.data.userId == request.auth.uid || isAdmin());
       
-      // Authenticated users can create their own applications
+      // Authenticated users can create their own application, but only as
+      // 'pending' — they must never be able to self-approve.
       allow create: if isSignedIn() && 
-                       request.resource.data.userId == request.auth.uid;
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.status == 'pending';
       
       // Only admins can update or delete applications
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
+
+    // Seller Applications collection (marketplace sellers)
+    match /sellerApplications/{applicationId} {
+      // Users can read their own applications, admins can read all
+      allow read: if isSignedIn() &&
+                     (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Authenticated users can create their own application, but only as
+      // 'pending' — they must never be able to self-approve.
+      allow create: if isSignedIn() &&
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.status == 'pending';
+
+      // Only admins can update or delete seller applications
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Marketplace items published by approved sellers
+    match /marketItems/{itemId} {
+      // Anyone can browse marketplace items
+      allow read: if true;
+
+      // Only approved sellers can create items, under their own sellerId
+      allow create: if isSignedIn() && isSeller() &&
+                       request.resource.data.sellerId == request.auth.uid;
+
+      // Owners manage their own items (sellerId can never change); admins can moderate
+      allow update: if isAdmin() ||
+                       (isSignedIn() && resource.data.sellerId == request.auth.uid &&
+                        request.resource.data.sellerId == resource.data.sellerId);
+      allow delete: if isAdmin() ||
+                       (isSignedIn() && resource.data.sellerId == request.auth.uid);
+    }
     
     // Camps collection
     match /camps/{campId} {
-      // Anyone can read active camps
-      allow read: if true;
+      // Public read only for ACTIVE camps (Audit v4 C-5): drafts and
+      // pending/inactive listings (and any host contact fields on them) are
+      // visible only to their owner and admins. Browse queries already
+      // filter status == 'active'; host dashboards filter hostId == self.
+      // Legacy docs created before the status field existed are treated as
+      // active (they were always publicly browsable).
+      function isPubliclyVisibleCamp() {
+        return !('status' in resource.data) || resource.data.status == 'active';
+      }
+      allow get: if isPubliclyVisibleCamp() ||
+                    (isSignedIn() && resource.data.hostId == request.auth.uid) ||
+                    isAdmin();
+      allow list: if isPubliclyVisibleCamp() ||
+                     (isSignedIn() && resource.data.hostId == request.auth.uid) ||
+                     isAdmin();
       
       // Only authenticated hosts can create camps
       allow create: if isSignedIn() && isHost();
       
-      // Hosts can update their own camps, admins can update any camp
+      // Helper: previously-stored aggregate values (may be missing on old docs)
+      function oldRating() {
+        return ('rating' in resource.data && resource.data.rating is number)
+                 ? resource.data.rating : 0;
+      }
+      function oldCount() {
+        return ('reviewCount' in resource.data && resource.data.reviewCount is number)
+                 ? resource.data.reviewCount : 0;
+      }
+      
+      // Helper: a guest's aggregate update is only allowed when, in the SAME
+      // atomic batch, that guest is creating a review for this camp, and the
+      // new rating/reviewCount are exactly the correct incremental aggregate
+      // of that review. This prevents any free-form rating manipulation:
+      // the referenced review must be new (not pre-existing), belong to the
+      // caller, target this camp, and the math must check out.
+      function isReviewAggregateUpdate(campId) {
+        let diffKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let reviewId = request.resource.data.lastReviewId;
+        let review = getAfter(/databases/$(database)/documents/reviews/$(reviewId)).data;
+        let newCount = request.resource.data.reviewCount;
+        let newRating = request.resource.data.rating;
+        return diffKeys.hasOnly(['rating', 'reviewCount', 'lastReviewId', 'latestReviewText', 'latestReviewId']) &&
+               // latestReviewText (browse-card snippet) may only be set to the
+               // exact text of the review created in this same batch, and
+               // latestReviewId must point to that same review so later edits
+               // and deletes can prove which review owns the snippet.
+               (!('latestReviewText' in diffKeys) ||
+                (request.resource.data.latestReviewText == review.reviewText &&
+                 request.resource.data.latestReviewId == reviewId)) &&
+               (!('latestReviewId' in diffKeys) ||
+                request.resource.data.latestReviewId == reviewId) &&
+               reviewId is string &&
+               // The review must be created in this batch, not pre-existing
+               !exists(/databases/$(database)/documents/reviews/$(reviewId)) &&
+               review.userId == request.auth.uid &&
+               review.campId == campId &&
+               review.rating is number &&
+               review.rating >= 1 && review.rating <= 5 &&
+               newCount is int &&
+               newCount == oldCount() + 1 &&
+               newRating is number &&
+               newRating >= 0 && newRating <= 5 &&
+               // newRating must be the exact incremental average (small
+               // tolerance for floating point)
+               math.abs(newRating * newCount - (oldRating() * oldCount() + review.rating)) < 0.001;
+      }
+      
+      // Helper: like isReviewAggregateUpdate, but for a guest EDITING their
+      // own existing review in the same atomic batch. The review must exist
+      // before and after the batch, belong to the caller, target this camp,
+      // the count must be unchanged, and the new rating must be exactly the
+      // old aggregate with the old review rating swapped for the new one.
+      function isReviewEditAggregateUpdate(campId) {
+        let diffKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let reviewId = request.resource.data.lastReviewId;
+        let before = get(/databases/$(database)/documents/reviews/$(reviewId)).data;
+        let after = getAfter(/databases/$(database)/documents/reviews/$(reviewId)).data;
+        let newCount = request.resource.data.reviewCount;
+        let newRating = request.resource.data.rating;
+        return diffKeys.hasOnly(['rating', 'reviewCount', 'lastReviewId', 'latestReviewText']) &&
+               // Snippet may only be refreshed when THIS review already owns it
+               // (the stored latestReviewId points at the edited review) and it
+               // is set to that review's new text. latestReviewId itself never
+               // changes on edit.
+               (!('latestReviewText' in diffKeys) ||
+                (request.resource.data.latestReviewText == after.reviewText &&
+                 resource.data.latestReviewId == reviewId)) &&
+               reviewId is string &&
+               // The review must already exist and still exist after the batch
+               exists(/databases/$(database)/documents/reviews/$(reviewId)) &&
+               existsAfter(/databases/$(database)/documents/reviews/$(reviewId)) &&
+               before.userId == request.auth.uid &&
+               after.userId == request.auth.uid &&
+               before.campId == campId &&
+               after.campId == campId &&
+               before.rating is number &&
+               after.rating is number &&
+               after.rating >= 1 && after.rating <= 5 &&
+               newCount is int &&
+               newCount == oldCount() &&
+               newCount >= 1 &&
+               newRating is number &&
+               newRating >= 0 && newRating <= 5 &&
+               math.abs(newRating * newCount - (oldRating() * oldCount() - before.rating + after.rating)) < 0.001;
+      }
+      
+      // Helper: like isReviewAggregateUpdate, but for a guest DELETING their
+      // own review in the same atomic batch. The review must exist before the
+      // batch and be deleted by it, belong to the caller, target this camp,
+      // the count must decrease by exactly one, and the new rating must be
+      // exactly the old aggregate minus the deleted review's rating (or 0
+      // when no reviews remain).
+      function isReviewDeleteAggregateUpdate(campId) {
+        let diffKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let reviewId = request.resource.data.lastReviewId;
+        let before = get(/databases/$(database)/documents/reviews/$(reviewId)).data;
+        let newCount = request.resource.data.reviewCount;
+        let newRating = request.resource.data.rating;
+        return diffKeys.hasOnly(['rating', 'reviewCount', 'lastReviewId', 'latestReviewText', 'latestReviewId']) &&
+               // On delete, the snippet may only be REMOVED (never set): the
+               // deleted review's text must not remain publicly visible, and
+               // the client cannot prove what the next-latest text is. It may
+               // only be removed when THIS review currently owns the snippet
+               // (stored latestReviewId matches), and latestReviewId must be
+               // removed alongside it.
+               (!('latestReviewText' in diffKeys) ||
+                (!('latestReviewText' in request.resource.data) &&
+                 resource.data.latestReviewId == reviewId)) &&
+               (!('latestReviewId' in diffKeys) ||
+                (!('latestReviewId' in request.resource.data) &&
+                 resource.data.latestReviewId == reviewId)) &&
+               reviewId is string &&
+               // The review must exist now and be deleted in this batch
+               exists(/databases/$(database)/documents/reviews/$(reviewId)) &&
+               !existsAfter(/databases/$(database)/documents/reviews/$(reviewId)) &&
+               before.userId == request.auth.uid &&
+               before.campId == campId &&
+               before.rating is number &&
+               newCount is int &&
+               newCount == oldCount() - 1 &&
+               newCount >= 0 &&
+               newRating is number &&
+               newRating >= 0 && newRating <= 5 &&
+               ((newCount == 0 && newRating == 0) ||
+                (newCount > 0 &&
+                 math.abs(newRating * newCount - (oldRating() * oldCount() - before.rating)) < 0.001));
+      }
+      
+      // Hosts can update their own camps, admins can update any camp.
+      // Guests may only touch the aggregate rating fields, and only as part
+      // of an atomic batch that creates, edits, or deletes their own review
+      // for this camp.
       allow update: if isSignedIn() && 
-                       (resource.data.hostId == request.auth.uid || isAdmin());
+                       (resource.data.hostId == request.auth.uid ||
+                        isAdmin() ||
+                        isReviewAggregateUpdate(campId) ||
+                        isReviewEditAggregateUpdate(campId) ||
+                        isReviewDeleteAggregateUpdate(campId));
       
       // Hosts can delete their own camps, admins can delete any camp
       allow delete: if isSignedIn() && 
@@ -87,20 +297,183 @@ service cloud.firestore {
     
     // Bookings collection
     match /bookings/{bookingId} {
-      // Anyone can read booking documents (required for availability calendar and host dashboards)
-      // If you want to restrict this, change to: allow read: if isSignedIn();
-      allow read: if true;
-      
-      // Authenticated users can create bookings
-      allow create: if isSignedIn();
-      
-      // Guests can update their own booking; hosts for the camp and admins can also update
+      // Bookings contain personal data: only the guest who booked, the host
+      // of the camp, or an admin may read them. Availability calendars must
+      // not rely on reading raw bookings anymore.
+      allow read: if isSignedIn() && (
+                     resource.data.userId == request.auth.uid ||
+                     resource.data.hostId == request.auth.uid ||
+                     isAdmin()
+                   );
+
+      // Bookings must always start as pending/pending — no client can create a
+      // pre-confirmed or pre-paid booking, preventing guest self-confirmation at
+      // creation time. Identity must match the authenticated caller.
+      //
+      // Narrow exception: a cash_on_arrival booking may start as 'confirmed'
+      // when the camp's own `instantBook` field is true. The camp document is
+      // authoritative (written only by hosts/admins), so a guest cannot
+      // self-confirm unless the host has explicitly enabled Instant Book.
+      function isInstantBookCashCreate() {
+        let campRef = /databases/$(database)/documents/camps/$(request.resource.data.campId);
+        return request.resource.data.paymentMethod == 'cash_on_arrival' &&
+               get(campRef).data.instantBook == true &&
+               request.resource.data.status == 'confirmed';
+      }
+
+      // Validate the shape of every client-created booking before it can
+      // reserve a date. The web/mobile flows represent a one-day stay with
+      // equal checkInDate/checkOutDate values, so ordering is checked against
+      // the full datetime strings instead. All amounts must be non-negative,
+      // the top-level amounts must mirror the price breakdown, and the
+      // breakdown must add up.
+      function hasValidBookingShape() {
+        return request.resource.data.campId is string &&
+               request.resource.data.userId is string &&
+               request.resource.data.hostId is string &&
+               request.resource.data.campTitle is string &&
+               request.resource.data.userName is string &&
+               request.resource.data.userEmail is string &&
+               request.resource.data.hostName is string &&
+               request.resource.data.hostEmail is string &&
+               request.resource.data.checkInDate is string &&
+               request.resource.data.checkOutDate is string &&
+               // The product is SINGLE-NIGHT bookings only: every client flow
+               // stores checkOutDate == checkInDate ("single-day convention",
+               // the real departure lives in the checkOut datetime). Enforcing
+               // equality here closes the multi-night double-booking hole
+               // (Audit v4 C-4): the lock transaction claims exactly one
+               // night, so a booking spanning more nights than it locks must
+               // never exist. If multi-night support is ever added, the lock
+               // transaction must claim every night of the range first, and
+               // only then may this constraint be relaxed.
+               request.resource.data.checkOutDate == request.resource.data.checkInDate &&
+               request.resource.data.checkIn is string &&
+               request.resource.data.checkOut is string &&
+               request.resource.data.checkOut > request.resource.data.checkIn &&
+               request.resource.data.guests is int &&
+               request.resource.data.guests > 0 &&
+               request.resource.data.campPrice is number &&
+               request.resource.data.serviceFee is number &&
+               request.resource.data.taxes is number &&
+               request.resource.data.totalPrice is number &&
+               request.resource.data.priceBreakdown is map &&
+               request.resource.data.priceBreakdown.basePrice is number &&
+               request.resource.data.priceBreakdown.serviceFee is number &&
+               request.resource.data.priceBreakdown.tax is number &&
+               request.resource.data.priceBreakdown.total is number &&
+               request.resource.data.priceBreakdown.basePrice >= 0 &&
+               request.resource.data.priceBreakdown.serviceFee >= 0 &&
+               request.resource.data.priceBreakdown.tax >= 0 &&
+               request.resource.data.campPrice == request.resource.data.priceBreakdown.basePrice &&
+               request.resource.data.serviceFee == request.resource.data.priceBreakdown.serviceFee &&
+               request.resource.data.taxes == request.resource.data.priceBreakdown.tax &&
+               request.resource.data.totalPrice == request.resource.data.priceBreakdown.total &&
+               math.abs(request.resource.data.priceBreakdown.total -
+                        (request.resource.data.priceBreakdown.basePrice +
+                         request.resource.data.priceBreakdown.serviceFee +
+                         request.resource.data.priceBreakdown.tax)) < 0.001 &&
+               // Service fee is platform-fixed at 10% of the base price and
+               // tax is currently always 0 — clients cannot understate either
+               // to shrink the total (server-side payment recompute covers
+               // online charges; this covers cash bookings too).
+               math.abs(request.resource.data.priceBreakdown.serviceFee -
+                        (request.resource.data.priceBreakdown.basePrice * 0.10)) < 0.001 &&
+               request.resource.data.priceBreakdown.tax == 0;
+      }
+
+      // A booking may only be created inside the atomic lock transaction:
+      // the SAME batch must claim the deterministic availability lock
+      // (availabilityLocks/{campId}_{checkInDate}) pointing at THIS booking,
+      // and write the public campAvailability date index for the same
+      // camp+date. This makes the three-document invariant mandatory — a
+      // direct client write that skips the lock is rejected by rules, not
+      // just by client convention.
+      function isPartOfLockTransaction(bookingId) {
+        let d = request.resource.data;
+        let lock = getAfter(/databases/$(database)/documents/availabilityLocks/$(d.campId + '_' + d.checkInDate)).data;
+        let dateDoc = getAfter(/databases/$(database)/documents/campAvailability/$(d.campId)/dates/$(d.checkInDate)).data;
+        return lock.bookingId == bookingId &&
+               lock.campId == d.campId &&
+               lock.date == d.checkInDate &&
+               dateDoc.campId == d.campId &&
+               dateDoc.date == d.checkInDate;
+      }
+
+      // Bind client-supplied booking fields to the authoritative camp
+      // document: hostId must be the camp's real host, the nightly base
+      // price must equal the camp's stored price (new `pricePerNight` or
+      // legacy `price` format), and the guest count must fit the camp's
+      // capacity when one is recorded.
+      function isConsistentWithCamp() {
+        let d = request.resource.data;
+        let camp = get(/databases/$(database)/documents/camps/$(d.campId)).data;
+        let hasNewPrice = ('pricePerNight' in camp) && camp.pricePerNight is number;
+        let hasLegacyPrice = ('price' in camp) && camp.price is number;
+        return d.hostId == camp.hostId &&
+               ((hasNewPrice && d.priceBreakdown.basePrice == camp.pricePerNight) ||
+                (hasLegacyPrice && d.priceBreakdown.basePrice == camp.price) ||
+                (!hasNewPrice && !hasLegacyPrice && d.priceBreakdown.basePrice == 0)) &&
+               (!(('maxGuests' in camp) && camp.maxGuests is int) ||
+                d.guests <= camp.maxGuests);
+      }
+
+      allow create: if isSignedIn() &&
+                       hasValidBookingShape() &&
+                       isConsistentWithCamp() &&
+                       isPartOfLockTransaction(bookingId) &&
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.paymentStatus == 'pending' &&
+                       (request.resource.data.status == 'pending' ||
+                        isInstantBookCashCreate());
+
+      // Guests may record the outcome of a Tap payment verification for online
+      // bookings. Clients may NEVER write status:confirmed or paymentStatus:paid —
+      // those transitions happen server-side only (Admin SDK / webhook, task #97/#118).
+      // Allowed transitions:
+      //   verified charge  → paymentStatus: pending_verification  (server will settle)
+      //   failed charge    → paymentStatus: failed
+      // The booking status field is immutable from this path; cash bookings are
+      // intentionally excluded (their status is set by the host).
+      function isGuestPaymentSettlement() {
+        let changed = request.resource.data.diff(resource.data).affectedKeys();
+        let newPay = request.resource.data.paymentStatus;
+        let priorPay = resource.data.paymentStatus;
+        // Prior-state guard: only allow writes from retryable states so guests
+        // cannot downgrade a paid/refunded booking's paymentStatus.
+        let retryable = priorPay == 'pending' || priorPay == 'failed';
+        // Clients NEVER write status:confirmed or paymentStatus:paid.
+        // Those transitions are performed by the server webhook only (Admin SDK).
+        // Clients may flag a verified charge (pending_verification) so the
+        // webhook knows to settle it, or record an explicit Tap failure.
+        return resource.data.userId == request.auth.uid &&
+               resource.data.paymentMethod != 'cash_on_arrival' &&
+               retryable &&
+               !changed.hasAny(['status']) &&
+               changed.hasOnly(['paymentStatus', 'authStatus', 'tapChargeId', 'failureReason']) &&
+               (newPay == 'pending_verification' || newPay == 'failed') &&
+               // Field bounds: tapChargeId must look like a Tap charge id and
+               // failureReason must be a bounded string — no arbitrary blobs.
+               (!changed.hasAny(['tapChargeId']) ||
+                (request.resource.data.tapChargeId is string &&
+                 request.resource.data.tapChargeId.size() >= 4 &&
+                 request.resource.data.tapChargeId.size() <= 100 &&
+                 request.resource.data.tapChargeId[0:4] == 'chg_')) &&
+               (!changed.hasAny(['failureReason']) ||
+                (request.resource.data.failureReason is string &&
+                 request.resource.data.failureReason.size() <= 500));
+      }
+
+      // Cancellation, host acceptance/decline, cash collection, refunds, and
+      // every booking-status transition run through authenticated API routes.
+      // Those server routes use the Admin SDK after they have atomically checked
+      // ownership, payment/refund state, and the availability lock. Client-side
+      // Firestore writes must never bypass those financial side effects.
       allow update: if isSignedIn() && (
-                       resource.data.userId == request.auth.uid ||
-                       resource.data.hostId == request.auth.uid ||
-                       isAdmin()
+                       isAdmin() ||
+                        isGuestPaymentSettlement()
                      );
-      
+
       // Only admins can delete bookings
       allow delete: if isAdmin();
     }
@@ -111,8 +484,9 @@ service cloud.firestore {
       allow read: if isSignedIn() && 
                      (resource.data.userId == request.auth.uid || isAdmin());
       
-      // Only system/admin can create transactions
-      allow create: if isSignedIn();
+      // No client code creates transactions; restrict creation to admins
+      // (backend/admin SDK bypasses these rules anyway)
+      allow create: if isAdmin();
       
       // Only admins can update transactions
       allow update: if isAdmin();
@@ -126,12 +500,90 @@ service cloud.firestore {
       // Anyone can read reviews
       allow read: if true;
       
-      // Authenticated users can create reviews
-      allow create: if isSignedIn();
+      // Review authenticity: the reviewer must reference one of their own
+      // bookings for the SAME camp, and that stay must be completed —
+      // either explicitly marked completed, or confirmed with a check-in
+      // date in the past. This blocks fake reviews from accounts that never
+      // stayed at the camp. The bookingId written on the review is the proof
+      // link and is validated against the booking document itself.
+      // checkInDate is a 'YYYY-MM-DD' string (legacy docs may carry a full
+      // ISO datetime — take the date part). Parse it into a timestamp and
+      // require it to be before "now" so same-day stays qualify after check-in.
+      function isPastDateString(s) {
+        let d = s.split('T')[0];
+        return d.size() == 10 &&
+               timestamp.date(
+                 int(d.split('-')[0]),
+                 int(d.split('-')[1]),
+                 int(d.split('-')[2])
+               ) < request.time;
+      }
+      function hasCompletedStay() {
+        let bookingId = request.resource.data.bookingId;
+        let booking = get(/databases/$(database)/documents/bookings/$(bookingId)).data;
+        // Payment must be settled: online bookings land as 'paid'; cash
+        // bookings become 'cash_collected' when the host marks them paid.
+        // A confirmed booking with a past check-in date but unsettled payment
+        // (pending / failed / pending_verification) does NOT qualify —
+        // no payment means no real stay (Audit v4 M-10).
+        let payOk = booking.paymentStatus == 'paid' ||
+                    booking.paymentStatus == 'cash_collected';
+        return bookingId is string &&
+               exists(/databases/$(database)/documents/bookings/$(bookingId)) &&
+               booking.userId == request.auth.uid &&
+               booking.campId == request.resource.data.campId &&
+               payOk &&
+               (booking.status == 'completed' ||
+                (booking.status == 'confirmed' &&
+                 booking.checkInDate is string &&
+                 isPastDateString(booking.checkInDate)));
+      }
+
+      // Field bounds: rating must be an int 1–5, review text a bounded
+      // string, and the display name (denormalized) a bounded string.
+      // Prevents junk ratings (0, 100, floats) and megabyte review bodies.
+      function hasValidReviewShape() {
+        let d = request.resource.data;
+        return d.rating is int &&
+               d.rating >= 1 && d.rating <= 5 &&
+               (!('reviewText' in d) ||
+                (d.reviewText is string && d.reviewText.size() <= 2000)) &&
+               (!('userName' in d) ||
+                (d.userName is string && d.userName.size() <= 200));
+      }
+
+      // Authenticated users can create reviews only under their own userId,
+      // with bounded fields, and only when they can prove a completed stay
+      // at this camp.
+      allow create: if isSignedIn() &&
+                       request.resource.data.userId == request.auth.uid &&
+                       hasValidReviewShape() &&
+                       hasCompletedStay();
       
-      // Users can update their own reviews, admins can update any review
-      allow update: if isSignedIn() && 
-                       (resource.data.userId == request.auth.uid || isAdmin());
+      // Users can update their own reviews — but identity and proof fields
+      // (userId, campId, bookingId) must NEVER change, preventing a guest
+      // from re-pointing a legitimate review at a different camp or user.
+      // Host-response fields are also blocked; hosts have their own rule below.
+      // Admins can update any review without restriction.
+      allow update: if isAdmin();
+      allow update: if isSignedIn() &&
+                       resource.data.userId == request.auth.uid &&
+                       !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['userId', 'campId', 'bookingId',
+                                  'adminResponse', 'adminResponseAt']) &&
+                       // Edited reviews must satisfy the same field bounds
+                       // as new ones (rating 1–5 int, bounded text).
+                       hasValidReviewShape();
+      
+      // The camp's host can add/edit ONLY the public response fields on
+      // reviews of their own camp (mobile "reply to review" feature)
+      allow update: if isSignedIn() &&
+                       get(/databases/$(database)/documents/camps/$(resource.data.campId)).data.hostId == request.auth.uid &&
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['adminResponse', 'adminResponseAt']) &&
+                       request.resource.data.adminResponse is string &&
+                       request.resource.data.adminResponse.size() > 0 &&
+                       request.resource.data.adminResponse.size() <= 1000;
       
       // Users can delete their own reviews, admins can delete any review
       allow delete: if isSignedIn() && 
@@ -146,9 +598,11 @@ service cloud.firestore {
                       resource.data.hostId == request.auth.uid ||
                       isAdmin());
       
-      // Authenticated users can create cancellation records
-      allow create: if isSignedIn() && 
-                       request.resource.data.guestId == request.auth.uid;
+      // Cancellation records are written ONLY by the server cancel endpoint
+      // (Admin SDK bypasses rules). Client creates are denied entirely —
+      // the old rule let any guest fabricate arbitrary cancellation records
+      // with no booking existence/ownership/status binding (Audit v4 C-3).
+      allow create: if isAdmin();
       
       // Only admins can update cancellation records
       allow update: if isAdmin();
@@ -175,6 +629,178 @@ service cloud.firestore {
                        (resource.data.hostId == request.auth.uid || isAdmin());
     }
     
+    // Availability locks — one doc per camp+date, claimed atomically in the
+    // SAME transaction that creates the booking it points to. This is what
+    // makes double-booking impossible: two concurrent bookings for the same
+    // camp/date race on this single doc id and one loses cleanly.
+    match /availabilityLocks/{lockId} {
+      // Booking transactions must read the lock to check availability.
+      allow get: if isSignedIn();
+      // No client lists locks (availability is derived from bookings/blockedDates).
+      allow list: if false;
+      
+      // Claiming a free date: the lock's id and fields must be consistent,
+      // and the booking it points to must be created in this same batch,
+      // by this caller, for this same camp and date.
+      allow create: if isSignedIn() &&
+                       request.resource.data.campId is string &&
+                       request.resource.data.date is string &&
+                       request.resource.data.bookingId is string &&
+                       lockId == request.resource.data.campId + '_' + request.resource.data.date &&
+                       !exists(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)) &&
+                       getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.userId == request.auth.uid &&
+                       getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.campId == request.resource.data.campId &&
+                       getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.checkInDate == request.resource.data.date;
+      
+      // Reclaiming a lock whose pointed booking is gone, cancelled, or expired:
+      // camp/date must be unchanged and the replacement booking must be
+      // created in this same batch by this caller for this camp/date.
+      // An online-payment pending booking whose expiresAt has elapsed is also
+      // treated as released so abandoned slots become bookable again.
+      // NOTE: in practice the client pre-cancels expired bookings before running
+      // the transaction, so the status == 'cancelled' branch usually fires; the
+      // expiry branch is defense-in-depth for the rule itself.
+      allow update: if isSignedIn() &&
+                       request.resource.data.campId == resource.data.campId &&
+                       request.resource.data.date == resource.data.date &&
+                       request.resource.data.bookingId is string &&
+                       (
+                         !exists(/databases/$(database)/documents/bookings/$(resource.data.bookingId)) ||
+                         get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.status == 'cancelled' ||
+                         (
+                           get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.paymentMethod == 'online' &&
+                           get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.status == 'pending' &&
+                           get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.expiresAt is int &&
+                           get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.expiresAt < request.time.toMillis()
+                         )
+                       ) &&
+                       !exists(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)) &&
+                       getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.userId == request.auth.uid &&
+                       getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.campId == resource.data.campId &&
+                       getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.checkInDate == resource.data.date;
+      
+      // Locks are never deleted by clients.
+      allow delete: if isAdmin();
+    }
+
+    // Camp availability index — one document per booked date so guests can filter
+    // without reading private bookings.  Writes are tightly coupled to the lock
+    // and booking transactions so no client can forge or erase entries freely.
+    match /campAvailability/{campId} {
+      allow read: if true;
+      allow write: if false;   // parent doc is never written; only dates/ matters
+
+      match /dates/{dateStr} {
+        allow read: if true;
+
+        // A date doc may be created or overwritten only when the same transaction
+        // also creates/updates the availability lock for this camp+date and creates
+        // a booking belonging to the authenticated caller for this camp+date.
+        allow create, update: if isSignedIn() &&
+          getAfter(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)).data.campId == campId &&
+          getAfter(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)).data.date == dateStr &&
+          getAfter(/databases/$(database)/documents/bookings/$(getAfter(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)).data.bookingId)).data.userId == request.auth.uid;
+
+        // A date doc may be deleted only when the same batch simultaneously
+        // cancels the booking it represents, and the caller is the original guest,
+        // the camp host, or an admin.  Deleting a non-existent doc (resource == null,
+        // e.g. pre-feature bookings) is always safe and always permitted.
+        allow delete: if
+          resource == null ||
+          isAdmin() ||
+          (
+            isSignedIn() &&
+            exists(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)) &&
+            (
+              get(/databases/$(database)/documents/bookings/$(get(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)).data.bookingId)).data.userId  == request.auth.uid ||
+              get(/databases/$(database)/documents/bookings/$(get(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)).data.bookingId)).data.hostId == request.auth.uid
+            ) &&
+            getAfter(/databases/$(database)/documents/bookings/$(get(/databases/$(database)/documents/availabilityLocks/$(campId + '_' + dateStr)).data.bookingId)).data.status == 'cancelled'
+          );
+      }
+    }
+    
+    // Message threads — one thread per booking, private to both participants.
+    // Thread ID is always "booking_{bookingId}" (deterministic).
+    match /threads/{threadId} {
+      // Only the guest, the host, or admins may read thread metadata.
+      allow get: if isSignedIn() && (
+        resource.data.guestId == request.auth.uid ||
+        resource.data.hostId == request.auth.uid ||
+        isAdmin()
+      );
+      // Participants may list (query) only threads where they appear as a
+      // participant. The query must include a where('guestId','==',uid) or
+      // where('hostId','==',uid) clause; Firestore enforces that every
+      // document returned passes this rule.
+      allow list: if isSignedIn() && (
+        resource.data.guestId == request.auth.uid ||
+        resource.data.hostId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Either the guest or the host may open the thread, but both guestId
+      // and hostId must match the referenced booking document to prevent
+      // unauthorized thread creation (no spoofing participant identity).
+      allow create: if isSignedIn() &&
+        request.resource.data.bookingId is string &&
+        request.resource.data.guestId is string &&
+        request.resource.data.hostId is string &&
+        // Enforce the deterministic thread ID shape: must be "booking_{bookingId}".
+        // This guarantees one thread per booking and blocks arbitrary document creation.
+        threadId == ('booking_' + request.resource.data.bookingId) &&
+        // guestId must match booking.userId
+        request.resource.data.guestId ==
+          get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.userId &&
+        // hostId must match booking.hostId
+        request.resource.data.hostId ==
+          get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.hostId &&
+        // Caller must be one of the two verified participants
+        (request.auth.uid == request.resource.data.guestId ||
+         request.auth.uid == request.resource.data.hostId);
+
+      // Either participant may update only thread metadata fields (lastMessage,
+      // unread counts, etc.). Identity fields and campId are permanently immutable.
+      // Field names must match what sendMessage / markThreadRead actually write:
+      //   lastMessage, lastMessageAt, lastMessageBy — message summary
+      //   unreadGuest, unreadHost                  — per-role unread counters
+      //   updatedAt                                — optional housekeeping
+      allow update: if isSignedIn() && (
+        resource.data.guestId == request.auth.uid ||
+        resource.data.hostId == request.auth.uid ||
+        isAdmin()
+      ) && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['lastMessage', 'lastMessageAt', 'lastMessageBy',
+                      'unreadGuest', 'unreadHost', 'updatedAt']);
+
+      allow delete: if isAdmin();
+
+      // Individual messages — subcollection under the thread.
+      match /messages/{messageId} {
+        // Only participants/admins can read messages.
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/threads/$(threadId)).data.guestId == request.auth.uid ||
+          get(/databases/$(database)/documents/threads/$(threadId)).data.hostId == request.auth.uid ||
+          isAdmin()
+        );
+
+        // Either participant can send; senderId must be their own uid.
+        // Text must be non-empty and under 2000 chars.
+        allow create: if isSignedIn() &&
+          request.resource.data.senderId == request.auth.uid &&
+          request.resource.data.text is string &&
+          request.resource.data.text.size() > 0 &&
+          request.resource.data.text.size() <= 2000 &&
+          (
+            get(/databases/$(database)/documents/threads/$(threadId)).data.guestId == request.auth.uid ||
+            get(/databases/$(database)/documents/threads/$(threadId)).data.hostId == request.auth.uid
+          );
+
+        // Messages are immutable once sent.
+        allow update, delete: if isAdmin();
+      }
+    }
+
     // Refunds collection
     match /refunds/{refundId} {
       // Users can read refunds for their own cancellations, admins can read all
@@ -182,8 +808,9 @@ service cloud.firestore {
                      (get(/databases/$(database)/documents/cancellations/$(resource.data.cancellationId)).data.guestId == request.auth.uid ||
                       isAdmin());
       
-      // System can create refund records (authenticated users for their own bookings)
-      allow create: if isSignedIn();
+      // No client code creates refunds; restrict creation to admins
+      // (backend/admin SDK bypasses these rules anyway)
+      allow create: if isAdmin();
       
       // Only admins can update refund records
       allow update: if isAdmin();

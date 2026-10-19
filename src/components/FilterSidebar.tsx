@@ -32,7 +32,7 @@ export default function FilterSidebar({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     filters.bookingDate ? filters.bookingDate : undefined
   );
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     setLocalFilters(filters);
@@ -113,14 +113,14 @@ export default function FilterSidebar({
     (localFilters.bookingDate ? 1 : 0);
 
   return (
-    <Card className="p-6 bg-white/95 backdrop-blur-sm border-2 border-orange-200">
+    <Card className="p-6 bg-white/95 backdrop-blur-sm border-2 border-border">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-5 h-5 text-#6B4423" />
+          <SlidersHorizontal className="w-5 h-5 text-primary" />
           <h3 className="text-lg font-bold text-gray-900">{t('filters.apply')}</h3>
           {activeFilterCount > 0 && (
-            <span className="bg-terracotta-100 text-#5A3820 text-xs font-semibold px-2 py-1 rounded-full">
+            <span className="bg-secondary text-primary text-xs font-semibold px-2 py-1 rounded-full">
               {activeFilterCount}
             </span>
           )}
@@ -143,13 +143,13 @@ export default function FilterSidebar({
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal border-2 border-orange-300",
+                  "w-full justify-start text-left font-normal border-2 border-border/80",
                   !selectedDate && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {selectedDate ? (
-                  format(selectedDate, "EEEE, MMM dd, yyyy")
+                  selectedDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })
                 ) : (
                   <span>{t('filters.selectDate')}</span>
                 )}
@@ -159,7 +159,7 @@ export default function FilterSidebar({
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={handleDateChange}
+                onSelect={(value) => handleDateChange(value instanceof Date ? value : undefined)}
                 disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                 initialFocus
               />
@@ -170,7 +170,7 @@ export default function FilterSidebar({
               variant="ghost"
               size="sm"
               onClick={handleClearDate}
-              className="w-full mt-2 text-#6B4423 hover:text-#5A3820 hover:bg-orange-50"
+              className="w-full mt-2 text-primary hover:text-primary/80 hover:bg-secondary/50"
             >
               {t('filters.clearDate')}
             </Button>
@@ -195,9 +195,9 @@ export default function FilterSidebar({
               className="mb-4"
             />
             <div className="flex items-center justify-between text-sm">
-              <span className="font-semibold text-#6B4423">{localFilters.priceRange[0]} BD</span>
+              <span className="font-semibold text-foreground">{localFilters.priceRange[0]} BD</span>
               <span className="text-gray-400">to</span>
-              <span className="font-semibold text-#6B4423">{localFilters.priceRange[1]} BD</span>
+              <span className="font-semibold text-foreground">{localFilters.priceRange[1]} BD</span>
             </div>
           </div>
         </div>
@@ -233,28 +233,33 @@ export default function FilterSidebar({
           <Label className="text-sm font-semibold text-gray-900 mb-3 block">
             {t('filters.minGuests')}
           </Label>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocalFilters({ ...localFilters, minGuests: Math.max(1, localFilters.minGuests - 1) })}
-              disabled={localFilters.minGuests <= 1}
-              className="border-orange-300"
-            >
-              -
-            </Button>
-            <span className="text-sm font-medium w-12 text-center">
-              {localFilters.minGuests}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocalFilters({ ...localFilters, minGuests: Math.min(50, localFilters.minGuests + 1) })}
-              disabled={localFilters.minGuests >= 50}
-              className="border-orange-300"
-            >
-              +
-            </Button>
+          <div className="flex flex-wrap gap-2">
+            {([1, 4, 6, 8, 10, 15, 20] as const).map((n) => {
+              const labelKey = n === 1
+                ? 'filters.guestsAny'
+                : n === 4  ? 'filters.guests4Plus'
+                : n === 6  ? 'filters.guests6Plus'
+                : n === 8  ? 'filters.guests8Plus'
+                : n === 10 ? 'filters.guests10Plus'
+                : n === 15 ? 'filters.guests15Plus'
+                :            'filters.guests20Plus';
+              const isSelected = localFilters.minGuests === n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setLocalFilters({ ...localFilters, minGuests: n })}
+                  className={cn(
+                    'px-3 py-2 min-h-[44px] flex items-center rounded-full text-sm font-medium border transition-colors',
+                    isSelected
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-white text-gray-700 border-border/80 hover:border-primary/60 hover:text-primary'
+                  )}
+                >
+                  {t(labelKey)}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -345,17 +350,17 @@ export default function FilterSidebar({
       </div>
 
       {/* Actions */}
-      <div className="mt-6 pt-6 border-t border-orange-200 space-y-3">
+      <div className="mt-6 pt-6 border-t border-border space-y-3">
         <Button
           onClick={handleApply}
-          className="w-full bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground lantern-halo font-semibold shadow-lg"
         >
           {t('filters.apply')}
         </Button>
         <Button
           variant="outline"
           onClick={handleReset}
-          className="w-full border-2 border-orange-300 hover:bg-orange-50"
+          className="w-full border-2 border-border/80 hover:bg-secondary/50"
         >
           {t('filters.reset')}
         </Button>

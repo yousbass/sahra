@@ -186,6 +186,28 @@ export function calculateHostCancellationRefund(
 }
 
 /**
+ * Normalise a legacy string policy tier ('flexible' | 'moderate' | 'strict')
+ * or an already-structured CancellationPolicy object into the canonical shape
+ * expected by calculateRefund. Safe to call on any runtime value from Firestore.
+ */
+export function normalizeCancellationPolicy(
+  policy: string | CancellationPolicy
+): CancellationPolicy {
+  if (typeof policy === 'object' && policy !== null) {
+    return policy;
+  }
+  switch (policy) {
+    case 'flexible':
+      return { type: 'full_refundable' };
+    case 'strict':
+      return { type: 'partial_refundable', arboonPercentage: 30 };
+    case 'moderate':
+    default:
+      return { type: 'partial_refundable', arboonPercentage: 20 };
+  }
+}
+
+/**
  * Helper function to create a full refundable policy
  */
 export function createFullRefundablePolicy(): CancellationPolicy {

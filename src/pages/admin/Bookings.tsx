@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,8 +28,7 @@ import {
 } from '@/components/ui/select';
 import { 
   Search, 
-  Eye, 
-  Loader2,
+  Eye,
   Calendar,
   Users,
   CheckCircle,
@@ -36,7 +36,7 @@ import {
   XCircle,
   Download
 } from 'lucide-react';
-import { getAllBookings, updateBooking, Booking } from '@/lib/firestore';
+import { getAllBookings, updateBookingStatus, Booking } from '@/lib/firestore';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -102,7 +102,7 @@ export default function AdminBookings() {
   const handleUpdateStatus = async (bookingId: string, status: 'pending' | 'confirmed' | 'cancelled') => {
     try {
       setActionLoading(true);
-      await updateBooking(bookingId, { status });
+      await updateBookingStatus(bookingId, status);
       toast.success(`Booking status updated to ${status}`);
       await loadBookings();
     } catch (error) {
@@ -119,8 +119,8 @@ export default function AdminBookings() {
       if (typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
         return format(date.toDate(), 'MMM dd, yyyy');
       }
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      if (dateObj instanceof Date && isNaN(dateObj.getTime())) return 'N/A';
+      const dateObj: Date = typeof date === 'string' ? new Date(date) : (date as Date);
+      if (isNaN(dateObj.getTime())) return 'N/A';
       return format(dateObj, 'MMM dd, yyyy');
     } catch (error) {
       console.error('Error formatting date:', error);
@@ -169,7 +169,7 @@ export default function AdminBookings() {
         );
       case 'pending':
         return (
-          <Badge className="bg-amber-100 text-amber-900 border-orange-300">
+          <Badge className="bg-secondary text-primary border-border/80">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
@@ -191,20 +191,20 @@ export default function AdminBookings() {
       case 'completed':
         return <Badge className="bg-green-100 text-green-900 border-green-300">Paid</Badge>;
       case 'pending':
-        return <Badge className="bg-amber-100 text-amber-900 border-orange-300">Pending</Badge>;
+        return <Badge className="bg-secondary text-primary border-border/80">Pending</Badge>;
       case 'failed':
         return <Badge variant="destructive">Failed</Badge>;
       case 'refunded':
         return <Badge className="bg-blue-100 text-blue-900 border-blue-300">Refunded</Badge>;
       default:
-        return <Badge className="bg-amber-100 text-amber-900 border-orange-300">Pending</Badge>;
+        return <Badge className="bg-secondary text-primary border-border/80">Pending</Badge>;
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export default function AdminBookings() {
         <Button
           onClick={exportToCSV}
           variant="outline"
-          className="border-2 border-orange-300 hover:bg-orange-50"
+          className="border-2 border-border/80 hover:bg-secondary/50"
           disabled={filteredBookings.length === 0}
         >
           <Download className="w-4 h-4 mr-2" />
@@ -229,7 +229,7 @@ export default function AdminBookings() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -237,12 +237,12 @@ export default function AdminBookings() {
               placeholder="Search by ID, user, or camp..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-orange-300 focus:border-#8B5A3C"
+              className="pl-10 border-border/80 focus:border-primary"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
+            <SelectTrigger className="border-border/80 focus:border-primary">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -254,7 +254,7 @@ export default function AdminBookings() {
           </Select>
 
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
+            <SelectTrigger className="border-border/80 focus:border-primary">
               <SelectValue placeholder="Filter by payment" />
             </SelectTrigger>
             <SelectContent>
@@ -269,11 +269,11 @@ export default function AdminBookings() {
       </Card>
 
       {/* Bookings Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-orange-50 border-orange-300">
+              <TableRow className="bg-secondary/50 border-border/80">
                 <TableHead className="font-bold text-gray-900">Booking ID</TableHead>
                 <TableHead className="font-bold text-gray-900">User</TableHead>
                 <TableHead className="font-bold text-gray-900">Camp</TableHead>
@@ -287,7 +287,7 @@ export default function AdminBookings() {
             </TableHeader>
             <TableBody>
               {filteredBookings.map((booking) => (
-                <TableRow key={booking.id} className="border-orange-200 hover:bg-orange-50">
+                <TableRow key={booking.id} className="border-border hover:bg-secondary/50">
                   <TableCell className="font-mono text-sm text-gray-700">
                     {booking.id.substring(0, 8)}...
                   </TableCell>
@@ -313,7 +313,7 @@ export default function AdminBookings() {
                       {booking.guests}
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold text-#6B4423">
+                  <TableCell className="font-semibold text-primary">
                     {booking.totalPrice.toFixed(3)} BD
                   </TableCell>
                   <TableCell>{getStatusBadge(booking.status)}</TableCell>
@@ -327,7 +327,7 @@ export default function AdminBookings() {
                           setSelectedBooking(booking);
                           setShowBookingDialog(true);
                         }}
-                        className="border-orange-300 hover:bg-orange-50"
+                        className="border-border/80 hover:bg-secondary/50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -388,14 +388,14 @@ export default function AdminBookings() {
                   <p className="font-semibold text-gray-900">
                     {formatDate(selectedBooking.checkInDate)}
                   </p>
-                  <p className="text-sm text-gray-600">{selectedBooking.checkIn.split(' ')[1]}</p>
+                  {selectedBooking.checkIn && <p className="text-sm text-gray-600">{selectedBooking.checkIn.split(' ')[1]}</p>}
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Check-out</p>
                   <p className="font-semibold text-gray-900">
                     {formatDate(selectedBooking.checkOutDate)}
                   </p>
-                  <p className="text-sm text-gray-600">{selectedBooking.checkOut.split(' ')[1]}</p>
+                  {selectedBooking.checkOut && <p className="text-sm text-gray-600">{selectedBooking.checkOut.split(' ')[1]}</p>}
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Guests</p>
@@ -410,30 +410,30 @@ export default function AdminBookings() {
               </div>
 
               {/* Price Breakdown */}
-              <div className="border-t border-orange-300 pt-4">
+              <div className="border-t border-border/80 pt-4">
                 <p className="text-sm text-gray-600 mb-3">Price Breakdown</p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-700">Camp Price</span>
+                    <span className="text-gray-700">Base Price</span>
                     <span className="font-semibold text-gray-900">
-                      {(selectedBooking.campPrice || 0).toFixed(3)} BD
+                      {(selectedBooking.priceBreakdown?.basePrice || 0).toFixed(3)} BD
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-700">Service Fee</span>
                     <span className="font-semibold text-gray-900">
-                      {(selectedBooking.serviceFee || 0).toFixed(3)} BD
+                      {(selectedBooking.priceBreakdown?.serviceFee || 0).toFixed(3)} BD
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-700">Taxes</span>
+                    <span className="text-gray-700">Tax</span>
                     <span className="font-semibold text-gray-900">
-                      {(selectedBooking.taxes || 0).toFixed(3)} BD
+                      {(selectedBooking.priceBreakdown?.tax || 0).toFixed(3)} BD
                     </span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-orange-300">
+                  <div className="flex justify-between pt-2 border-t border-border/80">
                     <span className="font-bold text-gray-900">Total</span>
-                    <span className="text-xl font-bold text-#6B4423">
+                    <span className="text-xl font-bold text-primary">
                       {selectedBooking.totalPrice.toFixed(3)} BD
                     </span>
                   </div>
@@ -458,7 +458,7 @@ export default function AdminBookings() {
                     variant="outline"
                     onClick={() => handleUpdateStatus(selectedBooking.id, 'pending')}
                     disabled={actionLoading || selectedBooking.status === 'pending'}
-                    className="border-orange-300 text-amber-700 hover:bg-orange-50"
+                    className="border-border/80 text-primary hover:bg-secondary/50"
                   >
                     <Clock className="w-4 h-4 mr-1" />
                     Set Pending

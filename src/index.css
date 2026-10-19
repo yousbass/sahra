@@ -1,55 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* MUKHYMAT warm earth tone theme - browns and oranges */
-    --background: 0 0% 100%;
-    --foreground: 25 30% 20%;
+    /* Camp Glow Theme */
+    --background: 40 40% 98%; /* Ivory #FDFBF7 */
+    --foreground: 226 60% 10%; /* Night Indigo #0A1128 */
+    
     --card: 0 0% 100%;
-    --card-foreground: 25 30% 20%;
+    --card-foreground: 226 60% 10%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 25 30% 20%;
-    /* Primary: Warm Brown #8B5A3C */
-    --primary: 20 42% 39%;
-    --primary-foreground: 0 0% 100%;
-    /* Secondary: Orange #FF8C42 */
-    --secondary: 24 100% 63%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 30 40% 96%;
-    --muted-foreground: 25 30% 46%;
-    /* Accent: Light Orange #FFA566 */
-    --accent: 24 100% 70%;
-    --accent-foreground: 25 30% 20%;
+    --popover-foreground: 226 60% 10%;
+    
+    /* Lantern Amber */
+    --primary: 33 86% 59%; /* #F0A03C */
+    --primary-foreground: 226 60% 10%; /* Night Indigo */
+    
+    /* Ivory / Sand */
+    --secondary: 40 30% 92%; 
+    --secondary-foreground: 226 60% 10%;
+    
+    /* Gulf Teal */
+    --accent: 186 71% 31%; /* #177E89 */
+    --accent-foreground: 0 0% 100%;
+    
+    --muted: 40 20% 92%;
+    --muted-foreground: 226 20% 45%;
+    
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 30 30% 88%;
-    --input: 30 30% 88%;
-    --ring: 20 42% 39%;
-    --radius: 0.5rem;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 40 20% 86%;
+    --input: 40 20% 86%;
+    --ring: 33 86% 59%; /* Lantern Amber */
+    
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 25 30% 10%;
-    --foreground: 30 40% 97%;
-    --card: 25 30% 12%;
-    --card-foreground: 30 40% 97%;
-    --popover: 25 30% 12%;
-    --popover-foreground: 30 40% 97%;
-    --primary: 20 42% 39%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 24 100% 63%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 25 30% 18%;
-    --muted-foreground: 30 40% 60%;
-    --accent: 25 30% 18%;
-    --accent-foreground: 30 40% 97%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 30 40% 97%;
-    --border: 25 30% 18%;
-    --input: 25 30% 18%;
-    --ring: 20 42% 39%;
+    --background: 226 60% 10%; /* Night Indigo */
+    --foreground: 40 40% 98%; /* Ivory */
+    
+    --card: 226 50% 12%;
+    --card-foreground: 40 40% 98%;
+    
+    --popover: 226 50% 12%;
+    --popover-foreground: 40 40% 98%;
+    
+    --primary: 33 86% 59%; /* Lantern Amber */
+    --primary-foreground: 226 60% 10%; /* Night Indigo */
+    
+    --secondary: 226 40% 16%;
+    --secondary-foreground: 40 40% 98%;
+    
+    --accent: 186 71% 31%; /* Gulf Teal */
+    --accent-foreground: 40 40% 98%;
+    
+    --muted: 226 25% 20%;
+    --muted-foreground: 40 20% 70%;
+    
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 40 40% 98%;
+    
+    --border: 226 25% 22%;
+    --input: 226 25% 22%;
+    --ring: 33 86% 59%;
   }
 }
 
@@ -58,23 +77,24 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* MUKHYMAT warm earth tone backgrounds */
-.desert-bg {
-  background: linear-gradient(135deg, #F5E6D3 0%, #FFE4B5 25%, #FFA566 50%, #FF8C42 75%, #8B5A3C 100%);
+/* Typography configuration mapping */
+html[lang="en"] {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
-
-.desert-gradient {
-  background: linear-gradient(to bottom, #F5E6D3, #FFE4B5, #F5E6D3);
+html[lang="ar"] {
+  font-family: 'Cairo', sans-serif;
 }
 
 /* Smooth transitions */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
 /* Hide number input spinners when we already provide +/- buttons */
@@ -87,16 +107,64 @@
   -moz-appearance: textfield;
 }
 
-/* Modern card styling */
+/* Signature Desert Gradients */
+.desert-bg {
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--secondary)) 100%);
+}
+
+.desert-gradient {
+  background: linear-gradient(to bottom, hsl(var(--background)), hsl(var(--secondary)), hsl(var(--background)));
+}
+
+.campfire-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(33, 90%, 50%));
+}
+
+/* Lantern Halo */
+.lantern-halo {
+  box-shadow: 0 0 15px 2px rgba(240, 160, 60, 0.4);
+}
+
+/* Modern card styling with warm depth */
 .modern-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(139, 90, 60, 0.15);
+  background: hsl(var(--card));
+  box-shadow: 0 10px 40px -10px rgba(10, 17, 40, 0.08), 0 4px 10px -5px rgba(10, 17, 40, 0.04);
+  border: 1px solid rgba(10, 17, 40, 0.08);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 /* Map container styling */
 .map-container {
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   overflow: hidden;
-  border: 2px solid rgba(139, 90, 60, 0.2);
+  border: 2px solid rgba(10, 17, 40, 0.15);
+  box-shadow: 0 4px 20px -5px rgba(10, 17, 40, 0.1);
+}
+
+/* Signature Campfire Loader Animation */
+.campfire-flame {
+  animation: flicker 1.2s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+.campfire-flame.delay-1 {
+  animation-delay: -0.2s;
+  animation-duration: 1.1s;
+}
+.campfire-flame.delay-2 {
+  animation-delay: -0.5s;
+  animation-duration: 1.3s;
+}
+.campfire-glow {
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes flicker {
+  0% { transform: scale(1) skewX(2deg); opacity: 0.8; }
+  50% { transform: scale(1.1) skewX(-2deg); opacity: 1; }
+  100% { transform: scale(0.95) skewX(1deg); opacity: 0.9; }
+}
+@keyframes glow-pulse {
+  0% { opacity: 0.3; transform: scale(0.9); }
+  100% { opacity: 0.6; transform: scale(1.2); }
 }

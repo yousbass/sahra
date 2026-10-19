@@ -1,5 +1,7 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -57,6 +59,8 @@ import { cn } from '@/lib/utils';
 export default function ManageAvailability() {
   const navigate = useNavigate();
   const { user, userData, loading: authLoading } = useAuth();
+  const { t, i18n } = useTranslation();
+  const fmtDate = (d: Date) => d.toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   const [camps, setCamps] = useState<Camp[]>([]);
   const [selectedCamp, setSelectedCamp] = useState<Camp | null>(null);
@@ -75,13 +79,13 @@ export default function ManageAvailability() {
     if (authLoading) return;
 
     if (!user || !userData) {
-      toast.error('Please sign in to manage availability');
+      toast.error(t('manageAvailability.toasts.signInRequired'));
       navigate('/signin');
       return;
     }
 
     if (!userData.isHost) {
-      toast.error('You need to be a host to manage availability');
+      toast.error(t('manageAvailability.toasts.hostRequired'));
       navigate('/profile');
       return;
     }
@@ -102,7 +106,7 @@ export default function ManageAvailability() {
       }
     } catch (error) {
       console.error('Error loading camps:', error);
-      toast.error('Failed to load your camps');
+      toast.error(t('manageAvailability.toasts.loadCampsFailed'));
     } finally {
       setLoading(false);
     }
@@ -129,14 +133,14 @@ export default function ManageAvailability() {
 
       // Load blocked dates
       const blocked = await getBlockedDates(selectedCamp.id);
-      setBlockedRanges(blocked);
+      setBlockedRanges(blocked as unknown as BlockedDate[]);
       
       const blockedDatesList = getBlockedDatesList(blocked);
       setBlockedDates(blockedDatesList);
 
     } catch (error) {
       console.error('Error loading availability:', error);
-      toast.error('Failed to load availability data');
+      toast.error(t('manageAvailability.toasts.loadAvailabilityFailed'));
     }
   };
 
@@ -158,12 +162,12 @@ export default function ManageAvailability() {
         notes
       );
 
-      toast.success('Dates blocked successfully');
+      toast.success(t('manageAvailability.toasts.blocked'));
       setShowBlockDialog(false);
       await loadAvailability();
     } catch (error) {
       console.error('Error blocking dates:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to block dates';
+      const errorMessage = error instanceof Error ? error.message : t('manageAvailability.toasts.blockFailed');
       toast.error(errorMessage);
     }
   };
@@ -174,12 +178,12 @@ export default function ManageAvailability() {
     try {
       setDeleting(true);
       await unblockDates(blockToDelete.id);
-      toast.success('Dates unblocked successfully');
+      toast.success(t('manageAvailability.toasts.unblocked'));
       setBlockToDelete(null);
       await loadAvailability();
     } catch (error) {
       console.error('Error unblocking dates:', error);
-      toast.error('Failed to unblock dates');
+      toast.error(t('manageAvailability.toasts.unblockFailed'));
     } finally {
       setDeleting(false);
     }
@@ -187,10 +191,10 @@ export default function ManageAvailability() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b desert-bg p-4 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-#6B4423 animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium">Loading availability data...</p>
+          <CampfireLoader size="lg" className="mx-auto mb-4" />
+          <p className="text-gray-700 font-medium">{t('manageAvailability.loading')}</p>
         </div>
       </div>
     );
@@ -202,28 +206,28 @@ export default function ManageAvailability() {
 
   if (camps.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+      <div className="min-h-screen bg-gradient-to-b desert-bg p-4">
         <div className="max-w-4xl mx-auto pt-8">
           <Button
             onClick={() => navigate('/host/listings')}
             variant="ghost"
-            className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
+            className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-secondary font-medium"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to My Listings
+            {t('manageAvailability.back')}
           </Button>
 
           <Card className="p-8 text-center">
             <CalendarDays className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">No Camps Yet</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('manageAvailability.noCampsTitle')}</h2>
             <p className="text-gray-600 mb-6">
-              Create your first camp listing to start managing availability
+              {t('manageAvailability.noCampsDesc')}
             </p>
             <Button
               onClick={() => navigate('/host/create')}
-              className="bg-#6B4423 hover:bg-#5A3820"
+              className="bg-primary hover:bg-#5A3820"
             >
-              Create Camp Listing
+              {t('manageAvailability.createCamp')}
             </Button>
           </Card>
         </div>
@@ -236,23 +240,23 @@ export default function ManageAvailability() {
   const totalBlockedDays = blockedDates.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b desert-bg p-4">
       <div className="max-w-6xl mx-auto pt-8 pb-20">
         <Button
           onClick={() => navigate('/host/listings')}
           variant="ghost"
-          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-orange-100 font-medium"
+          className="mb-6 text-gray-900 hover:text-gray-950 hover:bg-secondary font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to My Listings
+          {t('manageAvailability.back')}
         </Button>
 
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Manage Availability
+            {t('manageAvailability.title')}
           </h1>
           <p className="text-gray-700 font-medium">
-            View bookings and block unavailable dates
+            {t('manageAvailability.subtitle')}
           </p>
         </div>
 
@@ -261,7 +265,7 @@ export default function ManageAvailability() {
           <div className="flex items-center justify-between">
             <div className="flex-1 max-w-md">
               <label className="text-sm font-semibold text-gray-900 mb-2 block">
-                Select Camp
+                {t('manageAvailability.selectCamp')}
               </label>
               <Select
                 value={selectedCamp?.id}
@@ -271,7 +275,7 @@ export default function ManageAvailability() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a camp..." />
+                  <SelectValue placeholder={t('manageAvailability.chooseCamp')} />
                 </SelectTrigger>
                 <SelectContent>
                   {camps.map(camp => (
@@ -287,7 +291,7 @@ export default function ManageAvailability() {
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Block Dates
+              {t('manageAvailability.blockDatesBtn')}
             </Button>
           </div>
         </Card>
@@ -302,7 +306,7 @@ export default function ManageAvailability() {
                     <CalendarIcon className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">Total Bookings</p>
+                    <p className="text-sm text-gray-600 font-medium">{t('manageAvailability.stats.total')}</p>
                     <p className="text-2xl font-bold text-gray-900">{bookings.length}</p>
                   </div>
                 </div>
@@ -314,7 +318,7 @@ export default function ManageAvailability() {
                     <Check className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">Confirmed</p>
+                    <p className="text-sm text-gray-600 font-medium">{t('manageAvailability.stats.confirmed')}</p>
                     <p className="text-2xl font-bold text-gray-900">{confirmedBookings}</p>
                   </div>
                 </div>
@@ -326,7 +330,7 @@ export default function ManageAvailability() {
                     <Users className="w-5 h-5 text-yellow-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">Pending</p>
+                    <p className="text-sm text-gray-600 font-medium">{t('manageAvailability.stats.pending')}</p>
                     <p className="text-2xl font-bold text-gray-900">{pendingBookings}</p>
                   </div>
                 </div>
@@ -338,7 +342,7 @@ export default function ManageAvailability() {
                     <XCircle className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 font-medium">Blocked Days</p>
+                    <p className="text-sm text-gray-600 font-medium">{t('manageAvailability.stats.blocked')}</p>
                     <p className="text-2xl font-bold text-gray-900">{totalBlockedDays}</p>
                   </div>
                 </div>
@@ -347,7 +351,7 @@ export default function ManageAvailability() {
 
             {/* Calendar View */}
             <Card className="p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Calendar Overview</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">{t('manageAvailability.calendar.title')}</h2>
               <Calendar
                 mode="single"
                 className="rounded-md border"
@@ -363,15 +367,15 @@ export default function ManageAvailability() {
               <div className="flex flex-wrap gap-4 mt-4 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded bg-green-100 border border-green-300"></div>
-                  <span className="text-gray-700">Booked</span>
+                  <span className="text-gray-700">{t('manageAvailability.calendar.booked')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300"></div>
-                  <span className="text-gray-700">Blocked</span>
+                  <span className="text-gray-700">{t('manageAvailability.calendar.blocked')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-white border-2 border-orange-300"></div>
-                  <span className="text-gray-700">Available</span>
+                  <div className="w-4 h-4 rounded bg-white border-2 border-border/80"></div>
+                  <span className="text-gray-700">{t('manageAvailability.calendar.available')}</span>
                 </div>
               </div>
             </Card>
@@ -379,7 +383,7 @@ export default function ManageAvailability() {
             {/* Blocked Dates List */}
             {blockedRanges.length > 0 && (
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Blocked Date Ranges</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">{t('manageAvailability.blockedRanges.title')}</h2>
                 <div className="space-y-3">
                   {blockedRanges.map((block) => {
                     const startDate = block.startDate.toDate();
@@ -394,21 +398,21 @@ export default function ManageAvailability() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Badge variant="outline" className="bg-gray-100">
-                              {days} day{days > 1 ? 's' : ''}
+                              {t('manageAvailability.blockedRanges.day', { count: days })}
                             </Badge>
                             <Badge variant="outline">
                               {block.reasonCategory}
                             </Badge>
                           </div>
                           <p className="font-semibold text-gray-900">
-                            {format(startDate, 'MMM dd, yyyy')} - {format(endDate, 'MMM dd, yyyy')}
+                            {fmtDate(startDate)} – {fmtDate(endDate)}
                           </p>
                           <p className="text-sm text-gray-600 mt-1">
-                            Reason: {block.reason}
+                            {t('manageAvailability.blockedRanges.reason')}: {block.reason}
                           </p>
                           {block.notes && (
                             <p className="text-sm text-gray-500 mt-1">
-                              Notes: {block.notes}
+                              {t('manageAvailability.blockedRanges.notes')}: {block.notes}
                             </p>
                           )}
                         </div>
@@ -433,9 +437,9 @@ export default function ManageAvailability() {
         <Dialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Block Dates</DialogTitle>
+              <DialogTitle>{t('manageAvailability.blockDialog.title')}</DialogTitle>
               <DialogDescription>
-                Select date range to block for {selectedCamp?.title}
+                {t('manageAvailability.blockDialog.description', { campTitle: selectedCamp?.title })}
               </DialogDescription>
             </DialogHeader>
             <DateRangePicker
@@ -450,21 +454,22 @@ export default function ManageAvailability() {
         <AlertDialog open={!!blockToDelete} onOpenChange={(open) => !open && setBlockToDelete(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Unblock Dates?</AlertDialogTitle>
+              <AlertDialogTitle>{t('manageAvailability.unblockDialog.title')}</AlertDialogTitle>
               <AlertDialogDescription>
                 {blockToDelete && (
                   <>
-                    This will unblock dates from{' '}
-                    <strong>{format(blockToDelete.startDate.toDate(), 'MMM dd, yyyy')}</strong> to{' '}
-                    <strong>{format(blockToDelete.endDate.toDate(), 'MMM dd, yyyy')}</strong>.
+                    {t('manageAvailability.unblockDialog.from')}{' '}
+                    <strong>{fmtDate(blockToDelete.startDate.toDate())}</strong>{' '}
+                    {t('manageAvailability.unblockDialog.to')}{' '}
+                    <strong>{fmtDate(blockToDelete.endDate.toDate())}</strong>.
                     <br />
-                    These dates will become available for booking again.
+                    {t('manageAvailability.unblockDialog.willBeAvailable')}
                   </>
                 )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={deleting}>{t('manageAvailability.unblockDialog.cancel')}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleUnblockDates}
                 disabled={deleting}
@@ -473,10 +478,10 @@ export default function ManageAvailability() {
                 {deleting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Unblocking...
+                    {t('manageAvailability.unblockDialog.unblocking')}
                   </>
                 ) : (
-                  'Unblock Dates'
+                  t('manageAvailability.unblockDialog.confirm')
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>

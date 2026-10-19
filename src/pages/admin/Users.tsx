@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,8 +30,7 @@ import {
   Search, 
   Edit, 
   Ban, 
-  Trash2, 
-  Loader2,
+  Trash2,
   UserCheck,
   UserX,
   Download
@@ -163,8 +163,8 @@ export default function AdminUsers() {
       if (typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
         return format(date.toDate(), 'MMM dd, yyyy');
       }
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      if (dateObj instanceof Date && isNaN(dateObj.getTime())) return 'N/A';
+      const dateObj: Date = typeof date === 'string' ? new Date(date) : (date as Date);
+      if (isNaN(dateObj.getTime())) return 'N/A';
       return format(dateObj, 'MMM dd, yyyy');
     } catch (error) {
       console.error('Error formatting date:', error);
@@ -219,7 +219,7 @@ export default function AdminUsers() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
       </div>
     );
   }
@@ -235,7 +235,7 @@ export default function AdminUsers() {
         <Button
           onClick={exportToCSV}
           variant="outline"
-          className="border-2 border-orange-300 hover:bg-orange-50"
+          className="border-2 border-border/80 hover:bg-secondary/50"
           disabled={filteredUsers.length === 0}
         >
           <Download className="w-4 h-4 mr-2" />
@@ -244,7 +244,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -252,12 +252,12 @@ export default function AdminUsers() {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-orange-300 focus:border-#8B5A3C"
+              className="pl-10 border-border/80 focus:border-primary"
             />
           </div>
 
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
+            <SelectTrigger className="border-border/80 focus:border-primary">
               <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
@@ -269,7 +269,7 @@ export default function AdminUsers() {
           </Select>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
+            <SelectTrigger className="border-border/80 focus:border-primary">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -282,11 +282,11 @@ export default function AdminUsers() {
       </Card>
 
       {/* Users Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-orange-50 border-orange-300">
+              <TableRow className="bg-secondary/50 border-border/80">
                 <TableHead className="font-bold text-gray-900">User</TableHead>
                 <TableHead className="font-bold text-gray-900">Email</TableHead>
                 <TableHead className="font-bold text-gray-900">Phone</TableHead>
@@ -298,7 +298,7 @@ export default function AdminUsers() {
             </TableHeader>
             <TableBody>
               {filteredUsers.map((user) => (
-                <TableRow key={user.id} className="border-orange-200 hover:bg-orange-50">
+                <TableRow key={user.id} className="border-border hover:bg-secondary/50">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center">
@@ -327,7 +327,7 @@ export default function AdminUsers() {
                           setSelectedUser(user);
                           setShowUserDialog(true);
                         }}
-                        className="border-orange-300 hover:bg-orange-50"
+                        className="border-border/80 hover:bg-secondary/50"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -410,7 +410,7 @@ export default function AdminUsers() {
                   variant="outline"
                   onClick={() => handleToggleHost(selectedUser.id, selectedUser.isHost)}
                   disabled={actionLoading || selectedUser.isAdmin}
-                  className="border-2 border-orange-300 hover:bg-orange-50"
+                  className="border-2 border-border/80 hover:bg-secondary/50"
                 >
                   {selectedUser.isHost ? (
                     <>
@@ -429,7 +429,7 @@ export default function AdminUsers() {
                   variant="outline"
                   onClick={() => handleSuspendUser(selectedUser.id, selectedUser.status || 'active')}
                   disabled={actionLoading || selectedUser.isAdmin}
-                  className="border-2 border-orange-300 text-amber-700 hover:bg-orange-50"
+                  className="border-2 border-border/80 text-primary hover:bg-secondary/50"
                 >
                   {selectedUser.status === 'suspended' ? (
                     <>

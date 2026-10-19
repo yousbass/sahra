@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,14 +31,24 @@ import {
   Eye, 
   Trash2, 
   CheckCircle, 
-  XCircle, 
+  XCircle,
   Loader2,
   ExternalLink,
   MapPin,
   Users,
-  Star
+  Star,
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
-import { getAllCamps, updateCampStatus, Camp } from '@/lib/firestore';
+import {
+  getAllCamps,
+  updateCamp,
+  updateCampStatus,
+  recalculateAllCampRatings,
+  checkCampRatingDrift,
+  Camp,
+  RatingDriftReport
+} from '@/lib/firestore';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -47,17 +58,65 @@ export default function AdminCamps() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [pinFilter, setPinFilter] = useState<string>('all');
   const [selectedCamp, setSelectedCamp] = useState<Camp | null>(null);
   const [showCampDialog, setShowCampDialog] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
+  const [driftReport, setDriftReport] = useState<RatingDriftReport | null>(null);
+  const [checkingDrift, setCheckingDrift] = useState(false);
+  const [editLat, setEditLat] = useState('');
+  const [editLng, setEditLng] = useState('');
+  const [savingCoords, setSavingCoords] = useState(false);
+
+  const runDriftCheck = async () => {
+    try {
+      setCheckingDrift(true);
+      const report = await checkCampRatingDrift();
+      setDriftReport(report);
+      return report;
+    } catch (error) {
+      console.error('Error checking camp rating drift:', error);
+      setDriftReport(null);
+      return null;
+    } finally {
+      setCheckingDrift(false);
+    }
+  };
+
+  const handleRecalculateRatings = async () => {
+    try {
+      setRecalculating(true);
+      const result = await recalculateAllCampRatings();
+      if (result.failed.length > 0) {
+        console.error('Rating backfill failures:', result.failed);
+        toast.error(
+          `Recalculated ratings: ${result.updated} updated, ${result.failed.length} failed (see console)`
+        );
+      } else if (result.updated === 0) {
+        toast.success(`All ${result.checked} camps already had correct ratings`);
+      } else {
+        toast.success(
+          `Ratings recalculated: ${result.updated} of ${result.checked} camps corrected`
+        );
+      }
+      await Promise.all([loadCamps(), runDriftCheck()]);
+    } catch (error) {
+      console.error('Error recalculating camp ratings:', error);
+      toast.error('Failed to recalculate camp ratings');
+    } finally {
+      setRecalculating(false);
+    }
+  };
 
   useEffect(() => {
     loadCamps();
+    runDriftCheck();
   }, []);
 
   useEffect(() => {
     filterCamps();
-  }, [camps, searchTerm, statusFilter]);
+  }, [camps, searchTerm, statusFilter, pinFilter]);
 
   const loadCamps = async () => {
     try {
@@ -89,13 +148,24 @@ export default function AdminCamps() {
       filtered = filtered.filter(camp => camp.status === statusFilter);
     }
 
+    // Map pin filter
+    if (pinFilter === 'missing') {
+      filtered = filtered.filter(camp => !camp.coordinates);
+    }
+
     setFilteredCamps(filtered);
   };
 
   const handleUpdateStatus = async (campId: string, newStatus: 'active' | 'pending' | 'inactive') => {
     try {
       setActionLoading(true);
-      await updateCampStatus(campId, newStatus);
+      if (newStatus === 'inactive') {
+        // updateCampStatus only accepts 'active' | 'pending' | 'rejected';
+        // write the 'inactive' status directly via updateCamp
+        await updateCamp(campId, { status: 'inactive' });
+      } else {
+        await updateCampStatus(campId, newStatus);
+      }
       toast.success(`Camp status updated to ${newStatus}`);
       await loadCamps();
       setShowCampDialog(false);
@@ -104,6 +174,32 @@ export default function AdminCamps() {
       toast.error('Failed to update camp status');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleSaveCoordinates = async () => {
+    if (!selectedCamp) return;
+    const lat = parseFloat(editLat);
+    const lng = parseFloat(editLng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      toast.error('Please enter valid decimal coordinates (e.g. 26.0667, 50.5577)');
+      return;
+    }
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      toast.error('Latitude must be −90 to 90 and longitude −180 to 180');
+      return;
+    }
+    try {
+      setSavingCoords(true);
+      await updateCamp(selectedCamp.id, { coordinates: { lat, lng } });
+      toast.success('Coordinates saved — camp will now appear on the map');
+      setSelectedCamp({ ...selectedCamp, coordinates: { lat, lng } });
+      await loadCamps();
+    } catch (error) {
+      console.error('Error saving coordinates:', error);
+      toast.error('Failed to save coordinates');
+    } finally {
+      setSavingCoords(false);
     }
   };
 
@@ -142,8 +238,8 @@ export default function AdminCamps() {
         return format(date.toDate(), 'MMM dd, yyyy');
       }
       // Handle string or Date object
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      if (dateObj instanceof Date && isNaN(dateObj.getTime())) return 'N/A';
+      const dateObj: Date = typeof date === 'string' ? new Date(date) : (date as Date);
+      if (isNaN(dateObj.getTime())) return 'N/A';
       return format(dateObj, 'MMM dd, yyyy');
     } catch (error) {
       console.error('Error formatting date:', error);
@@ -154,7 +250,7 @@ export default function AdminCamps() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
       </div>
     );
   }
@@ -165,25 +261,139 @@ export default function AdminCamps() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Camp Management</h2>
-          <p className="text-gray-600 mt-1">{filteredCamps.length} camps found</p>
+          <p className="text-gray-600 mt-1">
+            {filteredCamps.length} camps found
+            {camps.filter(c => !c.coordinates).length > 0 && (
+              <span className="text-amber-700">
+                {' · '}{camps.filter(c => !c.coordinates).length} camp{camps.filter(c => !c.coordinates).length === 1 ? '' : 's'} not yet on the map
+              </span>
+            )}
+          </p>
         </div>
+        <Button
+          onClick={handleRecalculateRatings}
+          disabled={recalculating}
+          variant="outline"
+          className="border-border/80 text-gray-900 hover:bg-secondary/50"
+        >
+          {recalculating ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Star className="w-4 h-4 mr-2" />
+          )}
+          Recalculate Ratings
+        </Button>
       </div>
 
+      {/* Rating drift check */}
+      {checkingDrift && !driftReport ? (
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-4">
+          <div className="flex items-center gap-2 text-gray-600">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Checking camp ratings for drift...
+          </div>
+        </Card>
+      ) : driftReport && driftReport.drifted.length > 0 ? (
+        <Card className="bg-amber-50 border-amber-400 p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {driftReport.drifted.length} of {driftReport.checked} camps have out-of-sync ratings
+                </p>
+                <p className="text-sm text-gray-700 mt-1">
+                  Stored rating/review count differs from the actual reviews. Click Fix to correct only these camps.
+                </p>
+                <ul className="mt-2 space-y-1 text-sm text-gray-800">
+                  {driftReport.drifted.slice(0, 10).map((d) => (
+                    <li key={d.campId}>
+                      <span className="font-medium">{d.title || d.campId}</span>
+                      {': '}stored {d.storedRating.toFixed(2)} ({d.storedReviewCount} reviews)
+                      {' → actual '}{d.actualRating.toFixed(2)} ({d.actualReviewCount} reviews)
+                    </li>
+                  ))}
+                  {driftReport.drifted.length > 10 && (
+                    <li className="text-gray-600">
+                      …and {driftReport.drifted.length - 10} more
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={runDriftCheck}
+                disabled={checkingDrift || recalculating}
+                className="border-amber-400 hover:bg-amber-100"
+              >
+                {checkingDrift ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                )}
+                Re-check
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleRecalculateRatings}
+                disabled={recalculating || checkingDrift}
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                {recalculating ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Star className="w-4 h-4 mr-2" />
+                )}
+                Fix {driftReport.drifted.length} drifted camp{driftReport.drifted.length === 1 ? '' : 's'}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      ) : driftReport ? (
+        <Card className="bg-green-50 border-green-300 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-green-900">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <span>
+                All {driftReport.checked} camp ratings are in sync with their reviews
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={runDriftCheck}
+              disabled={checkingDrift || recalculating}
+              className="border-green-300 hover:bg-green-100"
+            >
+              {checkingDrift ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Re-check
+            </Button>
+          </div>
+        </Card>
+      ) : null}
+
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search by title, location, or host..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-orange-300 focus:border-#8B5A3C"
+              className="pl-10 border-border/80 focus:border-primary"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
+            <SelectTrigger className="border-border/80 focus:border-primary">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -193,15 +403,25 @@ export default function AdminCamps() {
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
+
+          <Select value={pinFilter} onValueChange={setPinFilter}>
+            <SelectTrigger className="border-border/80 focus:border-primary">
+              <SelectValue placeholder="Filter by map pin" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Map Pins</SelectItem>
+              <SelectItem value="missing">Missing coordinates</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </Card>
 
       {/* Camps Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-orange-50 border-orange-300">
+              <TableRow className="bg-secondary/50 border-border/80">
                 <TableHead className="font-bold text-gray-900">Camp</TableHead>
                 <TableHead className="font-bold text-gray-900">Host</TableHead>
                 <TableHead className="font-bold text-gray-900">Location</TableHead>
@@ -215,11 +435,11 @@ export default function AdminCamps() {
             </TableHeader>
             <TableBody>
               {filteredCamps.map((camp) => (
-                <TableRow key={camp.id} className="border-orange-200 hover:bg-orange-50">
+                <TableRow key={camp.id} className="border-border hover:bg-secondary/50">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <img
-                        src={camp.photo}
+                        src={camp.images?.[0] || 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800'}
                         alt={camp.title}
                         className="w-16 h-16 object-cover rounded-lg"
                         onError={(e) => {
@@ -242,21 +462,26 @@ export default function AdminCamps() {
                       <MapPin className="w-4 h-4" />
                       {camp.location}
                     </div>
+                    {!camp.coordinates && (
+                      <Badge className="mt-1 bg-amber-100 text-amber-900 border-amber-300 text-xs">
+                        No pin
+                      </Badge>
+                    )}
                   </TableCell>
-                  <TableCell className="font-semibold text-#6B4423">
-                    {camp.price} BD
+                  <TableCell className="font-semibold text-primary">
+                    {camp.pricePerNight} BD
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1 text-gray-700">
                       <Users className="w-4 h-4" />
-                      {camp.capacity}
+                      {camp.maxGuests}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-semibold text-gray-900">
-                        {camp.averageRating?.toFixed(1) || 'N/A'}
+                        {camp.rating?.toFixed(1) || 'N/A'}
                       </span>
                       <span className="text-sm text-gray-600">
                         ({camp.reviewCount || 0})
@@ -274,9 +499,11 @@ export default function AdminCamps() {
                         variant="outline"
                         onClick={() => {
                           setSelectedCamp(camp);
+                          setEditLat(camp.coordinates?.lat?.toString() ?? '');
+                          setEditLng(camp.coordinates?.lng?.toString() ?? '');
                           setShowCampDialog(true);
                         }}
-                        className="border-orange-300 hover:bg-orange-50"
+                        className="border-border/80 hover:bg-secondary/50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -307,7 +534,7 @@ export default function AdminCamps() {
               {/* Camp Image */}
               <div className="w-full h-64 rounded-lg overflow-hidden">
                 <img
-                  src={selectedCamp.photo}
+                  src={selectedCamp.images?.[0] || 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800'}
                   alt={selectedCamp.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -329,18 +556,18 @@ export default function AdminCamps() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div>
                     <p className="text-sm text-gray-600">Price</p>
-                    <p className="text-xl font-bold text-#6B4423">{selectedCamp.price} BD</p>
+                    <p className="text-xl font-bold text-primary">{selectedCamp.pricePerNight} BD</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Capacity</p>
-                    <p className="text-xl font-bold text-gray-900">{selectedCamp.capacity}</p>
+                    <p className="text-xl font-bold text-gray-900">{selectedCamp.maxGuests}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Rating</p>
                     <div className="flex items-center gap-1">
                       <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                       <span className="text-xl font-bold text-gray-900">
-                        {selectedCamp.averageRating?.toFixed(1) || 'N/A'}
+                        {selectedCamp.rating?.toFixed(1) || 'N/A'}
                       </span>
                     </div>
                   </div>
@@ -372,7 +599,7 @@ export default function AdminCamps() {
                       <p className="text-sm text-gray-600 mb-2">Amenities</p>
                       <div className="flex flex-wrap gap-2">
                         {selectedCamp.amenities.map((amenity, index) => (
-                          <Badge key={index} variant="secondary" className="bg-orange-100 text-sand-900">
+                          <Badge key={index} variant="secondary" className="bg-secondary text-sand-900">
                             {amenity}
                           </Badge>
                         ))}
@@ -382,12 +609,65 @@ export default function AdminCamps() {
                 </div>
               </div>
 
+              {/* Coordinates */}
+              <div className="border border-border/80 rounded-lg p-4 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <p className="font-semibold text-gray-900">Map Coordinates</p>
+                  {selectedCamp.coordinates ? (
+                    <Badge className="bg-green-100 text-green-900 border-green-300 text-xs">
+                      On map
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs text-gray-500">
+                      Not on map yet
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">
+                  Enter decimal coordinates (latitude, longitude). Find them on Google Maps by right-clicking a location. Hosts can also set these themselves via Edit Listing.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-1 block">Latitude</label>
+                    <Input
+                      placeholder="e.g. 26.0667"
+                      value={editLat}
+                      onChange={(e) => setEditLat(e.target.value)}
+                      className="border-border/80 focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-1 block">Longitude</label>
+                    <Input
+                      placeholder="e.g. 50.5577"
+                      value={editLng}
+                      onChange={(e) => setEditLng(e.target.value)}
+                      className="border-border/80 focus:border-primary"
+                    />
+                  </div>
+                </div>
+                <Button
+                  onClick={handleSaveCoordinates}
+                  disabled={savingCoords || !editLat || !editLng}
+                  size="sm"
+                  className="bg-primary hover:bg-primary/90 text-white"
+                >
+                  {savingCoords ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <MapPin className="w-4 h-4 mr-2" />
+                  )}
+                  Save Coordinates
+                </Button>
+              </div>
+
               {/* Actions */}
               <DialogFooter className="flex gap-2">
                 <Button
                   variant="outline"
                   onClick={() => window.open(`/camp/${selectedCamp.id}`, '_blank')}
-                  className="border-2 border-orange-300 hover:bg-orange-50"
+                  className="border-2 border-border/80 hover:bg-secondary/50"
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Public Page

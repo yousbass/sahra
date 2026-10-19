@@ -6,6 +6,7 @@ import RatingStars from './RatingStars';
 import { Review } from '@/lib/firestore';
 import { formatRelativeTime } from '@/lib/firestore';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewCardProps {
   review: Review;
@@ -21,6 +22,7 @@ export default function ReviewCard({
   currentUserId
 }: ReviewCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { i18n } = useTranslation();
   const isLongReview = review.reviewText.length > 200;
   const displayText = isExpanded || !isLongReview 
     ? review.reviewText 
@@ -47,7 +49,7 @@ export default function ReviewCard({
               className="w-12 h-12 rounded-full object-cover"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-terracotta-400 to-#6B4423 flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
               {review.userName.charAt(0).toUpperCase()}
             </div>
           )}
@@ -66,8 +68,8 @@ export default function ReviewCard({
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-gray-600">
-                Stayed: {new Date(review.checkInDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(review.checkOutDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              <p className="text-sm text-gray-600" dir="ltr">
+                {new Date(review.checkInDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { month: 'short', day: 'numeric' })} – {new Date(review.checkOutDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </p>
             </div>
             <div className="flex flex-col items-end gap-1">
@@ -86,7 +88,7 @@ export default function ReviewCard({
             {isLongReview && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-#6B4423 hover:text-#5A3820 font-medium text-sm mt-2"
+                className="text-primary hover:text-primary-foreground font-medium text-sm mt-2"
               >
                 {isExpanded ? 'Show less' : 'Read more'}
               </button>
@@ -101,7 +103,7 @@ export default function ReviewCard({
               onClick={handleHelpful}
               disabled={!canVote}
               className={cn(
-                'text-gray-600 hover:text-#6B4423',
+                'text-gray-600 hover:text-primary',
                 !canVote && 'opacity-50 cursor-not-allowed'
               )}
             >

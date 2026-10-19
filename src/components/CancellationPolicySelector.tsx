@@ -43,7 +43,7 @@ export function CancellationPolicySelector({ value, onChange }: CancellationPoli
     <div className="space-y-6">
       <div>
         <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Shield className="w-6 h-6 text-#6B4423" />
+          <Shield className="w-6 h-6 text-primary" />
           {t('cancelSelector.title')}
         </Label>
         <p className="text-sm text-gray-600 mt-2 font-medium">
@@ -56,8 +56,8 @@ export function CancellationPolicySelector({ value, onChange }: CancellationPoli
           {/* Full Refundable Policy */}
           <Card className={`p-5 border-2 transition-all cursor-pointer ${
             value.type === 'full_refundable' 
-              ? 'border-#8B5A3C bg-orange-50' 
-              : 'border-orange-300 hover:border-orange-300'
+              ? 'border-primary bg-secondary/50' 
+              : 'border-border/80 hover:border-border/80'
           }`}>
             <div className="flex items-start space-x-3">
               <RadioGroupItem value="full_refundable" id="full_refundable" className="mt-1" />
@@ -95,8 +95,8 @@ export function CancellationPolicySelector({ value, onChange }: CancellationPoli
           {/* Partial Refundable with عربون */}
           <Card className={`p-5 border-2 transition-all cursor-pointer ${
             value.type === 'partial_refundable' 
-              ? 'border-#8B5A3C bg-orange-50' 
-              : 'border-orange-300 hover:border-orange-300'
+              ? 'border-primary bg-secondary/50' 
+              : 'border-border/80 hover:border-border/80'
           }`}>
             <div className="flex items-start space-x-3">
               <RadioGroupItem value="partial_refundable" id="partial_refundable" className="mt-1" />
@@ -112,12 +112,12 @@ export function CancellationPolicySelector({ value, onChange }: CancellationPoli
                 {/* Arboon Percentage Slider */}
                 {value.type === 'partial_refundable' && (
                   <div className="space-y-4 mt-4">
-                    <div className="bg-white/80 p-4 rounded-lg border border-orange-200">
+                    <div className="bg-white/80 p-4 rounded-lg border border-border">
                       <div className="flex items-center justify-between mb-3">
                         <Label className="text-sm font-bold text-gray-900">
                           {t('cancelSelector.partialRefundable.arboonLabel')}
                         </Label>
-                        <span className="text-lg font-bold text-#6B4423">
+                        <span className="text-lg font-bold text-primary">
                           {arboonPercentage}%
                         </span>
                       </div>
@@ -134,7 +134,7 @@ export function CancellationPolicySelector({ value, onChange }: CancellationPoli
                       </p>
                     </div>
 
-                    <div className="bg-white/80 p-3 rounded-lg border border-orange-200">
+                    <div className="bg-white/80 p-3 rounded-lg border border-border">
                       <p className="text-xs font-semibold text-gray-900 mb-2">
                         {t('cancelSelector.partialRefundable.refundRules')}
                       </p>

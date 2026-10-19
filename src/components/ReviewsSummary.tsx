@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import RatingStars from './RatingStars';
 import { Card } from '@/components/ui/card';
 
@@ -18,13 +19,15 @@ export default function ReviewsSummary({
   reviewCount,
   ratingDistribution
 }: ReviewsSummaryProps) {
+  const { t } = useTranslation();
+
   const getPercentage = (count: number) => {
     if (reviewCount === 0) return 0;
     return (count / reviewCount) * 100;
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-orange-50 to-white">
+    <Card className="p-6 bg-gradient-to-br from-secondary to-background">
       <div className="grid md:grid-cols-2 gap-8">
         {/* Overall Rating */}
         <div className="flex flex-col items-center justify-center text-center">
@@ -33,7 +36,7 @@ export default function ReviewsSummary({
           </div>
           <RatingStars rating={averageRating} size="lg" className="mb-2" />
           <p className="text-gray-600 font-medium">
-            Based on {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
+            {t('campDetails.basedOnReviews', { count: reviewCount })}
           </p>
         </div>
 
@@ -47,11 +50,11 @@ export default function ReviewsSummary({
               <div key={star} className="flex items-center gap-3">
                 <div className="flex items-center gap-1 w-12">
                   <span className="text-sm font-medium text-gray-700">{star}</span>
-                  <span className="text-orange-500">★</span>
+                  <span className="text-primary">★</span>
                 </div>
                 <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-primary/80 to-primary transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>

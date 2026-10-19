@@ -1,0 +1,462 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
+import { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { 
+  Search, 
+  Edit, 
+  Ban, 
+  Trash2,
+  UserCheck,
+  UserX,
+  Download
+} from 'lucide-react';
+import { getAllUsers, updateUserStatus, toggleUserHostStatus, deleteUser, UserProfile } from '@/lib/firestore';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+
+export default function AdminUsers() {
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [showUserDialog, setShowUserDialog] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  useEffect(() => {
+    filterUsers();
+  }, [users, searchTerm, roleFilter, statusFilter]);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      console.log('Loading users...');
+      const data = await getAllUsers();
+      console.log('Users loaded:', data.length);
+      setUsers(data);
+    } catch (error) {
+      console.error('Error loading users:', error);
+      toast.error('Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterUsers = () => {
+    let filtered = [...users];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(user =>
+        (user.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (user.displayName || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Role filter
+    if (roleFilter !== 'all') {
+      if (roleFilter === 'admin') {
+        filtered = filtered.filter(user => user.isAdmin);
+      } else if (roleFilter === 'host') {
+        filtered = filtered.filter(user => user.isHost && !user.isAdmin);
+      } else if (roleFilter === 'user') {
+        filtered = filtered.filter(user => !user.isHost && !user.isAdmin);
+      }
+    }
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(user => user.status === statusFilter);
+    }
+
+    setFilteredUsers(filtered);
+  };
+
+  const getUserLabel = (user: UserProfile) => user.displayName || user.email || 'Unknown User';
+  const getUserInitial = (user: UserProfile) => {
+    const label = getUserLabel(user).trim();
+    return label ? label.charAt(0).toUpperCase() : '?';
+  };
+
+  const handleSuspendUser = async (userId: string, currentStatus: string) => {
+    try {
+      setActionLoading(true);
+      const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+      await updateUserStatus(userId, newStatus);
+      toast.success(`User ${newStatus === 'suspended' ? 'suspended' : 'activated'} successfully`);
+      await loadUsers();
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      toast.error('Failed to update user status');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleToggleHost = async (userId: string, currentIsHost: boolean) => {
+    try {
+      setActionLoading(true);
+      await toggleUserHostStatus(userId, !currentIsHost);
+      toast.success(`User ${!currentIsHost ? 'promoted to' : 'removed from'} host successfully`);
+      await loadUsers();
+    } catch (error) {
+      console.error('Error toggling host status:', error);
+      toast.error('Failed to update host status');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userEmail: string) => {
+    if (!confirm(`Are you sure you want to delete user ${userEmail}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      await deleteUser(userId);
+      toast.success('User deleted successfully');
+      await loadUsers();
+      setShowUserDialog(false);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Failed to delete user');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const formatDate = (date: Date | string | { toDate?: () => Date } | undefined) => {
+    if (!date) return 'N/A';
+    try {
+      if (typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
+        return format(date.toDate(), 'MMM dd, yyyy');
+      }
+      const dateObj: Date = typeof date === 'string' ? new Date(date) : (date as Date);
+      if (isNaN(dateObj.getTime())) return 'N/A';
+      return format(dateObj, 'MMM dd, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'N/A';
+    }
+  };
+
+  const exportToCSV = () => {
+    const headers = ['Email', 'Name', 'Phone', 'Role', 'Status', 'Joined Date'];
+    const rows = filteredUsers.map(user => [
+      user.email,
+      user.displayName || '',
+      user.phone || '',
+      user.isAdmin ? 'Admin' : user.isHost ? 'Host' : 'User',
+      user.status || 'active',
+      formatDate(user.createdAt)
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    toast.success('Users exported to CSV');
+  };
+
+  const getRoleBadge = (user: UserProfile) => {
+    if (user.isAdmin) {
+      return <Badge className="bg-red-500/10 text-red-400 border-red-500/20">Admin</Badge>;
+    }
+    if (user.isHost) {
+      return <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/20">Host</Badge>;
+    }
+    return <Badge variant="secondary" className="bg-muted text-muted-foreground border-border">User</Badge>;
+  };
+
+  const getStatusBadge = (status?: string) => {
+    if (status === 'suspended') {
+      return <Badge variant="destructive">Suspended</Badge>;
+    }
+    return <Badge className="bg-green-500/10 text-green-400 border-green-500/20">Active</Badge>;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold font-display text-foreground">User Management</h2>
+          <p className="text-muted-foreground mt-1">{filteredUsers.length} users found</p>
+        </div>
+        <Button
+          onClick={exportToCSV}
+          variant="outline"
+          className="border-border hover:bg-muted"
+          disabled={filteredUsers.length === 0}
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Export CSV
+        </Button>
+      </div>
+
+      {/* Filters */}
+      <Card className="modern-card p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
+              <SelectItem value="admin">Admins</SelectItem>
+              <SelectItem value="host">Hosts</SelectItem>
+              <SelectItem value="user">Users</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </Card>
+
+      {/* Users Table */}
+      <Card className="modern-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50 border-border">
+                <TableHead className="font-bold text-foreground">User</TableHead>
+                <TableHead className="font-bold text-foreground">Email</TableHead>
+                <TableHead className="font-bold text-foreground">Phone</TableHead>
+                <TableHead className="font-bold text-foreground">Role</TableHead>
+                <TableHead className="font-bold text-foreground">Status</TableHead>
+                <TableHead className="font-bold text-foreground">Joined</TableHead>
+                <TableHead className="font-bold text-foreground text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers.map((user) => (
+                <TableRow key={user.id} className="border-border hover:bg-muted/40">
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <span className="text-primary-foreground font-semibold text-sm">
+                          {getUserInitial(user)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">{getUserLabel(user)}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{user.email || 'No email'}</TableCell>
+                  <TableCell className="text-muted-foreground">{user.phone || '-'}</TableCell>
+                  <TableCell>{getRoleBadge(user)}</TableCell>
+                  <TableCell>{getStatusBadge(user.status)}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatDate(user.createdAt)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setShowUserDialog(true);
+                        }}
+                        className="border-border hover:bg-muted"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {filteredUsers.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No users found matching your filters</p>
+          </div>
+        )}
+      </Card>
+
+      {/* User Details Dialog */}
+      <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="space-y-6">
+              {/* User Info */}
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-xl">
+                    {getUserInitial(selectedUser)}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-foreground">{getUserLabel(selectedUser)}</h3>
+                  <p className="text-muted-foreground">{selectedUser.email || 'No email'}</p>
+                  <div className="flex gap-2 mt-2">
+                    {getRoleBadge(selectedUser)}
+                    {getStatusBadge(selectedUser.status)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Phone</p>
+                  <p className="font-semibold text-foreground">{selectedUser.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Joined Date</p>
+                  <p className="font-semibold text-foreground">
+                    {formatDate(selectedUser.createdAt)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Bookings</p>
+                  <p className="font-semibold text-foreground">{selectedUser.totalBookings || 0}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Spent</p>
+                  <p className="font-semibold text-foreground">
+                    {selectedUser.totalSpent ? `${selectedUser.totalSpent.toFixed(3)} BD` : '0.000 BD'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Bio */}
+              {selectedUser.bio && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Bio</p>
+                  <p className="text-foreground">{selectedUser.bio}</p>
+                </div>
+              )}
+
+              {/* Actions */}
+              <DialogFooter className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => handleToggleHost(selectedUser.id, selectedUser.isHost)}
+                  disabled={actionLoading || selectedUser.isAdmin}
+                  className="border-border hover:bg-muted"
+                >
+                  {selectedUser.isHost ? (
+                    <>
+                      <UserX className="w-4 h-4 mr-2" />
+                      Remove Host
+                    </>
+                  ) : (
+                    <>
+                      <UserCheck className="w-4 h-4 mr-2" />
+                      Make Host
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => handleSuspendUser(selectedUser.id, selectedUser.status || 'active')}
+                  disabled={actionLoading || selectedUser.isAdmin}
+                  className="border-border text-primary hover:bg-muted"
+                >
+                  {selectedUser.status === 'suspended' ? (
+                    <>
+                      <UserCheck className="w-4 h-4 mr-2" />
+                      Activate
+                    </>
+                  ) : (
+                    <>
+                      <Ban className="w-4 h-4 mr-2" />
+                      Suspend
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)}
+                  disabled={actionLoading || selectedUser.isAdmin}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

@@ -5,6 +5,9 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Plus Jakarta Sans', 'Cairo', 'sans-serif'],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -39,51 +42,37 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // MUKHYMAT warm earth tones - browns and oranges
-        terracotta: {
-          50: '#FFF5F0',
-          100: '#FFE8DC',
-          200: '#FFD4C4',
-          300: '#FFB8A0',
-          400: '#FF9B7C',
-          500: '#8B5A3C',
-          600: '#6B4423',
-          700: '#5A3820',
-          800: '#4A2F1A',
-          900: '#3A2515',
-          950: '#2A1A10',
-        },
-        sand: {
-          50: '#F5E6D3',
-          100: '#FFE4B5',
-          200: '#FFA566',
-          300: '#FF8C42',
-          400: '#DED0C0',
-          500: '#C9B8A5',
-          600: '#B09A84',
-          700: '#8F7D68',
-          800: '#6F6250',
-          900: '#544A3D',
-          950: '#3A342B',
-        },
-        sage: {
-          50: '#F7F9F8',
-          100: '#EDF2F0',
-          200: '#D9E5E0',
-          300: '#BDD4CB',
-          400: '#9EBFB3',
-          500: '#7FA89A',
-          600: '#648C7E',
-          700: '#4F7165',
-          800: '#3D5850',
-          900: '#2E433D',
-          950: '#1F2E2A',
-        },
+        // Camp Glow Identity
+        night: '#0A1128',
+        lantern: '#F0A03C',
+        teal: '#177E89',
+        ivory: '#FDFBF7',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xl: '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '2rem',
+      },
+      boxShadow: {
+        'warm': '0 10px 40px -10px rgba(10, 17, 40, 0.08), 0 4px 10px -5px rgba(10, 17, 40, 0.04)',
+        'warm-hover': '0 20px 40px -10px rgba(10, 17, 40, 0.12), 0 8px 16px -5px rgba(10, 17, 40, 0.06)',
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

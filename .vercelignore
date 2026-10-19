@@ -1,0 +1,6 @@
+clients/
+tests/
+test-results/
+playwright-report/
+functions/
+docs/

@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,25 +17,32 @@ import {
 import { User, LogOut, Crown, Mail, Loader2, Edit2, Save, X, Camera, Phone, Shield, Key, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { updateUserProfile } from '@/lib/firestore';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getCountFromServer } from 'firebase/firestore';
 import { 
   updatePassword, 
   reauthenticateWithCredential, 
   EmailAuthProvider,
-  FirebaseError
 } from 'firebase/auth';
+
+// FirebaseError is a transitive type; define a minimal interface to avoid import issues
+interface FirebaseError extends Error {
+  code: string;
+}
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { userData, loading, signOut, user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [editedPhone, setEditedPhone] = useState('');
   const [editedBio, setEditedBio] = useState('');
   const [saving, setSaving] = useState(false);
+  const [reviewCount, setReviewCount] = useState<number | null>(null);
 
   // Password change state
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
@@ -53,6 +61,14 @@ export default function Profile() {
       setEditedBio(userData.bio || '');
     }
   }, [userData]);
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'reviews'), where('userId', '==', user.uid));
+    getCountFromServer(q)
+      .then((snap) => setReviewCount(snap.data().count))
+      .catch(() => setReviewCount(0));
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -191,25 +207,25 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-amber-800 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b desert-bg p-4 flex items-center justify-center">
+        <CampfireLoader size="md" className="mx-auto my-4" />
       </div>
     );
   }
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+      <div className="min-h-screen bg-gradient-to-b desert-bg p-4">
         <div className="max-w-md mx-auto pt-20">
-          <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 text-center shadow-xl">
-            <div className="w-20 h-20 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full mx-auto flex items-center justify-center mb-4">
-              <User className="w-10 h-10 text-white" />
+          <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-8 text-center shadow-xl">
+            <div className="w-20 h-20 bg-primary/20 rounded-full mx-auto flex items-center justify-center mb-4">
+              <User className="w-10 h-10 text-primary" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('profile.welcome')}</h2>
             <p className="text-gray-700 font-medium mb-6">{t('profile.signInPrompt')}</p>
             <Button
               onClick={() => navigate('/signin')}
-              className="w-full h-12 bg-amber-800 hover:bg-amber-900 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg lantern-halo"
             >
               {t('profile.signIn')}
             </Button>
@@ -220,11 +236,15 @@ export default function Profile() {
   }
 
   const memberSince = userData.createdAt 
-    ? new Date(userData.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    : 'Recently';
+    ? (() => {
+        const raw = userData.createdAt;
+        const d = typeof raw === 'string' ? new Date(raw) : (raw as { toDate(): Date }).toDate();
+        return d.toLocaleDateString(i18n.language === 'ar' ? 'ar-BH' : 'en-US', { month: 'long', year: 'numeric' });
+      })()
+    : t('profile.memberSinceRecently', 'Recently');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4">
+    <div className="min-h-screen bg-gradient-to-b desert-bg p-4">
       <div className="max-w-4xl mx-auto pt-8 pb-20">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('profile.title')}</h1>
@@ -235,7 +255,7 @@ export default function Profile() {
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Personal Information Card */}
-            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6 shadow-xl">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900">Personal Information</h2>
                 {!isEditing ? (
@@ -243,7 +263,7 @@ export default function Profile() {
                     onClick={startEditing}
                     variant="outline"
                     size="sm"
-                    className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
+                    className="border-2 border-border/80 text-gray-900 hover:bg-secondary font-semibold"
                   >
                     <Edit2 className="w-4 h-4 mr-2" />
                     {t('profile.editProfile')}
@@ -254,7 +274,7 @@ export default function Profile() {
                      onClick={cancelEditing}
                      variant="outline"
                      size="sm"
-                     className="border-2 border-orange-300 text-gray-700 hover:bg-orange-50"
+                     className="border-2 border-border/80 text-gray-700 hover:bg-secondary"
                    >
                      <X className="w-4 h-4 mr-1" />
                       {t('profile.cancel')}
@@ -263,7 +283,7 @@ export default function Profile() {
                      onClick={saveProfile}
                      disabled={saving}
                      size="sm"
-                     className="bg-amber-800 hover:bg-amber-900 text-white font-semibold"
+                     className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold lantern-halo"
                    >
                      {saving ? (
                        <>
@@ -282,13 +302,13 @@ export default function Profile() {
               </div>
 
               {/* Profile Picture */}
-              <div className="flex items-center gap-6 mb-6 pb-6 border-b border-orange-300">
+              <div className="flex items-center gap-6 mb-6 pb-6 border-b border-border/80">
                 <div className="relative">
-                  <div className="w-24 h-24 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-12 h-12 text-white" />
+                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="w-12 h-12 text-primary" />
                   </div>
                   {isEditing && (
-                    <button className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full border-2 border-orange-300 flex items-center justify-center shadow-lg hover:bg-orange-50 transition-colors">
+                    <button className="absolute bottom-0 right-0 w-8 h-8 bg-background rounded-full border-2 border-border/80 flex items-center justify-center shadow-lg hover:bg-secondary transition-colors">
                       <Camera className="w-4 h-4 text-gray-700" />
                     </button>
                   )}
@@ -297,7 +317,7 @@ export default function Profile() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{userData.displayName}</h3>
                   <p className="text-sm text-gray-600 font-medium">{t('profile.memberSince', { date: memberSince })}</p>
                   {userData.isHost && (
-                    <div className="mt-2 inline-flex items-center gap-1 bg-gradient-to-r from-amber-700 to-amber-900 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                    <div className="mt-2 inline-flex items-center gap-1 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
                       <Crown className="w-3 h-3" />
                       {t('profile.hostActive')}
                     </div>
@@ -309,7 +329,7 @@ export default function Profile() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <User className="w-4 h-4 text-amber-800" />
+                    <User className="w-4 h-4 text-primary" />
                     {t('profile.name')}
                   </Label>
                   {isEditing ? (
@@ -317,7 +337,7 @@ export default function Profile() {
                       value={editedName}
                       onChange={(e) => setEditedName(e.target.value)}
                       placeholder={t('profile.name')}
-                      className="border-orange-300 focus:border-amber-700 text-gray-900"
+                      className="border-border/80 focus:border-primary text-gray-900"
                     />
                   ) : (
                     <p className="text-gray-800 font-medium">{userData.displayName}</p>
@@ -326,7 +346,7 @@ export default function Profile() {
 
                 <div className="space-y-2">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-amber-800" />
+                    <Mail className="w-4 h-4 text-primary" />
                     {t('auth.email')}
                   </Label>
                   <div className="flex items-center gap-2">
@@ -343,7 +363,7 @@ export default function Profile() {
 
                 <div className="space-y-2">
                   <Label className="text-gray-900 font-semibold flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-amber-800" />
+                    <Phone className="w-4 h-4 text-primary" />
                     {t('profile.phone')}
                   </Label>
                   {isEditing ? (
@@ -351,7 +371,7 @@ export default function Profile() {
                       value={editedPhone}
                       onChange={(e) => setEditedPhone(e.target.value)}
                       placeholder="+973 1234 5678"
-                      className="border-orange-300 focus:border-amber-700 text-gray-900"
+                      className="border-border/80 focus:border-primary text-gray-900"
                     />
                   ) : (
                     <p className="text-gray-800 font-medium">{userData.phone || t('profile.notProvided', { defaultValue: 'Not provided' })}</p>
@@ -366,7 +386,7 @@ export default function Profile() {
                       onChange={(e) => setEditedBio(e.target.value)}
                       placeholder={t('profile.bioPlaceholder', { defaultValue: 'Tell us about yourself...' })}
                       rows={3}
-                      className="w-full px-3 py-2 border border-orange-300 rounded-md focus:border-amber-700 focus:outline-none text-gray-900 placeholder:text-gray-400 resize-none"
+                      className="w-full px-3 py-2 border border-border/80 rounded-md focus:border-primary focus:outline-none text-gray-900 placeholder:text-gray-400 resize-none"
                     />
                   ) : (
                     <p className="text-gray-800 font-medium">{userData.bio || t('profile.noBio', { defaultValue: 'No bio added yet' })}</p>
@@ -376,13 +396,13 @@ export default function Profile() {
             </Card>
 
             {/* Account Security Card */}
-            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6 shadow-xl">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-800" />
+                <Shield className="w-5 h-5 text-primary" />
                 {t('profile.password.title')}
               </h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-300">
+                <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg border border-border/80">
                   <div>
                     <p className="font-semibold text-gray-900 mb-1">{t('profile.password.title')}</p>
                     <p className="text-sm text-gray-600 font-medium">{t('profile.password.lastChanged', { defaultValue: 'Last changed recently' })}</p>
@@ -392,7 +412,7 @@ export default function Profile() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-2 border-orange-300 text-gray-900 hover:bg-orange-100 font-semibold"
+                        className="border-2 border-border/80 text-gray-900 hover:bg-secondary font-semibold"
                       >
                         <Key className="mr-2 h-4 w-4" />
                         {t('profile.password.change')}
@@ -521,7 +541,7 @@ export default function Profile() {
                  </Dialog>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-300">
+                <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg border border-border/80">
                   <div>
                     <p className="font-semibold text-gray-900 mb-1">Two-Factor Authentication</p>
                     <p className="text-sm text-gray-600 font-medium">Add extra security to your account</p>
@@ -529,7 +549,7 @@ export default function Profile() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-2 border-orange-300 text-gray-900 hover:bg-orange-100 font-semibold"
+                    className="border-2 border-border/80 text-gray-900 hover:bg-secondary font-semibold"
                     onClick={() => toast.info('2FA feature coming soon')}
                   >
                     Enable
@@ -543,17 +563,17 @@ export default function Profile() {
           <div className="space-y-4">
             {/* Become Host Card */}
             {!userData.isHost && (
-              <Card className="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-6 shadow-xl">
+              <Card className="bg-primary text-primary-foreground p-6 shadow-xl">
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4">
-                  <Crown className="w-6 h-6 text-white" />
+                  <Crown className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <h3 className="text-lg font-bold mb-2">{t('profile.becomeHost')}</h3>
-                <p className="text-white/90 text-sm mb-4 font-medium">
+                <p className="text-primary-foreground/90 text-sm mb-4 font-medium">
                   Share your desert camp with travelers and start earning
                 </p>
                 <Button
                   onClick={handleBecomeHost}
-                  className="w-full bg-white text-amber-900 hover:bg-gray-50 font-semibold shadow-lg"
+                  className="w-full bg-white text-primary hover:bg-gray-50 font-semibold shadow-lg"
                 >
                   Apply to Become Host
                 </Button>
@@ -564,10 +584,10 @@ export default function Profile() {
             {userData.isHost && (
               <Card
                 onClick={() => navigate('/host')}
-                className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 cursor-pointer hover:shadow-xl transition-all hover:scale-105 group"
+                className="bg-white/95 backdrop-blur-sm border-border/80 p-6 cursor-pointer hover:shadow-xl transition-all hover:scale-105 group"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                  <Crown className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-background/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                  <Crown className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('host.dashboardTitle', { defaultValue: 'Host Dashboard' })}</h3>
                 <p className="text-gray-700 text-sm font-medium">{t('host.manageDesc')}</p>
@@ -575,12 +595,18 @@ export default function Profile() {
             )}
 
             {/* Quick Stats */}
-            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6 shadow-xl">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.statsTitle', { defaultValue: 'Account Stats' })}</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-700 font-medium">{t('profile.totalBookings', { defaultValue: 'Total Bookings' })}</span>
-                  <span className="text-lg font-bold text-amber-800">0</span>
+                  <span className="text-lg font-bold text-primary">0</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700 font-medium">{t('profile.reviewsWritten', { defaultValue: 'Reviews Written' })}</span>
+                  <span className="text-lg font-bold text-primary">
+                    {reviewCount === null ? '—' : reviewCount}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-700 font-medium">{t('profile.accountStatus', { defaultValue: 'Account Status' })}</span>
@@ -589,14 +615,14 @@ export default function Profile() {
                 {userData.isHost && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-700 font-medium">{t('profile.listings', { defaultValue: 'Listings' })}</span>
-                    <span className="text-lg font-bold text-amber-800">0</span>
+                    <span className="text-lg font-bold text-primary">0</span>
                   </div>
                 )}
               </div>
             </Card>
 
           {/* Sign Out Card */}
-            <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6 shadow-xl">
               <Button
                 onClick={handleSignOut}
                 variant="outline"

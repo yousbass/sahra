@@ -44,6 +44,10 @@ export interface BaseListing {
   longitude: number;
   googleMapsUrl?: string;
   price: number;
+  /** Optional peak nightly rate for Thursday & Friday nights (BHD) */
+  weekendPrice?: number;
+  /** Optional peak nightly rate for Bahrain public holidays (BHD) */
+  holidayPrice?: number;
   status: 'active' | 'inactive' | 'pending';
   listingType: ListingType;
   maxGuests: number;

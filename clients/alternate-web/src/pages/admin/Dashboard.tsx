@@ -1,0 +1,299 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { 
+  Users, 
+  Tent, 
+  Calendar, 
+  DollarSign, 
+  TrendingUp, 
+  TrendingDown,
+  ArrowRight,
+  BarChart
+} from 'lucide-react';
+import { getAdminStats, getRecentActivity, AdminStats, RecentActivity } from '@/lib/firestore';
+import { toast } from 'sonner';
+import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { getRevenueStats, getBookingTrendData } from '@/lib/firestore';
+
+export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [bookingTrendData, setBookingTrendData] = useState<Array<{ month: string; bookings: number; revenue: number }>>([]);
+  const [revenueStats, setRevenueStats] = useState<{
+    currentMonth: number;
+    lastMonth: number;
+    total: number;
+    percentageChange: number;
+  } | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Loading admin dashboard data...');
+      
+      // Load all dashboard data from Firestore
+      const [statsData, trendData, revenue, activity] = await Promise.all([
+        getAdminStats(),
+        getBookingTrendData(),
+        getRevenueStats(),
+        getRecentActivity(5)
+      ]);
+      
+      console.log('Dashboard data loaded:', { statsData, trendData, revenue, activity });
+      setStats(statsData);
+      setBookingTrendData(trendData);
+      setRevenueStats(revenue);
+      setRecentActivity(activity);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load dashboard data';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-muted-foreground mb-4">{error || 'Failed to load statistics'}</p>
+        <Button onClick={loadDashboardData} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  const statCards = [
+    {
+      title: 'Total Users',
+      value: stats.totalUsers,
+      subtitle: `${stats.totalHosts} hosts`,
+      icon: Users,
+      color: 'from-blue-500 to-blue-600',
+      action: () => navigate('/admin/users')
+    },
+    {
+      title: 'Total Camps',
+      value: stats.totalCamps,
+      subtitle: `${stats.activeCamps} active, ${stats.pendingCamps} pending`,
+      icon: Tent,
+      color: 'from-green-500 to-green-600',
+      action: () => navigate('/admin/camps')
+    },
+    {
+      title: 'Total Bookings',
+      value: stats.totalBookings,
+      subtitle: `${stats.confirmedBookings} confirmed, ${stats.pendingBookings} pending`,
+      icon: Calendar,
+      color: 'from-purple-500 to-purple-600',
+      action: () => navigate('/admin/bookings')
+    },
+    {
+      title: 'Total Revenue',
+      value: `${stats.totalRevenue.toFixed(3)} BD`,
+      subtitle: `${stats.monthlyRevenue.toFixed(3)} BD this month`,
+      icon: DollarSign,
+      color: 'from-primary to-primary/60',
+      action: () => navigate('/admin/analytics')
+    },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* Welcome Section */}
+      <div>
+        <h2 className="text-3xl font-display font-bold text-foreground mb-2">Welcome Back, Admin</h2>
+        <p className="text-muted-foreground">Here's what's happening with your platform today.</p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <Card
+              key={index}
+              className="modern-card p-6 hover:shadow-warm-hover transition-all cursor-pointer group"
+              onClick={card.action}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">{card.title}</h3>
+              <p className="text-2xl font-bold text-foreground mb-2">{card.value}</p>
+              <p className="text-xs text-muted-foreground">{card.subtitle}</p>
+              
+              <div className="mt-4 flex items-center text-primary text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                View Details
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Quick Actions */}
+      <Card className="modern-card p-6">
+        <h3 className="text-xl font-bold text-foreground mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Button
+            onClick={() => navigate('/admin/users')}
+            variant="outline"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border hover:bg-secondary"
+          >
+            <Users className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">View All Users</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/admin/camps')}
+            variant="outline"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border hover:bg-secondary"
+          >
+            <Tent className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">Manage Camps</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/admin/bookings')}
+            variant="outline"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border hover:bg-secondary"
+          >
+            <Calendar className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">View Bookings</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/admin/analytics')}
+            variant="outline"
+            className="h-auto flex-col gap-2 py-4 border-2 border-border hover:bg-secondary"
+          >
+            <BarChart className="w-6 h-6 text-primary" />
+            <span className="text-sm font-semibold">Analytics</span>
+          </Button>
+        </div>
+      </Card>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Bookings Trend */}
+        <Card className="modern-card p-6">
+          <h3 className="text-lg font-bold text-foreground mb-4">Bookings Trend (Last 12 Months)</h3>
+          {bookingTrendData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={bookingTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(224 30% 18%)" />
+                <XAxis dataKey="month" stroke="hsl(215 20% 65%)" />
+                <YAxis stroke="hsl(215 20% 65%)" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(224 35% 8%)', 
+                    border: '1px solid hsl(224 30% 18%)',
+                    borderRadius: '8px',
+                    color: 'hsl(210 40% 98%)'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="bookings" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth={3}
+                  dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+              No booking data available
+            </div>
+          )}
+        </Card>
+
+        {/* Revenue by Month */}
+        <Card className="modern-card p-6">
+          <h3 className="text-lg font-bold text-foreground mb-4">Revenue by Month (BD)</h3>
+          {bookingTrendData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <RechartsBarChart data={bookingTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(224 30% 18%)" />
+                <XAxis dataKey="month" stroke="hsl(215 20% 65%)" />
+                <YAxis stroke="hsl(215 20% 65%)" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(224 35% 8%)', 
+                    border: '1px solid hsl(224 30% 18%)',
+                    borderRadius: '8px',
+                    color: 'hsl(210 40% 98%)'
+                  }}
+                />
+                <Bar 
+                  dataKey="revenue" 
+                  fill="url(#colorRevenue)" 
+                  radius={[8, 8, 0, 0]}
+                />
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
+                  </linearGradient>
+                </defs>
+              </RechartsBarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+              No revenue data available
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Recent Activity */}
+      <Card className="modern-card p-6">
+        <h3 className="text-lg font-bold text-foreground mb-4">Recent Activity</h3>
+        {recentActivity.length > 0 ? (
+          <div className="space-y-4">
+            {recentActivity.map((activity) => (
+              <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">
+                <div className={`w-2 h-2 rounded-full mt-2 ${
+                  activity.type === 'user' ? 'bg-sky-400' :
+                  activity.type === 'camp' ? 'bg-green-400' :
+                  activity.type === 'booking' ? 'bg-purple-400' :
+                  'bg-primary'
+                }`} />
+                <div className="flex-1">
+                  <p className="text-sm text-foreground font-medium">{activity.message}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            No recent activity
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}

@@ -1,28 +1,46 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { Search, MapPin, Users, Tent, Loader2, SlidersHorizontal, Calendar as CalendarIcon, Waves, X, Grid3x3, List } from 'lucide-react';
-import { getCampsWithFilters, getCampAmenities, FilterState } from '@/lib/firestore';
-import { toast } from 'sonner';
-import FilterSidebar from '@/components/FilterSidebar';
-import RatingStars from '@/components/RatingStars';
-import { RefundPolicyBadge } from '@/components/RefundPolicyBadge';
-import { ListingTypeSelector } from '@/components/ListingTypeSelector';
-import { KashtaListingCard } from '@/components/KashtaListingCard';
-import { BAHRAIN_CAMPING_LOCATIONS } from '@/lib/locations';
+import {
+  Search,
+  ArrowRight,
+  ChevronRight,
+  Tent,
+  Waves,
+  Flame,
+  UtensilsCrossed,
+  MapPin,
+  Star,
+  CookingPot,
+  ShowerHead,
+  Zap,
+  Droplets,
+  Sofa,
+  Snowflake,
+  Music,
+  Tv,
+  Car,
+  Dog,
+  Users,
+  Shield,
+  Sparkles,
+  CalendarCheck,
+  type LucideIcon,
+  ShoppingBag,
+  Info,
+} from 'lucide-react';
+import { getCampsWithFilters, FilterState } from '@/lib/firestore';
 import { LegacyCamp, normalizeCampToLegacy } from '@/lib/dataCompatibility';
-import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import type { ListingType } from '@/types/listing';
+import { PatternSadu } from '@/components/BackgroundPatterns';
+import { useFavorites } from '@/hooks/useFavorites';
+import { FavoriteButton } from '@/components/FavoriteButton';
+import { MarketItemDialog } from '@/components/MarketItemDialog';
+import { MiniCard } from '@/components/MiniCard';
+import { marketItemsByCategory, type MarketItem } from '@/lib/marketplace';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const DEFAULT_FILTERS: FilterState = {
+const HOME_FILTERS: FilterState = {
   priceRange: [0, 1000],
   locations: [],
   minGuests: 1,
@@ -30,728 +48,535 @@ const DEFAULT_FILTERS: FilterState = {
   tentTypes: [],
   minRating: 0,
   sortBy: 'newest',
-  listingType: 'all'
+  listingType: 'all',
 };
+
+// Firestore's normalizeCampData attaches listingType at runtime; the shared
+// LegacyCamp interface predates it, so read it through a local view type.
+const listingTypeOf = (c: LegacyCamp): 'camp' | 'kashta' =>
+  (c as LegacyCamp & { listingType?: 'camp' | 'kashta' }).listingType || 'camp';
+
+const AMENITY_ICONS: Array<[RegExp, LucideIcon]> = [
+  [/fire/i, Flame],
+  [/bbq|grill/i, CookingPot],
+  [/cook|kitchen|dining|food/i, UtensilsCrossed],
+  [/restroom|bath|toilet/i, ShowerHead],
+  [/electric|light/i, Zap],
+  [/water/i, Droplets],
+  [/tent|carpet|furnish/i, Tent],
+  [/sofa|seating|tea/i, Sofa],
+  [/air condition/i, Snowflake],
+  [/sound|music/i, Music],
+  [/tv/i, Tv],
+  [/parking/i, Car],
+  [/pet/i, Dog],
+  [/family/i, Users],
+  [/security|guard/i, Shield],
+];
+
+const iconForAmenity = (name: string): LucideIcon =>
+  AMENITY_ICONS.find(([re]) => re.test(name))?.[1] || Sparkles;
+
+function MarketRail({
+  title,
+  subtitle,
+  items,
+  chip,
+  onOpen,
+}: {
+  title: string;
+  subtitle: string;
+  items: MarketItem[];
+  chip?: (m: MarketItem) => string;
+  onOpen: (m: MarketItem) => void;
+}) {
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === 'ar';
+  return (
+    <section className="pt-8">
+      <div className="flex items-baseline justify-between gap-3 mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+        </div>
+        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1.5 whitespace-nowrap">
+          <Sparkles className="w-3.5 h-3.5" />
+          {t('home.marketplaceNote')}
+        </span>
+      </div>
+      <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        {items.map((m) => (
+          <button
+            key={m.id}
+            onClick={() => onOpen(m)}
+            className="w-52 sm:w-56 shrink-0 text-left rtl:text-right group"
+          >
+            <div className="relative h-36 rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+              <img
+                src={m.image}
+                alt={isAr ? m.nameAr : m.nameEn}
+                loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              {chip && (
+                <Badge className="absolute top-2 ltr:left-2 rtl:right-2 bg-white/90 text-[#0A1128] hover:bg-white/90 text-xs font-semibold">
+                  {chip(m)}
+                </Badge>
+              )}
+            </div>
+            <p className="mt-2.5 text-sm font-semibold text-gray-900 truncate">
+              {isAr ? m.nameAr : m.nameEn}
+            </p>
+            <p className="text-sm font-bold text-gray-900 mt-0.5 tabular-nums">
+              {m.price} BHD{' '}
+              <span className="font-medium text-gray-500 text-xs">{isAr ? m.unitAr : m.unitEn}</span>
+            </p>
+            <span className="inline-block mt-1 text-xs font-semibold text-foreground bg-primary/10 rounded-full px-2 py-0.5">
+              {t('home.itemSoonChip')}
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function Index() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { t, i18n } = useTranslation();
   const [camps, setCamps] = useState<LegacyCamp[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
-  const [selectedListingType, setSelectedListingType] = useState<'all' | 'camp' | 'kashta'>('all');
-  const [locations, setLocations] = useState<string[]>([]);
-  const [amenities, setAmenities] = useState<string[]>([]);
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [campsError, setCampsError] = useState(false);
+  const { favorites } = useFavorites();
+  const [activeItem, setActiveItem] = useState<MarketItem | null>(null);
+
+  const [loadKey, setLoadKey] = useState(0);
 
   useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  useEffect(() => {
-    loadCamps();
-  }, [filters]);
-
-  // Update filters when listing type changes
-  useEffect(() => {
-    setFilters({ ...filters, listingType: selectedListingType });
-  }, [selectedListingType]);
-
-  const loadInitialData = async () => {
-    console.log('=== [ERR_INDEX_001] loadInitialData() START ===');
-    
-    try {
-      // Use centralized location list instead of fetching from Firestore
-      console.log('[ERR_INDEX_001] Loading location list from BAHRAIN_CAMPING_LOCATIONS');
-      const locationLabels = BAHRAIN_CAMPING_LOCATIONS.map(loc => loc.label);
-      console.log(`[ERR_INDEX_001] Loaded ${locationLabels.length} locations:`, locationLabels);
-      setLocations(locationLabels);
-
-      console.log('[ERR_INDEX_001] Fetching amenities...');
-      const fetchedAmenities = await getCampAmenities();
-      console.log(`[ERR_INDEX_001] Fetched ${fetchedAmenities.length} amenities:`, fetchedAmenities);
-      setAmenities(fetchedAmenities);
-      
-      console.log('[ERR_INDEX_001] loadInitialData() completed successfully');
-    } catch (error) {
-      console.error('[ERR_INDEX_001] Error in loadInitialData():', error);
-      console.error('[ERR_INDEX_001] Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : 'No stack trace'
-      });
-    }
-  };
-
-  const loadCamps = async () => {
-    console.log('=== [ERR_INDEX_002] loadCamps() START ===');
-    console.log('[ERR_INDEX_002] Current filters:', JSON.stringify(filters, null, 2));
-    
-    try {
-      setLoading(true);
-      
-      console.log('[ERR_INDEX_002] Calling getCampsWithFilters()');
-      console.log('[ERR_INDEX_002] Filters being passed:', JSON.stringify(filters, null, 2));
-      
-      let filteredCamps;
+    let cancelled = false;
+    setCampsError(false);
+    setLoading(true);
+    (async () => {
       try {
-        filteredCamps = await getCampsWithFilters(filters);
-        console.log(`[ERR_INDEX_002] getCampsWithFilters() returned ${filteredCamps.length} camps`);
-      } catch (firestoreError) {
-        console.error('[ERR_INDEX_002] Error calling getCampsWithFilters():', firestoreError);
-        console.error('[ERR_INDEX_002] Firestore error details:', {
-          message: firestoreError instanceof Error ? firestoreError.message : 'Unknown error',
-          stack: firestoreError instanceof Error ? firestoreError.stack : 'No stack trace',
-          filters: filters
-        });
-        throw firestoreError;
-      }
-      
-      if (!filteredCamps || filteredCamps.length === 0) {
-        console.warn('[ERR_INDEX_004] No camps returned from Firestore');
-        console.warn('[ERR_INDEX_004] This could mean:');
-        console.warn('[ERR_INDEX_004] 1. No camps exist in Firestore');
-        console.warn('[ERR_INDEX_004] 2. No camps match the current filters');
-        console.warn('[ERR_INDEX_004] 3. All camps have status != "active"');
-        setCamps([]);
-        
-        if (filters.bookingDate) {
-          toast.info('No camps available for the selected date. Try a different date.');
-        } else {
-          toast.info('No camps found. Try adjusting your filters.');
-        }
-        return;
-      }
-      
-      console.log('[ERR_INDEX_003] Converting camps to legacy format...');
-      try {
-        const legacyCamps = filteredCamps.map((camp, index) => {
-          console.log(`[ERR_INDEX_003] Normalizing camp ${index + 1}/${filteredCamps.length}: ${camp.id}`);
+        const raw = await getCampsWithFilters(HOME_FILTERS);
+        const normalized: LegacyCamp[] = [];
+        for (const camp of raw || []) {
           try {
-            const normalized = normalizeCampToLegacy(camp);
-            console.log(`[ERR_INDEX_003] Camp ${camp.id} normalized successfully`);
-            return normalized;
-          } catch (normError) {
-            console.error(`[ERR_INDEX_003] Error normalizing camp ${camp.id}:`, normError);
-            console.error(`[ERR_INDEX_003] Camp data:`, JSON.stringify(camp, null, 2));
-            throw normError;
+            normalized.push(normalizeCampToLegacy(camp));
+          } catch (e) {
+            console.warn('[HOME] Skipping camp that failed normalization:', e);
           }
-        });
-        
-        console.log(`[ERR_INDEX_003] Successfully normalized ${legacyCamps.length} camps`);
-        setCamps(legacyCamps);
-      } catch (normalizationError) {
-        console.error('[ERR_INDEX_003] Error during camp normalization:', normalizationError);
-        console.error('[ERR_INDEX_003] Normalization error details:', {
-          message: normalizationError instanceof Error ? normalizationError.message : 'Unknown error',
-          stack: normalizationError instanceof Error ? normalizationError.stack : 'No stack trace'
-        });
-        throw normalizationError;
+        }
+        if (!cancelled) setCamps(normalized);
+      } catch (e) {
+        console.error('[HOME] Failed to load listings:', e);
+        if (!cancelled) setCampsError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      
-      console.log(`=== [ERR_INDEX_002] loadCamps() SUCCESS: Set ${camps.length} camps ===`);
-    } catch (error) {
-      console.error('[ERR_INDEX_002] Error in loadCamps():', error);
-      console.error('[ERR_INDEX_002] Complete error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : 'No stack trace',
-        name: error instanceof Error ? error.name : 'Unknown',
-        filters: filters
-      });
-      
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load camps';
-      toast.error(errorMessage);
-      setCamps([]);
-    } finally {
-      setLoading(false);
-      console.log('[ERR_INDEX_002] loadCamps() completed, loading state set to false');
-    }
-  };
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [loadKey]);
 
-  const handleFilterChange = (newFilters: FilterState) => {
-    console.log('[ERR_INDEX_002] Filter change requested:', JSON.stringify(newFilters, null, 2));
-    setFilters(newFilters);
-  };
-
-  const handleSortChange = (sortBy: string) => {
-    console.log('[ERR_INDEX_002] Sort change requested:', sortBy);
-    setFilters({ ...filters, sortBy: sortBy as FilterState['sortBy'] });
-  };
-
-  const handleBookingDateChange = (value?: Date) => {
-    setFilters({ ...filters, bookingDate: value || undefined });
-  };
-
-  const removeFilter = (filterType: 'location' | 'amenity' | 'tentType' | 'rating' | 'price' | 'date' | 'listingType', value?: string) => {
-    const newFilters = { ...filters };
-    
-    switch (filterType) {
-      case 'location':
-        newFilters.locations = newFilters.locations.filter(l => l !== value);
-        break;
-      case 'amenity':
-        newFilters.amenities = newFilters.amenities.filter(a => a !== value);
-        break;
-      case 'tentType':
-        newFilters.tentTypes = newFilters.tentTypes.filter(t => t !== value);
-        break;
-      case 'rating':
-        newFilters.minRating = 0;
-        break;
-      case 'price':
-        newFilters.priceRange = [0, 1000];
-        break;
-      case 'date':
-        newFilters.bookingDate = undefined;
-        break;
-      case 'listingType':
-        newFilters.listingType = 'all';
-        setSelectedListingType('all');
-        break;
-    }
-    
-    setFilters(newFilters);
-  };
-
-  const clearAllFilters = () => {
-    setFilters(DEFAULT_FILTERS);
-    setSelectedListingType('all');
-    setSearchQuery('');
-  };
-
-  const filteredCamps = camps.filter(
-    (camp) =>
-      camp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      camp.location.toLowerCase().includes(searchQuery.toLowerCase())
+  // Season status — Bahraini camping ("barr") season runs roughly October through April.
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentDay = now.getDate();
+  // Season runs Oct 15 - Apr 15 (inclusive)
+  const isInSeason =
+    (currentMonth === 9 ? currentDay >= 15 : currentMonth > 9) ||
+    (currentMonth === 3 ? currentDay <= 15 : currentMonth < 3);
+  const seasonStartYear = currentMonth >= 9 ? now.getFullYear() : now.getFullYear() - 1;
+  const seasonRange = `${seasonStartYear}\u2013${seasonStartYear + 1}`;
+  const nextOpenMonth = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar' : 'en', { month: 'long' }).format(
+    new Date(now.getFullYear(), 9, 1)
   );
 
-  const getTotalTents = (config?: { large: number; small: number; entertainment: number }) => {
-    if (!config) return 0;
-    return config.large + config.small + config.entertainment;
-  };
+  const campCount = camps.filter((c) => listingTypeOf(c) !== 'kashta').length;
+  const kashtaCount = camps.filter((c) => listingTypeOf(c) === 'kashta').length;
+  const topRated = [...camps]
+    .sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
+    .slice(0, 4);
+  const trending = [...camps]
+    .sort((a, b) => ((b.reviewCount || 0) * (b.averageRating || 0)) - ((a.reviewCount || 0) * (a.averageRating || 0)))
+    .filter((c) => (c.reviewCount || 0) > 0)
+    .slice(0, 4);
+  const favCamps = camps.filter((c) => favorites.includes(c.id));
 
-  const handleCampClick = (campId: string) => {
-    console.log('=== CAMP CLICKED ===');
-    console.log('Camp ID:', campId);
-    console.log('Navigating to:', `/camp/${campId}`);
-    
-    navigate(`/camp/${campId}`, {
-      state: { from: '/' }
-    });
-  };
+  // Live amenity classification, derived from the loaded listings so every tile
+  // leads to at least one real result.
+  const amenityCounts = new Map<string, number>();
+  camps.forEach((c) => (c.amenities || []).forEach((a) => amenityCounts.set(a, (amenityCounts.get(a) || 0) + 1)));
+  const topAmenities = [...amenityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
 
-  // Calculate active filter count
-  const activeFilterCount = 
-    (filters.locations.length > 0 ? filters.locations.length : 0) +
-    (filters.amenities.length > 0 ? filters.amenities.length : 0) +
-    (filters.tentTypes.length > 0 ? filters.tentTypes.length : 0) +
-    (filters.minRating > 0 ? 1 : 0) +
-    (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000 ? 1 : 0) +
-    (filters.bookingDate ? 1 : 0) +
-    (filters.listingType && filters.listingType !== 'all' ? 1 : 0);
+  const goToSearch = (params?: string) =>
+    navigate(params ? `/search?${params}&ts=${Date.now()}` : '/search');
 
-  // Get type-specific counts
-  const campCount = filteredCamps.filter(c => (c.listingType || 'camp') === 'camp').length;
-  const kashtaCount = filteredCamps.filter(c => c.listingType === 'kashta').length;
+  const openCamp = (id: string) => navigate(`/camp/${id}`, { state: { from: '/' } });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-[#6B4423] animate-spin mx-auto mb-4" />
-          <p className="text-gray-700 font-medium text-lg">
-            {filters.bookingDate ? t('home.checkingAvailability') : t('home.loadingCamps')}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const isAr = i18n.language === 'ar';
+  const foodItems = marketItemsByCategory('food');
+  const supplyItems = [...marketItemsByCategory('firewood'), ...marketItemsByCategory('gear')];
+
+  const howSteps = [
+    { icon: Search, title: t('home.how1Title'), text: t('home.how1Text') },
+    { icon: CalendarCheck, title: t('home.how2Title'), text: t('home.how2Text') },
+    { icon: Flame, title: t('home.how3Title'), text: t('home.how3Text') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
-      {/* Hero Section - Fixed with dark background and white text */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#8B5A3C] via-[#6B4423] to-[#5A3820] text-white">
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="desert-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-                <path d="M0 50 Q25 30, 50 50 T100 50" fill="none" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="25" cy="30" r="3" fill="currentColor"/>
-                <circle cx="75" cy="30" r="3" fill="currentColor"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#desert-pattern)"/>
-          </svg>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 text-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-              {t('home.heroTitleTop')}
-              <span className="block text-orange-200 mt-2">{t('home.heroTitleBottom')}</span>
-            </h1>
-            <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 delay-200 duration-700">
-              {t('home.heroSubtitle')}
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background pb-20">
+      {/* Hero — search + both booking entries stay inside the first viewport */}
+      <section className="relative overflow-hidden bg-[#0A1128]">
+        <PatternSadu color="#FDFBF7" opacity={0.05} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 sm:pt-14 sm:pb-12">
+          <p className="text-primary font-semibold tracking-[0.25em] uppercase text-xs mb-2">
+            {t('header.brand')}
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white max-w-2xl leading-tight">
+            {t('home.heroTitle')}
+          </h1>
+          <p className="mt-2 text-white/70 text-sm sm:text-base max-w-xl">{t('home.heroSubtitle')}</p>
+          <button
+            onClick={() => goToSearch()}
+            className="mt-6 w-full max-w-2xl bg-white rounded-2xl shadow-xl px-4 sm:px-5 py-3.5 flex items-center gap-3 text-left rtl:text-right hover:shadow-2xl transition-shadow group"
+          >
+            <Search className="w-5 h-5 text-gray-400 shrink-0" />
+            <span className="flex-1 text-gray-500 text-sm sm:text-base truncate">
+              {t('home.searchPlaceholder')}
+            </span>
+            <span className="h-9 w-9 rounded-full bg-primary text-[#0A1128] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+            </span>
+          </button>
 
-      {/* Search & Filter Bar - NEW PROMINENT SECTION */}
-      <div className="relative z-40 bg-white shadow-lg border-b-2 border-orange-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {/* Listing Type Selector */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-              {t('listingType.sectionTitle')}
-            </h3>
-            <ListingTypeSelector
-              value={selectedListingType}
-              onChange={setSelectedListingType}
-              variant="cards"
-              campCount={campCount}
-              kashtaCount={kashtaCount}
-            />
-          </div>
-
-          {/* Search Bar */}
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
-              <Input
-                type="text"
-                placeholder={t('home.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-14 h-14 border-2 border-orange-300 focus:border-[#8B5A3C] rounded-xl text-lg text-gray-900 placeholder:text-gray-400"
-              />
-            </div>
-          </div>
-
-          {/* Quick Filters Row */}
-          <div className="flex flex-wrap gap-3 items-center">
-            {/* Date Picker */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-12 px-4 border-2 border-orange-300 hover:border-orange-400 hover:bg-orange-50 rounded-xl font-semibold text-gray-900"
-                >
-                  <CalendarIcon className="mr-2 h-5 w-5 text-[#6B4423]" />
-                  {filters.bookingDate ? format(filters.bookingDate, 'MMM d, yyyy') : t('home.datePlaceholder')}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-2 border-2 border-orange-200 rounded-2xl shadow-xl w-auto" align="start">
-                <Calendar
-                  mode="single"
-                  selected={filters.bookingDate}
-                  onSelect={(date) => handleBookingDateChange(date || undefined)}
-                  disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                  initialFocus
-                  variant="compact"
-                  hideLegend
-                />
-                <div className="flex justify-between items-center pt-2 px-1">
-                  <p className="text-xs text-gray-600">
-                    {filters.bookingDate ? format(filters.bookingDate, 'EEE, MMM d, yyyy') : t('home.datePickedLabel')}
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#6B4423] hover:bg-orange-50"
-                    onClick={() => handleBookingDateChange(undefined)}
-                  >
-                    {t('home.clear')}
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            {/* Guests Selector */}
-            <Select 
-              value={filters.minGuests.toString()} 
-              onValueChange={(value) => setFilters({ ...filters, minGuests: parseInt(value) })}
+          <p className="mt-6 text-white/80 text-xs font-semibold tracking-[0.2em] uppercase">
+            {t('home.bookNowLabel')}
+          </p>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-2 max-w-2xl">
+            <button
+              onClick={() => navigate('/camps')}
+              className="relative overflow-hidden rounded-2xl h-32 sm:h-36 bg-gradient-to-br from-[#16224D] to-[#1D2E63] border border-white/10 text-left rtl:text-right group shadow-md hover:shadow-xl transition-all hover:-translate-y-0.5"
             >
-              <SelectTrigger className="h-12 w-40 border-2 border-orange-300 rounded-xl font-semibold">
-                <Users className="w-5 h-5 mr-2 text-[#6B4423]" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[1, 2, 3, 4, 5, 6, 8, 10, 15, 20].map(num => (
-                  <SelectItem key={num} value={num.toString()}>
-                    {num} {num === 1 ? t('home.guestLabel') : t('home.guestsLabel')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Advanced Filters Button - Desktop */}
-            <Button
-              variant="outline"
-              className="hidden lg:flex h-12 px-4 border-2 border-orange-300 hover:bg-orange-50 rounded-xl font-semibold"
-              onClick={() => setShowMobileFilters(true)}
-            >
-              <SlidersHorizontal className="w-5 h-5 mr-2" />
-              {t('home.filters')}
-              {activeFilterCount > 0 && (
-                <Badge className="ml-2 bg-[#6B4423] text-white">
-                  {activeFilterCount}
-                </Badge>
-              )}
-            </Button>
-
-            {/* Mobile Filters Button */}
-            <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
-              <SheetTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="lg:hidden h-12 px-4 border-2 border-orange-300 hover:bg-orange-50 rounded-xl font-semibold"
-                >
-                  <SlidersHorizontal className="w-5 h-5 mr-2" />
-                  {t('home.filters')}
-                  {activeFilterCount > 0 && (
-                    <Badge className="ml-2 bg-[#6B4423] text-white">
-                      {activeFilterCount}
-                    </Badge>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
-                <FilterSidebar
-                  filters={filters}
-                  onFilterChange={(newFilters) => {
-                    handleFilterChange(newFilters);
-                    setShowMobileFilters(false);
-                  }}
-                  locations={locations}
-                  amenities={amenities}
-                />
-              </SheetContent>
-            </Sheet>
-
-            {/* Search Button */}
-            <Button 
-              onClick={() => loadCamps()}
-              className="h-12 px-6 bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <Search className="w-5 h-5 mr-2" />
-              {t('home.searchButton')}
-            </Button>
-          </div>
-
-          {/* Active Filters Chips */}
-          {activeFilterCount > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2 items-center">
-              <span className="text-sm font-semibold text-gray-700">{t('home.activeFilters')}</span>
-              
-              {filters.listingType && filters.listingType !== 'all' && (
-                <Badge 
-                  variant="secondary" 
-                  className="h-8 px-3 bg-orange-100 text-orange-900 border border-orange-300 cursor-pointer hover:bg-orange-200"
-                  onClick={() => removeFilter('listingType')}
-                >
-                  {filters.listingType === 'camp' ? '🏕️ ' + t('listingType.camp.title') : '🏖️ ' + t('listingType.kashta.title')}
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              )}
-              
-              {filters.locations.map(location => (
-                <Badge 
-                  key={location}
-                  variant="secondary" 
-                  className="h-8 px-3 bg-blue-100 text-blue-900 border border-blue-300 cursor-pointer hover:bg-blue-200"
-                  onClick={() => removeFilter('location', location)}
-                >
-                  📍 {location}
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              ))}
-              
-              {filters.amenities.map(amenity => (
-                <Badge 
-                  key={amenity}
-                  variant="secondary" 
-                  className="h-8 px-3 bg-green-100 text-green-900 border border-green-300 cursor-pointer hover:bg-green-200"
-                  onClick={() => removeFilter('amenity', amenity)}
-                >
-                  ✨ {amenity}
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              ))}
-              
-              {filters.minRating > 0 && (
-                <Badge 
-                  variant="secondary" 
-                  className="h-8 px-3 bg-yellow-100 text-yellow-900 border border-yellow-300 cursor-pointer hover:bg-yellow-200"
-                  onClick={() => removeFilter('rating')}
-                >
-                  ⭐ {filters.minRating}+ {t('filters.minRating')}
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              )}
-              
-              {filters.bookingDate && (
-                <Badge 
-                  variant="secondary" 
-                  className="h-8 px-3 bg-purple-100 text-purple-900 border border-purple-300 cursor-pointer hover:bg-purple-200"
-                  onClick={() => removeFilter('date')}
-                >
-                  📅 {format(filters.bookingDate, 'MMM d, yyyy')}
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              )}
-              
-              {(filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) && (
-                <Badge 
-                  variant="secondary" 
-                  className="h-8 px-3 bg-orange-100 text-orange-900 border border-orange-300 cursor-pointer hover:bg-orange-200"
-                  onClick={() => removeFilter('price')}
-                >
-                  💰 {filters.priceRange[0]} - {filters.priceRange[1]} BD
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              )}
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 font-semibold"
-                onClick={clearAllFilters}
-              >
-                {t('home.clearAll')}
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Filters Sidebar */}
-          <div className="hidden lg:block lg:w-80 flex-shrink-0">
-            <div className="sticky top-4">
-              <FilterSidebar
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                locations={locations}
-                amenities={amenities}
-              />
-            </div>
-          </div>
-
-          {/* Results Section */}
-          <div className="flex-1">
-            {/* Results Header */}
-            <div className="bg-white rounded-xl shadow-md border-2 border-orange-200 p-6 mb-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {selectedListingType === 'all' 
-                      ? `${t('home.showingListings', { count: filteredCamps.length })}${filteredCamps.length !== 1 ? '' : ''} ${t('home.listingsInBahrain')}`
-                      : selectedListingType === 'camp'
-                      ? campCount === 1 ? t('home.campsAvailableCount', { count: campCount }) : t('home.campsAvailableCountPlural', { count: campCount })
-                      : kashtaCount === 1 ? t('home.kashtasAvailableCount', { count: kashtaCount }) : t('home.kashtasAvailableCountPlural', { count: kashtaCount })
-                    }
-                  </h2>
-                  {filters.bookingDate && (
-                    <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                      <CalendarIcon className="w-4 h-4" />
-                      <span>
-                        {t('home.availableOn')} {format(filters.bookingDate, 'EEEE, MMMM dd, yyyy')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <Select value={filters.sortBy} onValueChange={handleSortChange}>
-                    <SelectTrigger className="w-48 h-11 border-2 border-orange-300 rounded-xl font-semibold">
-                      <SelectValue placeholder={t('home.sortBy')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">{t('home.sortNewest')}</SelectItem>
-                      <SelectItem value="price_asc">{t('home.sortPriceAsc')}</SelectItem>
-                      <SelectItem value="price_desc">{t('home.sortPriceDesc')}</SelectItem>
-                      <SelectItem value="rating">{t('home.sortRating')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <div className="hidden sm:flex gap-2">
-                    <Button
-                      variant={viewMode === 'grid' ? 'default' : 'outline'}
-                      size="icon"
-                      className={viewMode === 'grid' ? 'bg-[#6B4423] hover:bg-[#5A3820]' : 'border-2 border-orange-300'}
-                      onClick={() => setViewMode('grid')}
-                    >
-                      <Grid3x3 className="w-5 h-5" />
-                    </Button>
-                    <Button
-                      variant={viewMode === 'list' ? 'default' : 'outline'}
-                      size="icon"
-                      className={viewMode === 'list' ? 'bg-[#6B4423] hover:bg-[#5A3820]' : 'border-2 border-orange-300'}
-                      onClick={() => setViewMode('list')}
-                    >
-                      <List className="w-5 h-5" />
-                    </Button>
+              <PatternSadu color="#FDFBF7" opacity={0.06} />
+              <div className="relative h-full flex flex-col justify-between p-4">
+                <span className="h-9 w-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
+                  <Tent className="w-4.5 h-4.5 text-primary" />
+                </span>
+                <div className="flex items-end justify-between gap-2">
+                  <div>
+                    <p className="text-white font-bold text-base sm:text-lg">{t('home.serviceCamps')}</p>
+                    <p className="text-white/60 text-xs sm:text-sm tabular-nums">
+                      {loading ? '—' : t('home.campsAvailable', { count: campCount })}
+                    </p>
                   </div>
+                  <span className="h-8 w-8 rounded-full bg-primary text-[#0A1128] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                  </span>
                 </div>
               </div>
-            </div>
+            </button>
 
-            {/* Listings Grid/List */}
-            {filteredCamps.length === 0 ? (
-              <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-orange-200">
-                {selectedListingType === 'kashta' ? (
-                  <Waves className="w-20 h-20 text-gray-400 mx-auto mb-4" />
-                ) : (
-                  <Tent className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+            <button
+              onClick={() => navigate('/kashtas')}
+              className="relative overflow-hidden rounded-2xl h-32 sm:h-36 bg-accent text-left rtl:text-right group shadow-md hover:shadow-xl transition-all hover:-translate-y-0.5"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-black/25 to-transparent" />
+              <PatternSadu color="#FDFBF7" opacity={0.06} />
+              <div className="relative h-full flex flex-col justify-between p-4">
+                <span className="h-9 w-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center">
+                  <Waves className="w-4.5 h-4.5 text-white" />
+                </span>
+                <div className="flex items-end justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-white font-bold text-base sm:text-lg">{t('home.serviceKashtas')}</p>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex" onClick={(e) => e.stopPropagation()}>
+                              <Info className="w-3.5 h-3.5 text-white/50 hover:text-white/90 transition-colors cursor-default" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs text-xs">
+                            {t('home.kashtaTooltip')}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <p className="text-white/70 text-xs sm:text-sm tabular-nums">
+                      {loading ? '—' : t('home.kashtasAvailable', { count: kashtaCount })}
+                    </p>
+                  </div>
+                  <span className="h-8 w-8 rounded-full bg-white text-accent flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                  </span>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Season band */}
+      <div className="relative bg-white border-b border-border overflow-hidden">
+        <PatternSadu color="#0A1128" opacity={0.04} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 text-sm font-medium">
+            <div className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full border border-primary/20">
+              <span className="relative flex h-2 w-2">
+                {isInSeason && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 )}
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3">{t('home.noCampsTitle')}</h3>
-                <p className="text-gray-600 text-lg mb-8">
-                  {filters.bookingDate 
-                    ? t('home.noCampsDate')
-                    : t('home.noCampsGeneral')}
-                </p>
-                <Button
-                  onClick={clearAllFilters}
-                  size="lg"
-                  className="bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold h-12 px-8"
-                >
-                  {t('home.clearAll')}
-                </Button>
+                <span
+                  className={`relative inline-flex rounded-full h-2 w-2 ${isInSeason ? 'bg-primary' : 'bg-gray-400'}`}
+                ></span>
+              </span>
+              {isInSeason
+                ? t('home.seasonOpenLabel', { range: seasonRange })
+                : t('home.seasonClosedLabel', { month: nextOpenMonth })}
+            </div>
+            <span className="text-gray-500 hidden sm:inline-block">{t('home.seasonDate')}</span>
+          </div>
+          <span className="hidden md:flex items-center gap-2 text-sm text-foreground/70 font-medium">
+            <Tent className="w-4 h-4 opacity-70" />
+            {t('home.culturalQuote')}
+          </span>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* M-5: inline error state with retry — never a silently empty home */}
+        {!loading && campsError && (
+          <div className="mt-8 rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
+            <p className="text-gray-900 font-semibold mb-3">{t('home.loadErrorTitle')}</p>
+            <button
+              onClick={() => setLoadKey((k) => k + 1)}
+              className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              {t('home.loadErrorRetry')}
+            </button>
+          </div>
+        )}
+
+        {/* Browse by equipment — live classification derived from listings */}
+        {(loading || topAmenities.length > 0) && (
+          <section className="pt-8">
+            <h2 className="text-xl font-bold text-gray-900">{t('home.amenityTitle')}</h2>
+            <p className="text-sm text-gray-500 mt-1 mb-4">{t('home.amenitySubtitle')}</p>
+            {loading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+                  <div key={i} className="h-[74px] rounded-xl bg-gray-100 animate-pulse" />
+                ))}
               </div>
             ) : (
-              <div className={viewMode === 'grid' 
-                ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" 
-                : "space-y-6"
-              }>
-                {filteredCamps.map((camp) => {
-                  const listingType = (camp.listingType || 'camp') as ListingType;
-                  
-                  // Render Kashta card for kashta listings
-                  if (listingType === 'kashta') {
-                    return (
-                      <KashtaListingCard
-                        key={camp.id}
-                        listing={{
-                          id: camp.id,
-                          title: camp.title,
-                          description: camp.description || '',
-                          location: camp.location,
-                          pricePerNight: camp.price,
-                          images: camp.photo ? [{ url: camp.photo, isMain: true }] : [],
-                          status: 'active',
-                          hostId: camp.hostId || '',
-                          hostName: camp.hostName || '',
-                          createdAt: camp.createdAt || new Date().toISOString(),
-                          listingType: 'kashta',
-                          seatingCapacity: camp.seatingCapacity || 10,
-                          beachfrontAccess: camp.beachfrontAccess || false,
-                          shadeType: camp.shadeType,
-                          viewType: camp.viewType,
-                          waterActivities: camp.waterActivities || [],
-                          amenities: camp.amenities || [],
-                          rating: camp.averageRating,
-                          reviewCount: camp.reviewCount,
-                          cancellationPolicy: camp.refundPolicy,
-                          views: camp.views
-                        }}
-                        onClick={() => handleCampClick(camp.id)}
-                      />
-                    );
-                  }
-                  
-                  // Render regular camp card
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {topAmenities.map(([name, count]) => {
+                  const Icon = iconForAmenity(name);
                   return (
-                    <Card
-                      key={camp.id}
-                      className="group cursor-pointer overflow-hidden bg-white border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
-                      onClick={() => handleCampClick(camp.id)}
+                    <button
+                      key={name}
+                      onClick={() => goToSearch(`amenities=${encodeURIComponent(name)}`)}
+                      className="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3.5 text-left rtl:text-right hover:border-primary/40 hover:shadow-md transition-all"
                     >
-                      {/* Camp Image */}
-                      <div className="relative h-64 overflow-hidden">
-                        <img
-                          src={camp.photo}
-                          alt={camp.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800';
-                          }}
-                        />
-                        <div className="absolute top-4 right-4 flex gap-2">
-                          <RefundPolicyBadge policy={camp.refundPolicy} />
-                        </div>
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold px-3 py-1">
-                            <Tent className="w-4 h-4 mr-1" />
-                            {t('listingType.camp.badge')}
-                          </Badge>
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                          <div className="flex items-center text-white text-base font-semibold">
-                            <MapPin className="w-5 h-5 mr-2" />
-                            {camp.location}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Camp Details */}
-                      <div className="p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#6B4423] transition-colors">
-                          {camp.title}
-                        </h3>
-
-                        {/* Rating */}
-                        <div className="flex items-center gap-2 mb-4">
-                          <RatingStars rating={camp.averageRating || 0} size="lg" />
-                          <span className="text-base font-semibold text-gray-700">
-                            ({camp.reviewCount || 0} {camp.reviewCount === 1 ? t('home.reviewLabel') : t('home.reviewsLabel')})
-                          </span>
-                        </div>
-
-                        {/* Camp Info */}
-                        <div className="flex items-center gap-6 text-base text-gray-700 mb-5 font-medium">
-                          <div className="flex items-center">
-                            <Users className="w-5 h-5 mr-2 text-[#6B4423]" />
-                            {t('home.upToGuests', { count: camp.maxGuests })}
-                          </div>
-                          <div className="flex items-center">
-                            <Tent className="w-5 h-5 mr-2 text-[#6B4423]" />
-                            {getTotalTents(camp.tentConfiguration)} {getTotalTents(camp.tentConfiguration) === 1 ? t('home.tentLabel') : t('home.tentsLabel')}
-                          </div>
-                        </div>
-
-                        {/* Price */}
-                        <div className="flex items-center justify-between pt-5 border-t-2 border-orange-200">
-                          <div>
-                            <span className="text-3xl font-bold text-[#6B4423]">
-                              {camp.price} BD
-                            </span>
-                            <span className="text-base text-gray-600 ml-2 font-medium">{t('home.perDay')}</span>
-                          </div>
-                          <Button 
-                            size="lg"
-                            className="bg-[#6B4423] hover:bg-[#5A3820] text-white font-semibold h-11 px-6"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCampClick(camp.id);
-                            }}
-                          >
-                            {t('home.viewDetails')}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
+                      <span className="h-10 w-10 shrink-0 rounded-full bg-primary/10 border border-primary/15 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
+                        <Icon className="w-5 h-5 text-[#0A1128]" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-gray-900 truncate">
+                          {t(`amenityNames.${name}`, name)}
+                        </span>
+                        <span className="block text-xs text-gray-500 tabular-nums">
+                          {t('home.campsAvailable', { count })}
+                        </span>
+                      </span>
+                    </button>
                   );
                 })}
               </div>
             )}
+          </section>
+        )}
+
+        {/* Your favorites */}
+        {!loading && favCamps.length > 0 && (
+          <section className="pt-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">{t('home.yourFavorites')}</h2>
+              <button
+                onClick={() => goToSearch('favorites=1')}
+                className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+              >
+                {t('home.browseAll')}
+                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+              </button>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+              {favCamps.map((camp) => (
+                <div key={camp.id} className="w-60 shrink-0">
+                  <MiniCard camp={camp} onClick={() => openCamp(camp.id)} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Top rated */}
+        <section className="pt-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">{t('home.topRatedTitle')}</h2>
+            <button
+              onClick={() => goToSearch()}
+              className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            >
+              {t('home.browseAll')}
+              <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+            </button>
           </div>
-        </div>
+          {loading ? (
+            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="w-60 shrink-0">
+                  <div className="h-40 rounded-xl bg-gray-100 animate-pulse" />
+                  <div className="h-4 w-3/4 rounded bg-gray-100 animate-pulse mt-3" />
+                  <div className="h-3 w-1/2 rounded bg-gray-100 animate-pulse mt-2" />
+                </div>
+              ))}
+            </div>
+          ) : topRated.length > 0 ? (
+            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+              {topRated.map((camp) => (
+                <div key={camp.id} className="w-60 shrink-0">
+                  <MiniCard camp={camp} onClick={() => openCamp(camp.id)} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed border-gray-300 bg-white py-10 text-center">
+              <Tent className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm text-gray-500 font-medium">{t('home.seasonClosedLabel', { month: nextOpenMonth })}</p>
+            </div>
+          )}
+        </section>
+
+        {/* Popular Picks */}
+        {!loading && trending.length > 0 && (
+          <section className="pt-10">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{t('home.popularPicksTitle')}</h2>
+                <p className="text-xs text-gray-500 mt-0.5">{t('home.popularPicksSubtitle')}</p>
+              </div>
+              <button onClick={() => goToSearch()} className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                {t('home.browseAll')}
+                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+              </button>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+              {trending.map((camp) => (
+                <div key={camp.id} className="w-60 shrink-0">
+                  <MiniCard camp={camp} onClick={() => openCamp(camp.id)} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Marketplace — below camp discovery to reduce above-fold density */}
+        <section className="pt-10">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">{t('home.marketplaceTitle', 'Camp Services & Supplies')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {([
+              { cat: 'food', Icon: UtensilsCrossed, label: t('home.serviceCampFood') },
+              { cat: 'firewood', Icon: Flame, label: t('home.serviceFirewood') },
+              { cat: 'gear', Icon: ShoppingBag, label: t('home.serviceGear') },
+            ] as const).map(({ cat, Icon, label }) => (
+              <button
+                key={cat}
+                onClick={() => navigate(`/market?cat=${cat}`)}
+                className="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3.5 text-left rtl:text-right hover:border-primary/40 hover:shadow-md transition-all"
+              >
+                <span className="h-10 w-10 shrink-0 rounded-full bg-primary/10 border border-primary/15 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
+                  <Icon className="w-5 h-5 text-[#0A1128]" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-gray-900 truncate">{label}</span>
+                  <span className="block text-xs text-gray-500 truncate">{t('home.marketplaceNote')}</span>
+                </span>
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary rtl:rotate-180 shrink-0 transition-colors" />
+              </button>
+            ))}
+          </div>
+          <MarketRail
+            title={t('home.hungryTitle')}
+            subtitle={t('home.hungrySubtitle')}
+            items={foodItems}
+            onOpen={setActiveItem}
+          />
+          <MarketRail
+            title={t('home.suppliesTitle')}
+            subtitle={t('home.suppliesSubtitle')}
+            items={supplyItems}
+            chip={(m) => t(m.category === 'firewood' ? 'home.serviceFirewood' : 'home.serviceGear')}
+            onOpen={setActiveItem}
+          />
+        </section>
+
+        {/* How it works */}
+        <section className="pt-10">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">{t('home.howTitle')}</h2>
+          <div className="relative overflow-hidden rounded-2xl bg-[#0A1128]">
+            <PatternSadu color="#FDFBF7" opacity={0.05} />
+            <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 p-6 sm:p-8">
+              {howSteps.map(({ icon: Icon, title, text }, i) => (
+                <div key={title} className="flex sm:block items-start gap-4">
+                  <span className="relative h-11 w-11 shrink-0 rounded-full bg-primary text-[#0A1128] flex items-center justify-center">
+                    <Icon className="w-5 h-5" />
+                    <span className="absolute -top-1 ltr:-right-1 rtl:-left-1 h-5 w-5 rounded-full bg-white text-[#0A1128] text-xs font-bold flex items-center justify-center tabular-nums">
+                      {i + 1}
+                    </span>
+                  </span>
+                  <div className="sm:mt-3">
+                    <p className="text-white font-semibold">{title}</p>
+                    <p className="text-white/60 text-sm mt-1 leading-relaxed">{text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Host CTA */}
+        <section className="pt-10">
+          <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent">
+            <PatternSadu color="#0A1128" opacity={0.04} />
+            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 sm:p-8">
+              <div className="flex items-start gap-4">
+                <span className="h-11 w-11 shrink-0 rounded-full bg-primary text-[#0A1128] flex items-center justify-center">
+                  <Tent className="w-5 h-5" />
+                </span>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('home.hostCtaTitle')}</h2>
+                  <p className="text-sm text-gray-600 mt-1">{t('home.hostCtaText')}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/host')}
+                className="shrink-0 inline-flex items-center gap-2 rounded-full bg-primary text-[#0A1128] font-semibold px-5 py-2.5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              >
+                {t('home.hostCtaButton')}
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
+
+      {/* Marketplace item details */}
+      <MarketItemDialog item={activeItem} onClose={() => setActiveItem(null)} />
     </div>
   );
 }

@@ -87,7 +87,7 @@ export function StripePaymentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="p-4 border-2 border-orange-300 rounded-lg bg-white focus-within:border-#8B5A3C transition-colors">
+      <div className="p-4 border-2 border-border/80 rounded-lg bg-white focus-within:border-primary transition-colors">
         <CardElement
           options={{
             style: {
@@ -117,7 +117,7 @@ export function StripePaymentForm({
       <Button 
         type="submit" 
         disabled={!stripe || loading} 
-        className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold text-base"
+        className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground lantern-halo font-semibold text-base"
       >
         {loading ? (
           <>

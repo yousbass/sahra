@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CalendarDays, X } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 
 interface DateRangePickerProps {
@@ -22,14 +23,9 @@ interface DateRangePickerProps {
   disabled?: boolean;
 }
 
-const BLOCKING_REASONS = [
-  { value: 'maintenance', label: 'Maintenance/Repairs' },
-  { value: 'personal', label: 'Personal Use' },
-  { value: 'weather', label: 'Weather Conditions' },
-  { value: 'event', label: 'Special Event' },
-  { value: 'seasonal', label: 'Seasonal Closure' },
-  { value: 'other', label: 'Other' },
-];
+const BLOCKING_REASON_KEYS = [
+  'maintenance', 'personal', 'weather', 'event', 'seasonal', 'other',
+] as const;
 
 export function DateRangePicker({
   onConfirm,
@@ -37,42 +33,31 @@ export function DateRangePicker({
   bookedDates = [],
   disabled = false
 }: DateRangePickerProps) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'ar' ? 'ar-BH' : 'en-US';
+  const fmtDate = (d: Date) => d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [reasonCategory, setReasonCategory] = useState<string>('maintenance');
   const [customReason, setCustomReason] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
 
   const handleConfirm = () => {
-    if (!dateRange?.from) {
-      return;
-    }
-
+    if (!dateRange?.from) return;
     const startDate = dateRange.from;
     const endDate = dateRange.to || dateRange.from;
-
-    const reason = reasonCategory === 'other' && customReason 
-      ? customReason 
-      : BLOCKING_REASONS.find(r => r.value === reasonCategory)?.label || 'Not specified';
-
-    onConfirm(
-      { startDate, endDate },
-      reason,
-      reasonCategory,
-      notes || undefined
-    );
+    const reason = reasonCategory === 'other' && customReason
+      ? customReason
+      : t(`manageAvailability.dateRangePicker.reasons.${reasonCategory}`, reasonCategory);
+    onConfirm({ startDate, endDate }, reason, reasonCategory, notes || undefined);
   };
 
   const dayCount = dateRange?.from && dateRange?.to
     ? differenceInDays(dateRange.to, dateRange.from) + 1
-    : dateRange?.from
-    ? 1
-    : 0;
+    : dateRange?.from ? 1 : 0;
 
-  const isBooked = (date: Date) => {
-    return bookedDates.some(bookedDate => 
-      bookedDate.toDateString() === date.toDateString()
-    );
-  };
+  const isBooked = (date: Date) =>
+    bookedDates.some(d => d.toDateString() === date.toDateString());
 
   return (
     <Card className="p-6">
@@ -81,19 +66,14 @@ export function DateRangePicker({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-#6B4423" />
-              Block Date Range
+              <CalendarDays className="w-5 h-5 text-primary" />
+              {t('manageAvailability.dateRangePicker.heading')}
             </h3>
             <p className="text-sm text-gray-600 mt-1">
-              Select dates to block for your camp
+              {t('manageAvailability.dateRangePicker.subtitle')}
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onCancel}
-            className="text-gray-600 hover:text-gray-900"
-          >
+          <Button variant="ghost" size="sm" onClick={onCancel} className="text-gray-600 hover:text-gray-900">
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -101,21 +81,27 @@ export function DateRangePicker({
         {/* Calendar */}
         <div>
           <Label className="text-gray-900 font-semibold mb-2 block">
-            Select Dates <span className="text-red-600">*</span>
+            {t('manageAvailability.dateRangePicker.selectDates')} <span className="text-red-600">*</span>
           </Label>
           <Calendar
             mode="range"
             selected={dateRange}
-            onSelect={setDateRange}
+            onSelect={(value) => {
+              if (!value || value instanceof Date) {
+                setDateRange(undefined);
+              } else {
+                setDateRange(value);
+              }
+            }}
             disabled={(date) => disabled || isBooked(date) || date < new Date()}
             className="rounded-md border"
             numberOfMonths={2}
           />
           {dateRange?.from && (
             <p className="text-sm text-gray-600 mt-2">
-              Selected: {format(dateRange.from, 'MMM dd, yyyy')}
-              {dateRange.to && ` - ${format(dateRange.to, 'MMM dd, yyyy')}`}
-              {dayCount > 0 && ` (${dayCount} day${dayCount > 1 ? 's' : ''})`}
+              {t('manageAvailability.dateRangePicker.selected')}: {fmtDate(dateRange.from)}
+              {dateRange.to && ` – ${fmtDate(dateRange.to)}`}
+              {dayCount > 0 && ` (${t('manageAvailability.blockedRanges.day', { count: dayCount })})`}
             </p>
           )}
         </div>
@@ -123,16 +109,16 @@ export function DateRangePicker({
         {/* Reason */}
         <div className="space-y-2">
           <Label htmlFor="reason" className="text-gray-900 font-semibold">
-            Reason for Blocking <span className="text-red-600">*</span>
+            {t('manageAvailability.dateRangePicker.reasonLabel')} <span className="text-red-600">*</span>
           </Label>
           <Select value={reasonCategory} onValueChange={setReasonCategory}>
             <SelectTrigger id="reason">
-              <SelectValue placeholder="Select a reason..." />
+              <SelectValue placeholder={t('manageAvailability.dateRangePicker.reasonPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              {BLOCKING_REASONS.map((reason) => (
-                <SelectItem key={reason.value} value={reason.value}>
-                  {reason.label}
+              {BLOCKING_REASON_KEYS.map((key) => (
+                <SelectItem key={key} value={key}>
+                  {t(`manageAvailability.dateRangePicker.reasons.${key}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -143,11 +129,11 @@ export function DateRangePicker({
         {reasonCategory === 'other' && (
           <div className="space-y-2">
             <Label htmlFor="customReason" className="text-gray-900 font-semibold">
-              Custom Reason <span className="text-red-600">*</span>
+              {t('manageAvailability.dateRangePicker.customReasonLabel')} <span className="text-red-600">*</span>
             </Label>
             <Textarea
               id="customReason"
-              placeholder="Please specify the reason..."
+              placeholder={t('manageAvailability.dateRangePicker.customReasonPlaceholder')}
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
               rows={2}
@@ -159,11 +145,11 @@ export function DateRangePicker({
         {/* Notes */}
         <div className="space-y-2">
           <Label htmlFor="notes" className="text-gray-900 font-semibold">
-            Additional Notes (Optional)
+            {t('manageAvailability.dateRangePicker.notesLabel')}
           </Label>
           <Textarea
             id="notes"
-            placeholder="Any additional information..."
+            placeholder={t('manageAvailability.dateRangePicker.notesPlaceholder')}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
@@ -173,20 +159,16 @@ export function DateRangePicker({
 
         {/* Actions */}
         <div className="flex gap-3 pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            className="flex-1"
-            disabled={disabled}
-          >
-            Cancel
+          <Button variant="outline" onClick={onCancel} className="flex-1" disabled={disabled}>
+            {t('manageAvailability.dateRangePicker.cancelBtn')}
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={!dateRange?.from || disabled || (reasonCategory === 'other' && !customReason)}
             className="flex-1 bg-red-600 hover:bg-red-700 text-white"
           >
-            Block {dayCount > 0 ? `${dayCount} Date${dayCount > 1 ? 's' : ''}` : 'Dates'}
+            {t('manageAvailability.dateRangePicker.blockBtn')}
+            {dayCount > 0 && ` (${t('manageAvailability.blockedRanges.day', { count: dayCount })})`}
           </Button>
         </div>
       </div>

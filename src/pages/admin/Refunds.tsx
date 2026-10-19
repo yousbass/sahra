@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,8 +30,7 @@ import {
 } from '@/components/ui/select';
 import { 
   Search, 
-  Eye, 
-  Loader2,
+  Eye,
   DollarSign,
   CheckCircle,
   Clock,
@@ -53,6 +53,8 @@ export default function AdminRefunds() {
   const [showRefundDialog, setShowRefundDialog] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [adminNotes, setAdminNotes] = useState('');
+  const [showManualSettleConfirm, setShowManualSettleConfirm] = useState(false);
+  const [manualSettleNotes, setManualSettleNotes] = useState('');
 
   useEffect(() => {
     loadRefunds();
@@ -119,9 +121,39 @@ export default function AdminRefunds() {
       toast.success(`Refund status updated to ${status}`);
       await loadRefunds();
       setShowRefundDialog(false);
+      setShowManualSettleConfirm(false);
+      setManualSettleNotes('');
     } catch (error) {
       console.error('Error updating refund status:', error);
-      toast.error('Failed to update refund status');
+      toast.error(error instanceof Error ? error.message : 'Failed to update refund status');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  /** Manual settlement: admin confirms out-of-band payment with required notes. */
+  const handleManualSettle = async () => {
+    if (!selectedRefund) return;
+    if (!manualSettleNotes.trim()) {
+      toast.error('Settlement notes are required for manual settlement');
+      return;
+    }
+    try {
+      setActionLoading(true);
+      await updateRefundStatus(
+        selectedRefund.id,
+        'completed',
+        manualSettleNotes.trim(),
+        true, // manualSettlementConfirmed
+      );
+      toast.success('Refund manually marked as settled');
+      await loadRefunds();
+      setShowRefundDialog(false);
+      setShowManualSettleConfirm(false);
+      setManualSettleNotes('');
+    } catch (error) {
+      console.error('Error recording manual settlement:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to record manual settlement');
     } finally {
       setActionLoading(false);
     }
@@ -133,7 +165,7 @@ export default function AdminRefunds() {
       if (typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
         return format(date.toDate(), 'MMM dd, yyyy HH:mm');
       }
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      const dateObj = typeof date === 'string' ? new Date(date) : (date as Date);
       if (dateObj instanceof Date && isNaN(dateObj.getTime())) return 'N/A';
       return format(dateObj, 'MMM dd, yyyy HH:mm');
     } catch (error) {
@@ -188,7 +220,7 @@ export default function AdminRefunds() {
         );
       case 'pending':
         return (
-          <Badge className="bg-amber-100 text-amber-900 border-orange-300">
+          <Badge className="bg-secondary text-primary border-border/80">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
@@ -221,7 +253,7 @@ export default function AdminRefunds() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
       </div>
     );
   }
@@ -238,7 +270,7 @@ export default function AdminRefunds() {
           <Button
             onClick={loadRefunds}
             variant="outline"
-            className="border-2 border-orange-300 hover:bg-orange-50"
+            className="border-2 border-border/80 hover:bg-secondary/50"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -246,7 +278,7 @@ export default function AdminRefunds() {
           <Button
             onClick={exportToCSV}
             variant="outline"
-            className="border-2 border-orange-300 hover:bg-orange-50"
+            className="border-2 border-border/80 hover:bg-secondary/50"
             disabled={filteredRefunds.length === 0}
           >
             <Download className="w-4 h-4 mr-2" />
@@ -257,7 +289,7 @@ export default function AdminRefunds() {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <DollarSign className="w-5 h-5 text-blue-600" />
@@ -269,9 +301,9 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-100 rounded-lg">
+            <div className="p-2 bg-secondary rounded-lg">
               <Clock className="w-5 h-5 text-[#FF8C42]" />
             </div>
             <div>
@@ -281,7 +313,7 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <RefreshCw className="w-5 h-5 text-blue-600" />
@@ -293,7 +325,7 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <CheckCircle className="w-5 h-5 text-green-600" />
@@ -305,7 +337,7 @@ export default function AdminRefunds() {
           </div>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-4">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 rounded-lg">
               <XCircle className="w-5 h-5 text-red-600" />
@@ -319,7 +351,7 @@ export default function AdminRefunds() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -327,12 +359,12 @@ export default function AdminRefunds() {
               placeholder="Search by refund ID, booking ID, or guest ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-orange-300 focus:border-#8B5A3C"
+              className="pl-10 border-border/80 focus:border-primary"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="border-orange-300 focus:border-#8B5A3C">
+            <SelectTrigger className="border-border/80 focus:border-primary">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -347,11 +379,11 @@ export default function AdminRefunds() {
       </Card>
 
       {/* Refunds Table */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 overflow-hidden">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-orange-50 border-orange-300">
+              <TableRow className="bg-secondary/50 border-border/80">
                 <TableHead className="font-bold text-gray-900">Refund ID</TableHead>
                 <TableHead className="font-bold text-gray-900">Booking ID</TableHead>
                 <TableHead className="font-bold text-gray-900">Guest ID</TableHead>
@@ -363,7 +395,7 @@ export default function AdminRefunds() {
             </TableHeader>
             <TableBody>
               {filteredRefunds.map((refund) => (
-                <TableRow key={refund.id} className="border-orange-200 hover:bg-orange-50">
+                <TableRow key={refund.id} className="border-border hover:bg-secondary/50">
                   <TableCell className="font-mono text-sm text-gray-700">
                     {refund.id.substring(0, 8)}...
                   </TableCell>
@@ -373,7 +405,7 @@ export default function AdminRefunds() {
                   <TableCell className="font-mono text-sm text-gray-700">
                     {refund.guestId.substring(0, 8)}...
                   </TableCell>
-                  <TableCell className="font-semibold text-#6B4423">
+                  <TableCell className="font-semibold text-primary">
                     {refund.amount.toFixed(2)} BD
                   </TableCell>
                   <TableCell>{getStatusBadge(refund.status)}</TableCell>
@@ -390,7 +422,7 @@ export default function AdminRefunds() {
                           setAdminNotes(refund.adminNotes || '');
                           setShowRefundDialog(true);
                         }}
-                        className="border-orange-300 hover:bg-orange-50"
+                        className="border-border/80 hover:bg-secondary/50"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -410,7 +442,10 @@ export default function AdminRefunds() {
       </Card>
 
       {/* Refund Details Dialog */}
-      <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
+      <Dialog open={showRefundDialog} onOpenChange={(open) => {
+        setShowRefundDialog(open);
+        if (!open) { setShowManualSettleConfirm(false); setManualSettleNotes(''); }
+      }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Refund Details</DialogTitle>
@@ -489,42 +524,62 @@ export default function AdminRefunds() {
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   rows={3}
-                  className="border-orange-300 focus:border-#8B5A3C resize-none"
+                  className="border-border/80 focus:border-primary resize-none"
                 />
               </div>
 
               {/* Status Actions */}
-              <div className="border-t border-orange-300 pt-4">
-                <p className="text-sm text-gray-600 mb-3 font-semibold">Update Status</p>
+              <div className="border-t border-border/80 pt-4 space-y-3">
+                <p className="text-sm text-gray-600 font-semibold">Update Status</p>
+
+                {/* Terminal-state notice — no further changes allowed */}
+                {(selectedRefund.status === 'completed' || selectedRefund.status === 'not_applicable') && (
+                  <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span>
+                      This refund is in a terminal state (<strong>{selectedRefund.status}</strong>) and cannot be changed.
+                    </span>
+                  </div>
+                )}
+
+                {/* Primary actions — hidden for terminal states */}
+                {selectedRefund.status !== 'completed' && selectedRefund.status !== 'not_applicable' && (
                 <div className="grid grid-cols-2 gap-2">
+                  {/* Retry Tap refund — only useful when no tapRefundId yet */}
                   <Button
                     size="sm"
                     onClick={() => handleUpdateStatus(selectedRefund.id, 'processing', adminNotes)}
                     disabled={actionLoading || selectedRefund.status === 'processing'}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
+                    title={selectedRefund.tapRefundId ? 'Tap refund already initiated' : 'Retry Tap refund call'}
                   >
                     <RefreshCw className="w-4 h-4 mr-1" />
-                    Set Processing
+                    Retry Refund
                   </Button>
+
+                  {/* Tap-verified complete — server checks Tap status before writing */}
                   <Button
                     size="sm"
                     onClick={() => handleUpdateStatus(selectedRefund.id, 'completed', adminNotes)}
-                    disabled={actionLoading || selectedRefund.status === 'completed'}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    disabled={actionLoading || !selectedRefund.tapRefundId}
+                    className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+                    title={selectedRefund.tapRefundId ? 'Verify with Tap then mark completed' : 'No Tap refund ID — use Manual Settlement below'}
                   >
                     <CheckCircle className="w-4 h-4 mr-1" />
-                    Mark Completed
+                    Verify &amp; Complete
                   </Button>
+
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handleUpdateStatus(selectedRefund.id, 'pending', adminNotes)}
                     disabled={actionLoading || selectedRefund.status === 'pending'}
-                    className="border-orange-300 text-amber-700 hover:bg-orange-50"
+                    className="border-border/80 text-primary hover:bg-secondary/50"
                   >
                     <Clock className="w-4 h-4 mr-1" />
-                    Set Pending
+                    Reset to Pending
                   </Button>
+
                   <Button
                     size="sm"
                     variant="outline"
@@ -536,6 +591,58 @@ export default function AdminRefunds() {
                     Mark Failed
                   </Button>
                 </div>
+                )}
+
+                {/* Manual settlement — only for non-terminal, positive-amount, non-cash records */}
+                {selectedRefund.status !== 'completed' && selectedRefund.status !== 'not_applicable' && selectedRefund.amount > 0 && (
+                  <div className="border border-amber-300 rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      className="w-full flex items-center justify-between px-3 py-2 bg-amber-50 text-sm font-semibold text-amber-900 hover:bg-amber-100 transition-colors"
+                      onClick={() => setShowManualSettleConfirm(v => !v)}
+                    >
+                      <span className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        Manual Settlement (no Tap verification)
+                      </span>
+                      <span className="text-xs font-normal text-amber-700">
+                        {showManualSettleConfirm ? 'Cancel' : 'Use this if paid outside Tap'}
+                      </span>
+                    </button>
+
+                    {showManualSettleConfirm && (
+                      <div className="p-3 bg-white space-y-3">
+                        <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
+                          ⚠️ This bypasses Tap verification. Use only when the refund was
+                          settled by bank transfer or another out-of-band method. Your notes
+                          will be permanently recorded as the audit trail.
+                        </p>
+                        <div className="space-y-1">
+                          <Label htmlFor="manual-settle-notes" className="text-sm font-semibold text-gray-900">
+                            Settlement evidence <span className="text-red-600">*</span>
+                          </Label>
+                          <Textarea
+                            id="manual-settle-notes"
+                            placeholder="Required: describe how and when the refund was settled (e.g. bank transfer ref, date, amount)…"
+                            value={manualSettleNotes}
+                            onChange={(e) => setManualSettleNotes(e.target.value)}
+                            rows={3}
+                            className="border-amber-300 focus:border-amber-500 resize-none text-sm"
+                          />
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={handleManualSettle}
+                          disabled={actionLoading || !manualSettleNotes.trim()}
+                          className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Confirm Manual Settlement
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -544,7 +651,7 @@ export default function AdminRefunds() {
             <Button
               variant="outline"
               onClick={() => setShowRefundDialog(false)}
-              className="border-2 border-orange-300"
+              className="border-2 border-border/80"
             >
               Close
             </Button>

@@ -13,6 +13,8 @@ export interface LegacyCamp {
   title: string;
   photo: string;  // Single photo
   price: number;  // Direct price field
+  weekendPrice?: number;  // Optional peak rate for Thu & Fri nights
+  holidayPrice?: number;  // Optional peak rate for Bahrain public holidays
   location: string;
   tentConfiguration: { large: number; small: number; entertainment: number };
   tents?: Array<{
@@ -63,7 +65,10 @@ export interface LegacyBooking {
   hostId: string;
   hostName: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  paymentStatus: 'pending' | 'paid' | 'refunded' | 'partially_refunded';
+  /** Widened to match the full NewBooking.paymentStatus union so the
+   *  convertBookingToLegacyFormat / normalizeBookingToLegacy helpers
+   *  can assign without a cast. */
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'pending_verification' | 'refunded' | 'partially_refunded' | 'cash_collected';
   createdAt: string;
 }
 
@@ -115,6 +120,8 @@ export function convertCampToLegacyFormat(camp: NewCamp): LegacyCamp {
       title: camp.title,
       photo: camp.images && camp.images.length > 0 ? camp.images[0] : '',
       price: camp.pricePerNight || 0,
+      ...(typeof camp.weekendPrice === 'number' && camp.weekendPrice > 0 ? { weekendPrice: camp.weekendPrice } : {}),
+      ...(typeof camp.holidayPrice === 'number' && camp.holidayPrice > 0 ? { holidayPrice: camp.holidayPrice } : {}),
       location: camp.location,
       tentConfiguration: {
         large: camp.tentConfig?.largeTents || 0,
@@ -159,6 +166,8 @@ export function convertLegacyCampToNewFormat(legacyCamp: LegacyCamp): Partial<Ne
       title: legacyCamp.title,
       images: legacyCamp.photo ? [legacyCamp.photo] : [],
       pricePerNight: legacyCamp.price || 0,
+      ...(typeof legacyCamp.weekendPrice === 'number' && legacyCamp.weekendPrice > 0 ? { weekendPrice: legacyCamp.weekendPrice } : {}),
+      ...(typeof legacyCamp.holidayPrice === 'number' && legacyCamp.holidayPrice > 0 ? { holidayPrice: legacyCamp.holidayPrice } : {}),
       location: legacyCamp.location,
       tentConfig: {
         largeTents: legacyCamp.tentConfiguration?.large || 0,
@@ -289,14 +298,18 @@ export function normalizeCampToLegacy(camp: LegacyCamp | NewCamp | Partial<Legac
   });
   
   try {
+    // Cast to the union accepted by the type-guard helpers.  The guards only
+    // inspect property existence / types at runtime so a partial object is safe.
+    const campUnion = camp as LegacyCamp | NewCamp;
+
     // Check if it's already in legacy format
-    if (isLegacyCamp(camp) && !isNewCamp(camp)) {
+    if (isLegacyCamp(campUnion) && !isNewCamp(campUnion)) {
       console.log('[ERR_COMPAT_001] Camp is already in legacy format');
       return camp as LegacyCamp;
     }
     
     // Check if it's in new format
-    if (isNewCamp(camp) && !isLegacyCamp(camp)) {
+    if (isNewCamp(campUnion) && !isLegacyCamp(campUnion)) {
       console.log('[ERR_COMPAT_001] Camp is in new format, converting...');
       return convertCampToLegacyFormat(camp as NewCamp);
     }
@@ -342,6 +355,8 @@ export function normalizeCampToLegacy(camp: LegacyCamp | NewCamp | Partial<Legac
       title: partialCamp.title || 'Untitled Camp',
       photo: photo,
       price: price,
+      ...(typeof partialCamp.weekendPrice === 'number' && partialCamp.weekendPrice > 0 ? { weekendPrice: partialCamp.weekendPrice } : {}),
+      ...(typeof partialCamp.holidayPrice === 'number' && partialCamp.holidayPrice > 0 ? { holidayPrice: partialCamp.holidayPrice } : {}),
       location: partialCamp.location || '',
       tentConfiguration: tentConfiguration,
       maxGuests: partialCamp.maxGuests || 0,

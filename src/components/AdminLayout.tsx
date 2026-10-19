@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, 
   Users, 
+  UserCheck,
+  Store,
   Tent, 
   Calendar, 
   Star, 
@@ -12,7 +14,9 @@ import {
   Menu, 
   X,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  RefreshCw,
+  Flag,
 } from 'lucide-react';
 import { useAdmin } from '@/hooks/useAdmin';
 import { signOut } from 'firebase/auth';
@@ -45,9 +49,13 @@ export default function AdminLayout() {
   const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/admin/users', icon: Users, label: 'Users' },
+    { path: '/admin/host-applications', icon: UserCheck, label: 'Host Applications' },
+    { path: '/admin/seller-applications', icon: Store, label: 'Seller Applications' },
     { path: '/admin/camps', icon: Tent, label: 'Camps' },
     { path: '/admin/bookings', icon: Calendar, label: 'Bookings' },
     { path: '/admin/reviews', icon: Star, label: 'Reviews' },
+    { path: '/admin/refunds', icon: RefreshCw, label: 'Refunds' },
+    { path: '/admin/disputes', icon: Flag, label: 'Disputes' },
     { path: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
@@ -76,7 +84,7 @@ export default function AdminLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b desert-bg flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-#6B4423 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-700 font-medium">Loading admin panel...</p>
@@ -86,9 +94,9 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200">
+    <div className="min-h-screen bg-gradient-to-b desert-bg">
       {/* Top Header */}
-      <header className="bg-white border-b border-orange-300 sticky top-0 z-40 shadow-sm">
+      <header className="bg-white border-b border-border/80 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <Button
@@ -117,7 +125,7 @@ export default function AdminLayout() {
               variant="outline"
               size="sm"
               onClick={handleSignOut}
-              className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50"
+              className="border-2 border-border/80 text-gray-900 hover:bg-secondary"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
@@ -131,7 +139,7 @@ export default function AdminLayout() {
         <aside
           className={`
             fixed lg:sticky top-[57px] left-0 h-[calc(100vh-57px)] 
-            bg-white border-r border-orange-300 shadow-lg
+            bg-white border-r border-border/80 shadow-lg
             transition-all duration-300 z-30
             ${sidebarOpen ? 'w-64' : 'w-0 lg:w-16'}
             overflow-hidden
@@ -150,7 +158,7 @@ export default function AdminLayout() {
                     w-full justify-start gap-3
                     ${active 
                       ? 'bg-gradient-to-r from-#8B5A3C to-#6B4423 text-white hover:from-#6B4423 hover:to-#5A3820' 
-                      : 'text-gray-700 hover:bg-orange-50'
+                      : 'text-gray-700 hover:bg-secondary'
                     }
                   `}
                   onClick={() => {
@@ -176,7 +184,7 @@ export default function AdminLayout() {
           <div className="mb-6 flex items-center gap-2 text-sm">
             {getBreadcrumbs().map((crumb, index, arr) => (
               <div key={index} className="flex items-center gap-2">
-                <span className={index === arr.length - 1 ? 'text-#6B4423 font-semibold' : 'text-gray-600'}>
+                <span className={index === arr.length - 1 ? 'text-primary font-semibold' : 'text-gray-600'}>
                   {crumb}
                 </span>
                 {index < arr.length - 1 && <ChevronRight className="w-4 h-4 text-gray-400" />}

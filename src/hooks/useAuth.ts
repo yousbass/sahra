@@ -40,7 +40,8 @@ export function useAuth() {
               email: firebaseUser.email || '',
               displayName: firebaseUser.displayName || 'User',
               photoURL: firebaseUser.photoURL || undefined,
-              isHost: false,
+              // Role flags (isHost/isAdmin/isSeller) are never set by the
+              // client — they start absent and are granted by admins only.
             };
             
             await createUserProfile(firebaseUser.uid, newUserData);
@@ -62,7 +63,7 @@ export function useAuth() {
     return unsubscribe;
   }, []);
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, phone?: string) => {
     // Firebase authentication
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -72,7 +73,9 @@ export function useAuth() {
       const newUserData: Omit<UserProfile, 'id' | 'createdAt'> = {
         email: userCredential.user.email || '',
         displayName: name,
-        isHost: false,
+        ...(phone && phone.trim() ? { phone: phone.trim() } : {}),
+        // Role flags (isHost/isAdmin/isSeller) are omitted intentionally —
+        // they start absent and are granted by admins only.
       };
       
       // Create user profile with retry logic
@@ -168,7 +171,7 @@ export function useAuth() {
         const newUserData: Omit<UserProfile, 'id' | 'createdAt'> = {
           email: result.user.email || '',
           displayName: result.user.displayName || 'User',
-          isHost: false,
+          // Role flags omitted — granted by admins only.
         };
         
         // Only add photoURL if it exists
@@ -214,7 +217,7 @@ export function useAuth() {
         const newUserData: Omit<UserProfile, 'id' | 'createdAt'> = {
           email: result.user.email || '',
           displayName: result.user.displayName || 'User',
-          isHost: false,
+          // Role flags omitted — granted by admins only.
         };
         
         // Only add photoURL if it exists
@@ -253,6 +256,15 @@ export function useAuth() {
     try {
       await firebaseSignOut(auth);
       setUserData(null);
+      // Shared-device hygiene (Audit v4 H-9): clear per-account local state
+      // so the next user of this browser doesn't inherit it. Language is a
+      // device preference and is deliberately kept.
+      try {
+        localStorage.removeItem('mukhymat_favorites');
+        localStorage.removeItem('mukhymat_unread_reviews');
+      } catch {
+        // Private mode — nothing persisted anyway.
+      }
       toast.success('Signed out successfully');
     } catch (error) {
       toast.error('Failed to sign out');

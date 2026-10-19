@@ -1,3 +1,4 @@
+import { CampfireLoader } from '@/components/CampfireLoader';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { 
-  Loader2,
   TrendingUp,
   Users,
   DollarSign,
@@ -22,7 +22,6 @@ import {
   getPopularCamps,
   getBookingTrendData,
   AdminStats,
-  Camp
 } from '@/lib/firestore';
 import { toast } from 'sonner';
 import { 
@@ -45,8 +44,8 @@ import { format } from 'date-fns';
 export default function AdminAnalytics() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [revenueData, setRevenueData] = useState<Array<{ month: string; revenue: number }>>([]);
-  const [userGrowthData, setUserGrowthData] = useState<Array<{ month: string; users: number; hosts: number }>>([]);
-  const [popularCamps, setPopularCamps] = useState<Camp[]>([]);
+  const [userGrowthData, setUserGrowthData] = useState<{ currentMonth: number; lastMonth: number; total: number; percentageChange: number } | null>(null);
+  const [popularCamps, setPopularCamps] = useState<Array<{ id: string; title?: string; rating?: number; reviewCount?: number; pricePerNight?: number; images?: string[] }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('30days');
@@ -79,8 +78,8 @@ export default function AdminAnalytics() {
       
       // User growth data
       setUserGrowthData(userGrowth);
-      
-      setPopularCamps(topCamps);
+
+      setPopularCamps(topCamps as Array<{ id: string; title?: string; rating?: number; reviewCount?: number; pricePerNight?: number; images?: string[] }>);
     } catch (error) {
       console.error('Error loading analytics:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to load analytics';
@@ -123,7 +122,7 @@ export default function AdminAnalytics() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-#6B4423 animate-spin" />
+        <CampfireLoader size="lg" className="mx-auto mb-4" />
       </div>
     );
   }
@@ -132,7 +131,7 @@ export default function AdminAnalytics() {
     return (
       <div className="text-center py-20">
         <p className="text-gray-600 mb-4">{error || 'Failed to load analytics'}</p>
-        <Button onClick={loadAnalytics} className="bg-#6B4423 hover:bg-#5A3820">
+        <Button onClick={loadAnalytics} className="bg-primary hover:bg-#5A3820">
           Retry
         </Button>
       </div>
@@ -149,7 +148,7 @@ export default function AdminAnalytics() {
         </div>
         <div className="flex gap-2">
           <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-[180px] border-orange-300">
+            <SelectTrigger className="w-[180px] border-border/80">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -162,7 +161,7 @@ export default function AdminAnalytics() {
           <Button
             onClick={exportData}
             variant="outline"
-            className="border-2 border-orange-300 hover:bg-orange-50"
+            className="border-2 border-border/80 hover:bg-secondary/50"
           >
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -172,7 +171,7 @@ export default function AdminAnalytics() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
               <Users className="w-6 h-6 text-white" />
@@ -184,7 +183,7 @@ export default function AdminAnalytics() {
           <p className="text-sm text-gray-600 mt-1">{stats.totalHosts} hosts</p>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center">
               <DollarSign className="w-6 h-6 text-white" />
@@ -196,7 +195,7 @@ export default function AdminAnalytics() {
           <p className="text-sm text-gray-600 mt-1">{stats.monthlyRevenue.toFixed(0)} BD this month</p>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
               <Star className="w-6 h-6 text-white" />
@@ -208,7 +207,7 @@ export default function AdminAnalytics() {
           <p className="text-sm text-gray-600 mt-1">{stats.totalReviews} reviews</p>
         </Card>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-white" />
@@ -224,7 +223,7 @@ export default function AdminAnalytics() {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Trend */}
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Revenue Trend (Last 12 Months)</h3>
           {revenueData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
@@ -256,26 +255,31 @@ export default function AdminAnalytics() {
         </Card>
 
         {/* User Growth */}
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">User Growth (Last 12 Months)</h3>
-          {userGrowthData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={userGrowthData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#fff', 
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="users" fill="#3b82f6" radius={[8, 8, 0, 0]} name="Total Users" />
-                <Bar dataKey="hosts" fill="#10b981" radius={[8, 8, 0, 0]} name="Hosts" />
-              </BarChart>
-            </ResponsiveContainer>
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">User Growth</h3>
+          {userGrowthData ? (
+            <div className="h-[300px] flex flex-col justify-center gap-6 px-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">This Month</p>
+                  <p className="text-3xl font-bold text-gray-900">{userGrowthData.currentMonth}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">Last Month</p>
+                  <p className="text-3xl font-bold text-gray-900">{userGrowthData.lastMonth}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">Total Users</p>
+                  <p className="text-3xl font-bold text-gray-900">{userGrowthData.total}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">MoM Change</p>
+                  <p className={`text-3xl font-bold ${userGrowthData.percentageChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {userGrowthData.percentageChange >= 0 ? '+' : ''}{userGrowthData.percentageChange.toFixed(1)}%
+                  </p>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-gray-500">
               No user growth data available
@@ -287,7 +291,7 @@ export default function AdminAnalytics() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Booking Status Distribution */}
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Booking Status Distribution</h3>
           {bookingStatusData.length > 0 && bookingStatusData.some(d => d.value > 0) ? (
             <ResponsiveContainer width="100%" height={300}>
@@ -318,12 +322,12 @@ export default function AdminAnalytics() {
         </Card>
 
         {/* Top Performing Camps */}
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Top Performing Camps</h3>
           {popularCamps.length > 0 ? (
             <div className="space-y-3 max-h-[300px] overflow-y-auto">
               {popularCamps.map((camp, index) => (
-                <div key={camp.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors">
+                <div key={camp.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-#8B5A3C to-#6B4423 flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-sm">{index + 1}</span>
                   </div>
@@ -343,7 +347,7 @@ export default function AdminAnalytics() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-#6B4423">{camp.pricePerNight} BD</p>
+                    <p className="font-bold text-primary">{camp.pricePerNight} BD</p>
                   </div>
                 </div>
               ))}
@@ -357,7 +361,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Additional Stats */}
-      <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-6">
+      <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Platform Statistics</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>

@@ -3,11 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, Loader2, Calendar, Users, DollarSign, ShieldCheck } from 'lucide-react';
-import { calculateRefund } from '@/lib/refundCalculator';
+import { AlertCircle, Loader2, Calendar, Users, DollarSign, ShieldCheck, Phone } from 'lucide-react';
+import { config } from '@/lib/config';
+import { calculateRefund, normalizeCancellationPolicy } from '@/lib/refundCalculator';
 import type { CancellationPolicy } from '@/lib/refundCalculator';
 import { cancelBooking } from '@/lib/firestore';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface BookingWithCamp {
   id: string;
@@ -21,7 +23,7 @@ interface BookingWithCamp {
   status: string;
   userId: string;
   userEmail: string;
-  cancellationPolicy?: CancellationPolicy;
+  cancellationPolicy?: string | CancellationPolicy;
 }
 
 interface CancellationDialogProps {
@@ -39,18 +41,22 @@ export function CancellationDialog({
 }: CancellationDialogProps) {
   const [cancelling, setCancelling] = useState(false);
   const [reason, setReason] = useState('');
+  const { t, i18n } = useTranslation();
 
-  // Calculate refund
-  const policy = booking.cancellationPolicy || 'moderate';
+  // Normalise the stored policy — Firestore may hold a legacy string tier
+  // ('flexible' | 'moderate' | 'strict') or a full CancellationPolicy object.
+  const rawPolicy: string | CancellationPolicy = booking.cancellationPolicy ?? 'moderate';
+  const normalizedPolicy = normalizeCancellationPolicy(rawPolicy);
   const refundCalculation = calculateRefund(
     booking.totalPrice,
     new Date(booking.checkInDate),
     new Date(),
-    policy
+    normalizedPolicy
   );
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'ar' ? 'ar-BH' : 'en-US';
+    return new Date(dateString).toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -58,39 +64,27 @@ export function CancellationDialog({
     });
   };
 
-  const getPolicyName = (policy: CancellationPolicy) => {
-    switch (policy) {
-      case 'flexible':
-        return 'Flexible';
-      case 'moderate':
-        return 'Moderate';
-      case 'strict':
-        return 'Strict';
-      default:
-        return 'Moderate';
-    }
+  const getPolicyName = (p: string | CancellationPolicy) => {
+    const tier = typeof p === 'string' ? p : p.type;
+    if (tier === 'flexible' || tier === 'full_refundable') return t('cancellationDialog.policy.flexible');
+    if (tier === 'strict') return t('cancellationDialog.policy.strict');
+    return t('cancellationDialog.policy.moderate');
   };
 
-  const getPolicyColor = (policy: CancellationPolicy) => {
-    switch (policy) {
-      case 'flexible':
-        return 'text-green-600';
-      case 'moderate':
-        return 'text-blue-600';
-      case 'strict':
-        return 'text-orange-600';
-      default:
-        return 'text-blue-600';
-    }
+  const getPolicyColor = (p: string | CancellationPolicy) => {
+    const tier = typeof p === 'string' ? p : p.type;
+    if (tier === 'flexible' || tier === 'full_refundable') return 'text-green-600';
+    if (tier === 'strict') return 'text-primary';
+    return 'text-blue-600';
   };
 
   const getRefundMessage = () => {
     if (refundCalculation.refundPercentage === 100) {
-      return "You'll receive a full refund because you're cancelling within the allowed timeframe.";
+      return t('cancellationDialog.refundFull');
     } else if (refundCalculation.refundPercentage === 50) {
-      return "You'll receive a 50% refund based on the cancellation policy and timing.";
+      return t('cancellationDialog.refundHalf');
     } else {
-      return "Unfortunately, you're not eligible for a refund due to the cancellation policy and timing.";
+      return t('cancellationDialog.refundNone');
     }
   };
 
@@ -106,18 +100,18 @@ export function CancellationDialog({
 
       console.log('✅ Cancellation successful');
       
-      toast.success('Booking cancelled successfully', {
+      toast.success(t('cancellationDialog.successTitle'), {
         description: refundCalculation.refundAmount > 0 
-          ? `A refund of ${refundCalculation.refundAmount.toFixed(2)} BD will be processed.`
-          : 'No refund is applicable for this cancellation.'
+          ? t('cancellationDialog.successRefund', { amount: refundCalculation.refundAmount.toFixed(2) })
+          : t('cancellationDialog.successNoRefund')
       });
 
       onCancellationComplete();
       onOpenChange(false);
     } catch (error) {
       console.error('❌ Cancellation failed:', error);
-      toast.error('Failed to cancel booking', {
-        description: error instanceof Error ? error.message : 'Please try again later'
+      toast.error(t('cancellationDialog.errorTitle'), {
+        description: error instanceof Error ? error.message : t('cancellationDialog.errorDefault')
       });
     } finally {
       setCancelling(false);
@@ -128,43 +122,43 @@ export function CancellationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900">Cancel Booking</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">{t('cancellationDialog.title')}</DialogTitle>
           <DialogDescription className="text-gray-600">
-            Review the cancellation details and refund information before confirming
+            {t('cancellationDialog.description')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           {/* Booking Details */}
-          <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
+          <div className="bg-secondary/50 border-2 border-border/80 rounded-lg p-4">
             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-#6B4423" />
-              Booking Details
+              <Calendar className="w-5 h-5 text-primary" />
+              {t('cancellationDialog.bookingDetails')}
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Camp:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.camp')}:</span>
                 <span className="text-gray-900 font-bold">{booking.campName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Location:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.location')}:</span>
                 <span className="text-gray-900 font-bold">{booking.campLocation}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Check-in:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.checkIn')}:</span>
                 <span className="text-gray-900 font-bold">{formatDate(booking.checkInDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Check-out:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.checkOut')}:</span>
                 <span className="text-gray-900 font-bold">{formatDate(booking.checkOutDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Guests:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.guests')}:</span>
                 <span className="text-gray-900 font-bold">{booking.numberOfGuests}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-orange-300">
-                <span className="text-gray-900 font-bold">Total Paid:</span>
-                <span className="text-#6B4423 font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
+              <div className="flex justify-between pt-2 border-t border-border/80">
+                <span className="text-gray-900 font-bold">{t('cancellationDialog.totalPaid')}:</span>
+                <span className="text-primary font-bold text-lg">{booking.totalPrice.toFixed(2)} BD</span>
               </div>
             </div>
           </div>
@@ -173,10 +167,12 @@ export function CancellationDialog({
           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
             <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-blue-600" />
-              Cancellation Policy
+              {t('cancellationDialog.cancellationPolicy')}
             </h3>
             <p className="text-sm text-gray-700 mb-2">
-              This booking has a <span className={`font-bold ${getPolicyColor(policy)}`}>{getPolicyName(policy)}</span> cancellation policy.
+              {t('cancellationDialog.policyStatementPre')}{' '}
+              <span className={`font-bold ${getPolicyColor(rawPolicy)}`}>{getPolicyName(rawPolicy)}</span>{' '}
+              {t('cancellationDialog.policyStatementPost')}
             </p>
             <p className="text-sm text-gray-700">
               {getRefundMessage()}
@@ -193,23 +189,23 @@ export function CancellationDialog({
               <DollarSign className={`w-5 h-5 ${
                 refundCalculation.refundAmount > 0 ? 'text-green-600' : 'text-red-600'
               }`} />
-              Refund Breakdown
+              {t('cancellationDialog.refundBreakdown')}
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Original Amount:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.originalAmount')}:</span>
                 <span className="text-gray-900 font-bold">{booking.totalPrice.toFixed(2)} BD</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Service Fee (non-refundable):</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.serviceFee')}:</span>
                 <span className="text-gray-900 font-bold">-{refundCalculation.serviceFee.toFixed(2)} BD</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Refund Percentage:</span>
+                <span className="text-gray-700 font-medium">{t('cancellationDialog.refundPercentage')}:</span>
                 <span className="text-gray-900 font-bold">{refundCalculation.refundPercentage}%</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-gray-300">
-                <span className="text-gray-900 font-bold text-base">You'll Receive:</span>
+                <span className="text-gray-900 font-bold text-base">{t('cancellationDialog.youllReceive')}:</span>
                 <span className={`font-bold text-xl ${
                   refundCalculation.refundAmount > 0 ? 'text-green-600' : 'text-red-600'
                 }`}>
@@ -219,39 +215,50 @@ export function CancellationDialog({
             </div>
             {refundCalculation.refundAmount > 0 && (
               <p className="text-xs text-gray-600 mt-3">
-                💡 Refunds are processed within 5-10 business days to your original payment method.
+                {t('cancellationDialog.refundTimeline')}
               </p>
             )}
           </div>
 
           {/* Warning */}
-          <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
+          <div className="bg-secondary/50 border-2 border-border/80 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-[#FF8C42] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-semibold text-gray-900 mb-1">Important Notice</p>
+                <p className="font-semibold text-gray-900 mb-1">{t('cancellationDialog.importantNotice')}</p>
                 <p className="text-sm text-gray-700">
-                  This action cannot be undone. Once you confirm the cancellation, your booking will be cancelled immediately and you will receive a confirmation email.
+                  {t('cancellationDialog.cannotUndo')}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Support contact */}
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 border border-border/50">
+            <Phone className="w-4 h-4 text-primary shrink-0" />
+            <p className="text-xs text-gray-700">
+              {t('cancellationDialog.needHelp')}{' '}
+              <a href={`tel:${config.supportPhone}`} className="font-semibold text-primary hover:underline">{config.supportPhone}</a>
+              {' · '}
+              <a href={`mailto:${config.supportEmail}`} className="font-semibold text-primary hover:underline">{config.supportEmail}</a>
+            </p>
+          </div>
+
           {/* Cancellation Reason */}
           <div className="space-y-2">
             <Label htmlFor="reason" className="text-gray-900 font-semibold">
-              Reason for Cancellation (Optional)
+              {t('cancellationDialog.reasonLabel')}
             </Label>
             <Textarea
               id="reason"
-              placeholder="Let us know why you're cancelling (optional)..."
+              placeholder={t('cancellationDialog.reasonPlaceholder')}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
-              className="border-orange-300 focus:border-#8B5A3C resize-none"
+              className="border-border/80 focus:border-primary resize-none"
             />
             <p className="text-xs text-gray-600">
-              Your feedback helps us improve our service
+              {t('cancellationDialog.feedbackHelp')}
             </p>
           </div>
         </div>
@@ -262,9 +269,9 @@ export function CancellationDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={cancelling}
-            className="border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
+            className="border-2 border-border/80 text-gray-900 hover:bg-secondary/50 font-semibold"
           >
-            Keep Booking
+            {t('cancellationDialog.keepBooking')}
           </Button>
           <Button
             type="button"
@@ -275,10 +282,10 @@ export function CancellationDialog({
             {cancelling ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Cancelling...
+                {t('cancellationDialog.cancelling')}
               </>
             ) : (
-              'Confirm Cancellation'
+              t('cancellationDialog.confirmCancellation')
             )}
           </Button>
         </DialogFooter>

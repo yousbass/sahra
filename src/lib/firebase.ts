@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Validate that all required Firebase environment variables are present
@@ -44,7 +44,13 @@ let facebookProvider;
 try {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
-  db = getFirestore(app);
+  // Enable IndexedDB offline persistence with multi-tab support so cached
+  // camp/booking data remains available when the device is briefly offline.
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
+  });
   storage = getStorage(app);
   googleProvider = new GoogleAuthProvider();
   facebookProvider = new FacebookAuthProvider();

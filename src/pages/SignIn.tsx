@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,10 @@ import { useTranslation } from 'react-i18next';
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Only allow same-app relative paths (blocks "//host" protocol-relative URLs)
+  const rawReturnTo = searchParams.get('returnTo') || '/profile';
+  const returnTo = rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//') ? rawReturnTo : '/profile';
   const { signIn, signInWithGoogle, resetPassword } = useAuth();
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
@@ -24,7 +28,7 @@ export default function SignIn() {
 
     try {
       await signIn(email, password);
-      navigate('/profile');
+      navigate(returnTo, { replace: true });
     } catch (error) {
       // Error is already handled in useAuth hook
     } finally {
@@ -52,7 +56,7 @@ export default function SignIn() {
     setLoading(true);
     try {
       await signInWithGoogle();
-      navigate('/profile');
+      navigate(returnTo, { replace: true });
     } catch (error) {
       // Error is already handled in useAuth hook
     } finally {
@@ -61,15 +65,15 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b desert-bg p-4 flex items-center justify-center">
       <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="text-6xl mb-4">🏜️</div>
+            <img src="/assets/mukhymat-logo.jpg" alt="MUKHYMAT" className="h-20 w-20 mx-auto object-cover rounded-full shadow-md mb-6" />
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.welcomeBack')}</h1>
             <p className="text-gray-700 font-medium">{t('auth.signInSubtitle')}</p>
           </div>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 shadow-xl">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-8 shadow-xl">
           <form onSubmit={handleEmailSignIn} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900 font-semibold">{t('auth.email')}</Label>
@@ -83,7 +87,7 @@ export default function SignIn() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                  className="pl-11 border-border/80 focus:border-primary text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -95,7 +99,7 @@ export default function SignIn() {
                   type="button"
                   onClick={handleResetPassword}
                   disabled={resetting || loading}
-                  className="text-sm text-#6B4423 hover:text-#5A3820 font-semibold disabled:opacity-50"
+                  className="text-sm text-primary hover:text-primary-foreground font-semibold disabled:opacity-50"
                 >
                   {resetting ? t('auth.sending') : t('auth.forgot')}
                 </button>
@@ -110,7 +114,7 @@ export default function SignIn() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900"
+                  className="pl-11 border-border/80 focus:border-primary text-gray-900"
                 />
               </div>
             </div>
@@ -118,7 +122,7 @@ export default function SignIn() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground lantern-halo font-semibold shadow-lg"
             >
               {loading ? (
                 <>
@@ -136,7 +140,7 @@ export default function SignIn() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-orange-300"></div>
+              <div className="w-full border-t border-border/80"></div>
             </div>
               <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-gray-700 font-medium">{t('auth.orContinue')}</span>
@@ -148,7 +152,7 @@ export default function SignIn() {
             onClick={handleGoogleSignIn}
             disabled={loading}
             variant="outline"
-            className="w-full h-12 border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
+            className="w-full h-12 border-2 border-border/80 text-gray-900 hover:bg-secondary font-semibold"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -179,7 +183,7 @@ export default function SignIn() {
             {t('auth.noAccount')}{' '}
             <button
               onClick={() => navigate('/signup')}
-              className="text-#6B4423 hover:text-#5A3820 font-semibold"
+              className="text-primary hover:text-primary-foreground font-semibold"
             >
               {t('auth.signUp')}
             </button>

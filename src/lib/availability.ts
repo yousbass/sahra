@@ -1,5 +1,5 @@
 import { parseISO, isSameDay, isPast, startOfDay, isWithinInterval } from 'date-fns';
-import { getBookingsByCamp, Booking } from './firestore';
+import { getBookingsByCamp, getCampBookedDatesFromIndex, Booking } from './firestore';
 import { getBlockedDates as getBlockedDatesFromFirestore } from './firestore';
 
 export interface AvailabilityCheckResult {
@@ -32,21 +32,16 @@ export async function checkAvailability(
       };
     }
     
-    // 2. Check for existing bookings
-    // FIXED: Only check checkInDate, NOT checkOutDate
-    // A booking occupies only its check-in date. The checkout happens at 3:00 AM the next day,
-    // so that date is available for new check-ins at 8:00 AM.
-    const bookings = await getBookingsByCamp(campId);
-    const conflictingBooking = bookings.find(booking => 
-      isSameDay(parseISO(booking.checkInDate), checkDate) &&
-      booking.status !== 'cancelled'
-    );
-    
-    if (conflictingBooking) {
+    // 2. Check against the publicly-readable campAvailability index.
+    // This subcollection has `allow read: if true` so it works for all guests
+    // without requiring access to private booking records. Expired
+    // online-payment pending slots are already excluded by getCampBookedDatesFromIndex.
+    const bookedDates = await getCampBookedDatesFromIndex(campId);
+    const isBooked = bookedDates.some(d => isSameDay(d, checkDate));
+    if (isBooked) {
       return {
         available: false,
         reason: 'booked',
-        conflictingBookingId: conflictingBooking.id,
         message: 'This date is already booked'
       };
     }
@@ -90,28 +85,16 @@ export async function checkAvailability(
 }
 
 /**
- * Get all booked dates from existing bookings
- * FIXED: Only return check-in dates, NOT checkout dates
+ * Get all booked dates for a camp from the public campAvailability index.
+ * Reads from campAvailability/{campId}/dates which has `allow read: if true`,
+ * so this works for any guest without needing access to private booking records.
+ * Expired online-payment pending slots are excluded (treated as available).
+ *
+ * Propagates read failures — callers must catch and surface a visible error
+ * state so guests never see an unmarked calendar when freshness is uncertain.
  */
 export async function getBookedDates(campId: string): Promise<Date[]> {
-  console.log('=== GET BOOKED DATES ===');
-  console.log('Camp ID:', campId);
-  
-  try {
-    const bookings = await getBookingsByCamp(campId);
-    
-    // Only return check-in dates - checkout dates are available for new bookings
-    const bookedDates = bookings
-      .filter(booking => booking.status !== 'cancelled')
-      .map(booking => parseISO(booking.checkInDate));
-    
-    console.log(`✅ Found ${bookedDates.length} booked dates (check-in dates only)`);
-    return bookedDates;
-    
-  } catch (error) {
-    console.error('❌ Error fetching booked dates:', error);
-    throw error;
-  }
+  return getCampBookedDatesFromIndex(campId);
 }
 
 /**

@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Mail, Lock, UserPlus, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Phone, UserPlus, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -14,15 +15,24 @@ export default function SignUp() {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Phone is optional — validate only when provided.
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length > 0 && (phoneDigits.length < 8 || phoneDigits.length > 15)) {
+      toast.error(t('reserve.phoneValidFormat'));
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await signUp(email, password, name);
+      await signUp(email, password, name, phone);
       navigate('/profile');
     } catch (error) {
       // Error is already handled in useAuth hook
@@ -44,15 +54,15 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-200 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b desert-bg p-4 flex items-center justify-center">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🏜️</div>
+          <img src="/assets/mukhymat-logo.jpg" alt="MUKHYMAT" className="h-20 w-20 mx-auto object-cover rounded-full shadow-md mb-6" />
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('authSignUp.join')}</h1>
           <p className="text-gray-700 font-medium">{t('authSignUp.subtitle')}</p>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur-sm border-orange-300 p-8 shadow-xl">
+        <Card className="bg-white/95 backdrop-blur-sm border-border/80 p-8 shadow-xl">
           <form onSubmit={handleEmailSignUp} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-900 font-semibold">{t('authSignUp.fullName')}</Label>
@@ -66,7 +76,23 @@ export default function SignUp() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   disabled={loading}
-                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                  className="pl-11 border-border/80 focus:border-primary text-gray-900 placeholder:text-gray-400"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-gray-900 font-semibold">{t('reserve.phone')} <span className="text-gray-400 font-normal text-xs">({t('common.optional', 'optional')})</span></Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+973 XXXX XXXX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={loading}
+                  className="pl-11 border-border/80 focus:border-primary text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -83,7 +109,7 @@ export default function SignUp() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900 placeholder:text-gray-400"
+                  className="pl-11 border-border/80 focus:border-primary text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -101,7 +127,7 @@ export default function SignUp() {
                   required
                   disabled={loading}
                   minLength={6}
-                  className="pl-11 border-orange-300 focus:border-#8B5A3C text-gray-900"
+                  className="pl-11 border-border/80 focus:border-primary text-gray-900"
                 />
               </div>
               <p className="text-xs text-gray-600 font-medium">{t('authSignUp.passwordHint')}</p>
@@ -110,7 +136,7 @@ export default function SignUp() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-gradient-to-r from-#8B5A3C to-#6B4423 hover:from-#6B4423 hover:to-#5A3820 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground lantern-halo font-semibold shadow-lg"
             >
               {loading ? (
                 <>
@@ -128,7 +154,7 @@ export default function SignUp() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-orange-300"></div>
+              <div className="w-full border-t border-border/80"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-gray-700 font-medium">{t('authSignUp.orContinue')}</span>
@@ -140,7 +166,7 @@ export default function SignUp() {
             onClick={handleGoogleSignUp}
             disabled={loading}
             variant="outline"
-            className="w-full h-12 border-2 border-orange-300 text-gray-900 hover:bg-orange-50 font-semibold"
+            className="w-full h-12 border-2 border-border/80 text-gray-900 hover:bg-secondary font-semibold"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -171,7 +197,7 @@ export default function SignUp() {
             {t('authSignUp.haveAccount')}{' '}
             <button
               onClick={() => navigate('/signin')}
-              className="text-#6B4423 hover:text-#5A3820 font-semibold"
+              className="text-primary hover:text-primary-foreground font-semibold"
             >
               {t('authSignUp.signIn')}
             </button>
